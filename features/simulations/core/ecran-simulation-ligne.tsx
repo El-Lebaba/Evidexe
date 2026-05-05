@@ -23,7 +23,7 @@ type ProprietesEcranSimulationLigne = {
 
 type NomIcone = ComponentProps<typeof MaterialCommunityIcons>['name'];
 
-const ARRIERE_PLAN_PAGE_SIMULATION = '#EAE3D2';
+const themeBase = obtenirThemeApplication(false);
 
 const DETAILS_DOMAINE: Record<
   DomaineSimulation,
@@ -39,8 +39,8 @@ const DETAILS_DOMAINE: Record<
 > = {
   mathematiques: {
     cheminRetour: '/(tabs)/mathematiques' as Href,
-    couleurAccent: '#8D9771',
-    couleurDouce: '#DDE4D5',
+    couleurAccent: themeBase.blue,
+    couleurDouce: themeBase.cardDark,
     description: 'Une nouvelle visualisation interactive est en construction pour rendre ce concept plus clair.',
     icone: 'function-variant',
     libelle: 'Mathematiques',
@@ -48,8 +48,8 @@ const DETAILS_DOMAINE: Record<
   },
   physique: {
     cheminRetour: '/(tabs)/physique' as Href,
-    couleurAccent: '#6E7F73',
-    couleurDouce: '#D7E2DA',
+    couleurAccent: themeBase.green,
+    couleurDouce: themeBase.cardDark,
     description: 'Le laboratoire est presque pret: schema, controles et animation arrivent dans une prochaine version.',
     icone: 'atom',
     libelle: 'Physique',
@@ -57,8 +57,8 @@ const DETAILS_DOMAINE: Record<
   },
   'programmation-java': {
     cheminRetour: '/(tabs)/programmation-java' as Href,
-    couleurAccent: '#7B6F54',
-    couleurDouce: '#E4DCC8',
+    couleurAccent: themeBase.orange,
+    couleurDouce: themeBase.cardDark,
     description: 'Un atelier Java est en preparation avec une logique pas a pas et des essais interactifs.',
     icone: 'code-braces',
     libelle: 'Java',
@@ -66,17 +66,13 @@ const DETAILS_DOMAINE: Record<
   },
 };
 
-const themeBase = obtenirThemeApplication(false);
-
-export function EcranSimulationLigne({ title, type}: LineSimulationScreenProps) {
+export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulationLigne) {
   const modeSombre = useSchemaCouleur() === 'dark';
   const themeActif = obtenirThemeApplication(modeSombre);
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const headerTranslateY = scrollY.interpolate({
-export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulationLigne) {
   const defilementY = useRef(new Animated.Value(0)).current;
   const pulsation = useRef(new Animated.Value(0)).current;
   const detailDomaine = DETAILS_DOMAINE[domaine];
+  const couleurDouce = modeSombre ? themeActif.cardDark : detailDomaine.couleurDouce;
 
   useEffect(() => {
     const animationPulsation = Animated.loop(
@@ -119,12 +115,15 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
   });
   const opaciteHalo = pulsation.interpolate({
     inputRange: [0, 1],
-    outputRange: [0.24, 0.46],
+    outputRange: [0.18, 0.38],
   });
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: themeActif.background }]}>
-      <VueTheme lightColor={themeActif.background} darkColor={themeActif.background} style={[styles.container, { backgroundColor: themeActif.background }]}>
+      <VueTheme
+        darkColor={themeActif.background}
+        lightColor={themeActif.background}
+        style={[styles.container, { backgroundColor: themeActif.background }]}>
         <Animated.View
           style={[
             styles.superpositionEntete,
@@ -143,19 +142,25 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
           )}
           scrollEventThrottle={16}
           showsVerticalScrollIndicator={false}>
-          <VueTheme lightColor={themeActif.background} darkColor={themeActif.background} style={styles.content}>
-            <TexteTheme lightColor={themeActif.text} darkColor={themeActif.text} style={{ color: themeActif.text }} type="title">{title}</TexteTheme>
-          <VueTheme style={styles.contenu}>
-            <View style={styles.vitrine}>
+          <VueTheme
+            darkColor={themeActif.background}
+            lightColor={themeActif.background}
+            style={[styles.contenu, { backgroundColor: themeActif.background }]}>
+            <View
+              style={[
+                styles.vitrine,
+                { backgroundColor: themeActif.panel, borderColor: themeActif.border },
+              ]}>
               <View style={styles.motif}>
                 {detailDomaine.motif.map((symbole, index) => (
                   <TexteTheme
                     key={`${symbole}-${index}`}
-                    darkColor="#243B53"
-                    lightColor="#243B53"
+                    darkColor={themeActif.ink}
+                    lightColor={themeActif.ink}
                     style={[
                       styles.symbole,
                       {
+                        color: themeActif.ink,
                         left: `${10 + index * 18}%`,
                         top: index % 2 === 0 ? 20 : 72,
                       },
@@ -169,46 +174,63 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
                 style={[
                   styles.halo,
                   {
-                    backgroundColor: detailDomaine.couleurDouce,
+                    backgroundColor: couleurDouce,
                     opacity: opaciteHalo,
                     transform: [{ scale: echelleHalo }],
                   },
                 ]}
               />
 
-              <View style={[styles.cercleIcone, { backgroundColor: detailDomaine.couleurDouce }]}>
+              <View
+                style={[
+                  styles.cercleIcone,
+                  { backgroundColor: couleurDouce, borderColor: themeActif.border },
+                ]}>
                 <MaterialCommunityIcons color={detailDomaine.couleurAccent} name={detailDomaine.icone} size={52} />
               </View>
 
-              <View style={styles.badgeDomaine}>
-                <MaterialCommunityIcons color="#243B53" name="timer-sand" size={16} />
-                <TexteTheme darkColor="#243B53" lightColor="#243B53" style={styles.texteBadgeDomaine}>
+              <View
+                style={[
+                  styles.badgeDomaine,
+                  { backgroundColor: themeActif.soft, borderColor: themeActif.border },
+                ]}>
+                <MaterialCommunityIcons color={themeActif.ink} name="timer-sand" size={16} />
+                <TexteTheme
+                  darkColor={themeActif.ink}
+                  lightColor={themeActif.ink}
+                  style={[styles.texteBadgeDomaine, { color: themeActif.ink }]}>
                   {detailDomaine.libelle}
                 </TexteTheme>
               </View>
 
-              <TexteTheme darkColor="#243B53" lightColor="#243B53" style={styles.titrePrincipal}>
+              <TexteTheme
+                darkColor={themeActif.ink}
+                lightColor={themeActif.ink}
+                style={[styles.titrePrincipal, { color: themeActif.ink }]}>
                 Bientot disponible
               </TexteTheme>
 
-              <TexteTheme darkColor="#5E6D64" lightColor="#5E6D64" style={styles.description}>
+              <TexteTheme
+                darkColor={themeActif.cardText}
+                lightColor={themeActif.cardText}
+                style={[styles.description, { color: themeActif.cardText }]}>
                 {detailDomaine.description}
               </TexteTheme>
 
               <View style={styles.zoneProgression}>
-                <View style={styles.ligneProgression}>
+                <View style={[styles.ligneProgression, { backgroundColor: themeActif.soft }]}>
                   <View style={[styles.progressionActive, { backgroundColor: detailDomaine.couleurAccent }]} />
                 </View>
                 <View style={styles.etapes}>
-                  <TexteTheme darkColor="#5E6D64" lightColor="#5E6D64" style={styles.texteEtape}>
-                    Idee
-                  </TexteTheme>
-                  <TexteTheme darkColor="#5E6D64" lightColor="#5E6D64" style={styles.texteEtape}>
-                    Design
-                  </TexteTheme>
-                  <TexteTheme darkColor="#5E6D64" lightColor="#5E6D64" style={styles.texteEtape}>
-                    Simulation
-                  </TexteTheme>
+                  {['Idee', 'Design', 'Simulation'].map((etape) => (
+                    <TexteTheme
+                      key={etape}
+                      darkColor={themeActif.cardText}
+                      lightColor={themeActif.cardText}
+                      style={[styles.texteEtape, { color: themeActif.cardText }]}>
+                      {etape}
+                    </TexteTheme>
+                  ))}
                 </View>
               </View>
 
@@ -216,11 +238,14 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
                 onPress={() => router.replace(detailDomaine.cheminRetour)}
                 style={({ pressed, hovered }) => [
                   styles.boutonRetour,
-                  { borderColor: detailDomaine.couleurAccent },
+                  { backgroundColor: themeActif.soft, borderColor: detailDomaine.couleurAccent },
                   pressed || hovered ? styles.boutonRetourSurvol : null,
                 ]}>
-                <MaterialCommunityIcons color="#243B53" name="arrow-left" size={18} />
-                <TexteTheme darkColor="#243B53" lightColor="#243B53" style={styles.texteBoutonRetour}>
+                <MaterialCommunityIcons color={themeActif.ink} name="arrow-left" size={18} />
+                <TexteTheme
+                  darkColor={themeActif.ink}
+                  lightColor={themeActif.ink}
+                  style={[styles.texteBoutonRetour, { color: themeActif.ink }]}>
                   Retour aux simulations
                 </TexteTheme>
               </Pressable>
@@ -253,7 +278,6 @@ const styles = StyleSheet.create({
   },
   contenu: {
     alignItems: 'center',
-    backgroundColor: ARRIERE_PLAN_PAGE_SIMULATION,
     minHeight: 680,
     paddingBottom: 40,
     paddingHorizontal: 20,
@@ -261,8 +285,6 @@ const styles = StyleSheet.create({
   },
   vitrine: {
     alignItems: 'center',
-    backgroundColor: '#F5F1E6',
-    borderColor: '#243B53',
     borderRadius: 18,
     borderWidth: 1.5,
     maxWidth: 620,
@@ -275,7 +297,7 @@ const styles = StyleSheet.create({
   },
   motif: {
     ...StyleSheet.absoluteFillObject,
-    opacity: 0.16,
+    opacity: 0.12,
   },
   symbole: {
     fontSize: 24,
@@ -291,7 +313,6 @@ const styles = StyleSheet.create({
   },
   cercleIcone: {
     alignItems: 'center',
-    borderColor: '#243B53',
     borderRadius: 56,
     borderWidth: 1.5,
     height: 112,
@@ -301,8 +322,6 @@ const styles = StyleSheet.create({
   },
   badgeDomaine: {
     alignItems: 'center',
-    backgroundColor: '#E9E2D0',
-    borderColor: '#243B53',
     borderRadius: 999,
     borderWidth: 1.5,
     flexDirection: 'row',
@@ -335,7 +354,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   ligneProgression: {
-    backgroundColor: '#DDD7C8',
     borderRadius: 999,
     height: 10,
     overflow: 'hidden',
@@ -356,7 +374,6 @@ const styles = StyleSheet.create({
   },
   boutonRetour: {
     alignItems: 'center',
-    backgroundColor: '#EFE8D8',
     borderRadius: 12,
     borderWidth: 1.5,
     flexDirection: 'row',
@@ -367,7 +384,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   boutonRetourSurvol: {
-    backgroundColor: '#E4DCC8',
     transform: [{ translateY: -1 }],
   },
   texteBoutonRetour: {

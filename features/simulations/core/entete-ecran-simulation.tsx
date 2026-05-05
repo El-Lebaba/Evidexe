@@ -26,36 +26,59 @@ function obtenirHrefSection(domaine: string): Href {
       : '/(tabs)/programmation-java') as Href;
 }
 
-export function EnteteEcranSimulation({ title, type }: ProprietesEnteteEcranSimulation) {
+export function EnteteEcranSimulation({ titre, domaine }: ProprietesEnteteEcranSimulation) {
   const modeSombre = useSchemaCouleur() === 'dark';
   const themeActif = obtenirThemeApplication(modeSombre);
-  const closeSimulation = () => {
-    router.replace(obtenirHrefSection(type));
-  };
+
+  function fermerSimulation() {
+    router.replace(obtenirHrefSection(domaine));
+  }
 
   return (
-    <View style={styles.headerShell}>
-      <View style={[styles.topShade, { backgroundColor: themeActif.surface, borderBottomColor: themeActif.border }]} />
-      <View style={[styles.header, { backgroundColor: themeActif.background, borderBottomColor: themeActif.border }]}>
-        <View style={styles.headerRow}>
-          <View style={styles.leftGroup}>
-          <Pressable onPress={closeSimulation} style={[styles.backButton, { backgroundColor: themeActif.panel, borderColor: themeActif.border }]}>
-            <MaterialCommunityIcons color={themeActif.ink} name="arrow-left" size={20} />
-          </Pressable>
-          <View style={styles.titleGroup}>
-            <Pressable onPress={() => router.replace('/(tabs)/accueil' as Href)} style={styles.logoButton}>
-              <Image
-                contentFit="contain"
-                source={require('@/assets/images/evidexe-logo.png')}
-                style={styles.logo}
-              />
+    <View style={styles.enveloppeEntete}>
+      <View
+        style={[
+          styles.ombreHaute,
+          { backgroundColor: themeActif.surface, borderBottomColor: themeActif.border },
+        ]}
+      />
+      <View
+        style={[
+          styles.entete,
+          { backgroundColor: themeActif.background, borderBottomColor: themeActif.border },
+        ]}>
+        <View style={styles.rangeeEntete}>
+          <View style={styles.groupeGauche}>
+            <Pressable
+              onPress={fermerSimulation}
+              style={[
+                styles.boutonRetour,
+                { backgroundColor: themeActif.panel, borderColor: themeActif.border },
+              ]}>
+              <MaterialCommunityIcons color={themeActif.ink} name="arrow-left" size={20} />
             </Pressable>
-            <TexteTheme darkColor={themeActif.text} lightColor={themeActif.text} style={[styles.title, { color: themeActif.text }]}>
-              {title}
-            </TexteTheme>
+            <View style={styles.groupeTitre}>
+              <Pressable onPress={() => router.replace('/(tabs)/accueil' as Href)} style={styles.boutonLogo}>
+                <Image
+                  contentFit="contain"
+                  source={require('@/assets/images/evidexe-logo.png')}
+                  style={styles.logo}
+                />
+              </Pressable>
+              <TexteTheme
+                darkColor={themeActif.text}
+                lightColor={themeActif.text}
+                style={[styles.titre, { color: themeActif.text }]}>
+                {titre}
+              </TexteTheme>
+            </View>
           </View>
-          </View>
-          <Pressable onPress={() => router.replace('/(tabs)/profil' as Href)} style={[styles.profileButton, { backgroundColor: themeActif.panel, borderColor: themeActif.border }]}>
+          <Pressable
+            onPress={() => router.replace('/(tabs)/profil' as Href)}
+            style={[
+              styles.boutonProfil,
+              { backgroundColor: themeActif.panel, borderColor: themeActif.border },
+            ]}>
             <MaterialCommunityIcons color={themeActif.ink} name="account-circle-outline" size={20} />
           </Pressable>
         </View>
@@ -69,16 +92,12 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   ombreHaute: {
-    backgroundColor: '#DDD7C8',
-    borderBottomColor: '#243B53',
     borderBottomWidth: 1.5,
     minHeight: HAUTEUR_OMBRE_HAUT_ENTETE_SIMULATION,
     width: '100%',
   },
   entete: {
     alignItems: 'flex-start',
-    backgroundColor: '#EAE3D2',
-    borderBottomColor: '#243B53',
     borderBottomWidth: 1.5,
     justifyContent: 'flex-start',
     minHeight: HAUTEUR_BARRE_ENTETE_SIMULATION,
@@ -104,8 +123,6 @@ const styles = StyleSheet.create({
   },
   boutonRetour: {
     alignItems: 'center',
-    backgroundColor: '#F5F1E6',
-    borderColor: '#243B53',
     borderRadius: 10,
     borderWidth: 1.5,
     height: 38,
@@ -114,8 +131,6 @@ const styles = StyleSheet.create({
   },
   boutonProfil: {
     alignItems: 'center',
-    backgroundColor: '#F5F1E6',
-    borderColor: '#243B53',
     borderRadius: 10,
     borderWidth: 1.5,
     height: 38,
@@ -135,4 +150,3 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
 });
-

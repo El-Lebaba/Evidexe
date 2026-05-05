@@ -585,56 +585,29 @@ function EcranSectionTableauBord({
                     {groupesJava.map((groupe) => {
                       const rangeesGroupe = decouperEntrees(groupe.entrees, deuxColonnes ? 2 : 1);
 
-                        return (
-                        <View key={entree.href} style={styles.cardSlot}>
-                            <Pressable
-                                disabled={isClosed}
-                                onPress={() => {
-                                  if (!isClosed) {
-                                    donneesLocales.enregistrerClicSimulation(section, entree.href);
-                                    router.push(entree.href as Href);
-                                  }
-                                }}
-                              style={({ pressed, hovered }) => [
-                              styles.mathCard,
-                              schemaCouleur === 'dark' ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
-                                isClosed ? styles.mathCardClosed : null,
-                                !isClosed && (pressed || hovered) ? styles.mathCardPressed : null,
-                              ]}>
-                              <View style={styles.mathCardTop}>
-                                <View style={styles.iconShell}>
-                                  <MaterialCommunityIcons
-                                    color={THEME_MATHS.coral}
-                                    name={(entree.icon ?? 'book-open-variant') as keyof typeof MaterialCommunityIcons.glyphMap}
-                                    size={22}
-                                  />
-                                </View>
-
-                                <View style={styles.cardStatusRow}>
-                                  <View
-                                    style={[
-                                      styles.statusBadge,
-                                      obtenirStyleStatut(entree.statut),
-                                    ]}>
-                                    <TexteTheme
-                                      lightColor="#243B53"
-                                      style={styles.statusText}>
-                                      {obtenirEtiquetteStatut(entree.statut)}
-                                    </TexteTheme>
-                                  </View>
-                                </View>
-                              </View>
-
-                              <TexteTheme lightColor={THEME_MATHS.ink} style={styles.cardTitle}>
-                                {entree.title}
+                      return (
+                        <View key={groupe.valeur} style={styles.groupeJava}>
+                          <View style={styles.enteteGroupeJava}>
+                            <View style={styles.iconShell}>
+                              <MaterialCommunityIcons
+                                color={THEME_MATHS.coral}
+                                name={groupe.icone as keyof typeof MaterialCommunityIcons.glyphMap}
+                                size={22}
+                              />
+                            </View>
+                            <View style={styles.texteGroupeJava}>
+                              <TexteTheme
+                                lightColor={schemaCouleur === 'dark' ? themeApplication.text : THEME_MATHS.card}
+                                style={styles.titreGroupeJava}>
+                                {groupe.titre}
                               </TexteTheme>
-
-                              <TexteTheme lightColor={THEME_MATHS.mutedInk} numberOfLines={3} style={styles.cardDescription}>
-                                {entree.description ?? 'Simulation interactive a ouvrir depuis cette fiche.'}
+                              <TexteTheme
+                                lightColor={schemaCouleur === 'dark' ? themeApplication.muted : THEME_MATHS.cardSoft}
+                                style={styles.sectionSubtitle}>
+                                {groupe.entrees.length} simulation{groupe.entrees.length > 1 ? 's' : ''}
                               </TexteTheme>
                             </View>
                           </View>
-
                           <View style={[styles.cardGrid, { rowGap: espaceRangees }]}>
                             {rangeesGroupe.map((rangee, indexRangee) => (
                               <View
