@@ -1,34 +1,19 @@
 import { Tabs } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import { donneesLocales } from '@/db/donnees-principales';
+import { obtenirThemeApplication } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
 export default function DispositionOnglets() {
-  const [modeSombre, definirModeSombre] = useState(false);
-
-  useEffect(() => {
-    function rafraichirParametres() {
-      definirModeSombre(donneesLocales.obtenirParametres().darkMode);
-    }
-
-    donneesLocales.init();
-    rafraichirParametres();
-
-    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
-      window.addEventListener('evidex_settings_changed', rafraichirParametres);
-      return () => window.removeEventListener('evidex_settings_changed', rafraichirParametres);
-    }
-  }, []);
-
-  const arrierePlanOnglet = modeSombre ? '#1F2A32' : undefined;
-  const bordureOnglet = modeSombre ? '#9DB2C0' : undefined;
+  const modeSombre = useSchemaCouleur() === 'dark';
+  const themeApplication = obtenirThemeApplication(modeSombre);
 
   return (
     <Tabs
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: arrierePlanOnglet,
-          borderTopColor: bordureOnglet,
+          backgroundColor: modeSombre ? themeApplication.surface : undefined,
+          borderTopColor: modeSombre ? themeApplication.border : undefined,
           display: 'none',
         },
         headerShown: false,
@@ -40,6 +25,10 @@ export default function DispositionOnglets() {
       <Tabs.Screen
         name="profil/index"
         options={{ title: 'Profil' }}
+      />
+      <Tabs.Screen
+        name="succes/index"
+        options={{ title: 'Succes' }}
       />
       <Tabs.Screen
         name="cours"

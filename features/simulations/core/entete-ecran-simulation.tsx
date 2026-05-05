@@ -4,6 +4,8 @@ import { Href, router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { TexteTheme } from '@/components/texte-theme';
+import { obtenirThemeApplication } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
 type ProprietesEnteteEcranSimulation = {
   domaine: string;
@@ -24,35 +26,37 @@ function obtenirHrefSection(domaine: string): Href {
       : '/(tabs)/programmation-java') as Href;
 }
 
-export function EnteteEcranSimulation({ titre, domaine }: ProprietesEnteteEcranSimulation) {
-  const fermerSimulation = () => {
-    router.replace(obtenirHrefSection(domaine));
+export function EnteteEcranSimulation({ title, type }: ProprietesEnteteEcranSimulation) {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  const themeActif = obtenirThemeApplication(modeSombre);
+  const closeSimulation = () => {
+    router.replace(obtenirHrefSection(type));
   };
 
   return (
-    <View style={styles.enveloppeEntete}>
-      <View style={styles.ombreHaute} />
-      <View style={styles.entete}>
-        <View style={styles.rangeeEntete}>
-          <View style={styles.groupeGauche}>
-            <Pressable onPress={fermerSimulation} style={styles.boutonRetour}>
-              <MaterialCommunityIcons color="#243B53" name="arrow-left" size={20} />
+    <View style={styles.headerShell}>
+      <View style={[styles.topShade, { backgroundColor: themeActif.surface, borderBottomColor: themeActif.border }]} />
+      <View style={[styles.header, { backgroundColor: themeActif.background, borderBottomColor: themeActif.border }]}>
+        <View style={styles.headerRow}>
+          <View style={styles.leftGroup}>
+          <Pressable onPress={closeSimulation} style={[styles.backButton, { backgroundColor: themeActif.panel, borderColor: themeActif.border }]}>
+            <MaterialCommunityIcons color={themeActif.ink} name="arrow-left" size={20} />
+          </Pressable>
+          <View style={styles.titleGroup}>
+            <Pressable onPress={() => router.replace('/(tabs)/accueil' as Href)} style={styles.logoButton}>
+              <Image
+                contentFit="contain"
+                source={require('@/assets/images/evidexe-logo.png')}
+                style={styles.logo}
+              />
             </Pressable>
-            <View style={styles.groupeTitre}>
-              <Pressable onPress={() => router.replace('/(tabs)/accueil' as Href)} style={styles.boutonLogo}>
-                <Image
-                  contentFit="contain"
-                  source={require('@/assets/images/evidexe-logo.png')}
-                  style={styles.logo}
-                />
-              </Pressable>
-              <TexteTheme darkColor="#243B53" lightColor="#243B53" style={styles.titre}>
-                {titre}
-              </TexteTheme>
-            </View>
+            <TexteTheme darkColor={themeActif.text} lightColor={themeActif.text} style={[styles.title, { color: themeActif.text }]}>
+              {title}
+            </TexteTheme>
           </View>
-          <Pressable onPress={() => router.replace('/(tabs)/profil' as Href)} style={styles.boutonProfil}>
-            <MaterialCommunityIcons color="#243B53" name="account-circle-outline" size={20} />
+          </View>
+          <Pressable onPress={() => router.replace('/(tabs)/profil' as Href)} style={[styles.profileButton, { backgroundColor: themeActif.panel, borderColor: themeActif.border }]}>
+            <MaterialCommunityIcons color={themeActif.ink} name="account-circle-outline" size={20} />
           </Pressable>
         </View>
       </View>

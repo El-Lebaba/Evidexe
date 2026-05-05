@@ -3,17 +3,10 @@ import { Href, router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const palette = {
-  background: '#EEF5ED',
-  panel: '#F8F5EE',
-  border: '#D7CDBE',
-  text: '#1B232C',
-  muted: '#66766A',
-  mint: '#18C2A0',
-  blue: '#7EA6E0',
-  yellow: '#D8A94A',
-  coral: '#D97B6C',
-};
+import { obtenirThemeApplication } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
+
+const palette = obtenirThemeApplication(false);
 
 const sections = [
   {
@@ -34,44 +27,54 @@ const sections = [
     key: 'java',
     title: 'Java',
     icon: 'code',
-    color: palette.coral,
+    color: palette.red,
     href: '/(tabs)/programmation-java' as const,
   },
 ];
 
 export default function SimulationsHubScreen() {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  const themeActif = obtenirThemeApplication(modeSombre);
+  const sectionColors = [themeActif.blue, themeActif.yellow, themeActif.red];
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.page}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: themeActif.background }]}>
+      <View style={[styles.page, { backgroundColor: themeActif.background }]}>
         <Pressable onPress={() => router.back()} style={styles.backButton}>
-          <MaterialIcons name="arrow-back" size={22} color={palette.text} />
-          <Text style={styles.backText}>Retour</Text>
+          <MaterialIcons name="arrow-back" size={22} color={themeActif.text} />
+          <Text style={[styles.backText, { color: themeActif.text }]}>Retour</Text>
         </Pressable>
 
-        <Text style={styles.eyebrow}>Simulations</Text>
-        <Text style={styles.title}>Choisis une section temporaire</Text>
-        <Text style={styles.copy}>
+        <Text style={[styles.eyebrow, { color: themeActif.green }]}>Simulations</Text>
+        <Text style={[styles.title, { color: themeActif.text }]}>Choisis une section temporaire</Text>
+        <Text style={[styles.copy, { color: themeActif.muted }]}>
           Cette page sert de point de passage pour l&apos;instant. Chaque bouton ouvre la section
           correspondante.
         </Text>
 
         <View style={styles.buttonStack}>
-          {sections.map((section) => (
+          {sections.map((section, index) => {
+            const sectionColor = sectionColors[index % sectionColors.length];
+
+            return (
             <Pressable
               key={section.key}
               onPress={() => router.push(section.href as Href)}
               style={({ pressed }) => [
                 styles.sectionButton,
-                { borderColor: section.color },
+                {
+                  backgroundColor: themeActif.panel,
+                  borderColor: sectionColor,
+                },
                 pressed && styles.sectionButtonPressed,
               ]}>
-              <View style={[styles.sectionIcon, { backgroundColor: section.color }]}>
-                <MaterialIcons name={section.icon as never} size={24} color={palette.text} />
+              <View style={[styles.sectionIcon, { backgroundColor: sectionColor }]}>
+                <MaterialIcons name={section.icon as never} size={24} color={themeActif.ink} />
               </View>
-              <Text style={styles.sectionTitle}>{section.title}</Text>
-              <MaterialIcons name="chevron-right" size={26} color={palette.muted} />
+              <Text style={[styles.sectionTitle, { color: themeActif.ink }]}>{section.title}</Text>
+              <MaterialIcons name="chevron-right" size={26} color={themeActif.muted} />
             </Pressable>
-          ))}
+          )})}
         </View>
       </View>
     </SafeAreaView>
@@ -103,7 +106,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   eyebrow: {
-    color: palette.mint,
+    color: palette.green,
     fontSize: 13,
     fontWeight: '900',
     letterSpacing: 0.6,

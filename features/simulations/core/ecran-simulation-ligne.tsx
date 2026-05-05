@@ -6,11 +6,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
+import { obtenirThemeApplication } from '@/constantes/theme';
 import {
   EnteteEcranSimulation,
   ESPACE_CONTENU_ENTETE_SIMULATION,
   HAUTEUR_TOTALE_ENTETE_SIMULATION,
 } from '@/features/simulations/core/entete-ecran-simulation';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
 type DomaineSimulation = 'mathematiques' | 'physique' | 'programmation-java';
 
@@ -64,6 +66,13 @@ const DETAILS_DOMAINE: Record<
   },
 };
 
+const themeBase = obtenirThemeApplication(false);
+
+export function EcranSimulationLigne({ title, type}: LineSimulationScreenProps) {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  const themeActif = obtenirThemeApplication(modeSombre);
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const headerTranslateY = scrollY.interpolate({
 export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulationLigne) {
   const defilementY = useRef(new Animated.Value(0)).current;
   const pulsation = useRef(new Animated.Value(0)).current;
@@ -114,8 +123,8 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
   });
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <VueTheme style={styles.conteneur}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: themeActif.background }]}>
+      <VueTheme lightColor={themeActif.background} darkColor={themeActif.background} style={[styles.container, { backgroundColor: themeActif.background }]}>
         <Animated.View
           style={[
             styles.superpositionEntete,
@@ -134,6 +143,8 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
           )}
           scrollEventThrottle={16}
           showsVerticalScrollIndicator={false}>
+          <VueTheme lightColor={themeActif.background} darkColor={themeActif.background} style={styles.content}>
+            <TexteTheme lightColor={themeActif.text} darkColor={themeActif.text} style={{ color: themeActif.text }} type="title">{title}</TexteTheme>
           <VueTheme style={styles.contenu}>
             <View style={styles.vitrine}>
               <View style={styles.motif}>
@@ -223,11 +234,11 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: ARRIERE_PLAN_PAGE_SIMULATION,
+    backgroundColor: themeBase.background,
     flex: 1,
   },
-  conteneur: {
-    backgroundColor: ARRIERE_PLAN_PAGE_SIMULATION,
+  container: {
+    backgroundColor: themeBase.background,
     flex: 1,
   },
   superpositionEntete: {

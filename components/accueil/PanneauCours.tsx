@@ -2,31 +2,10 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Href, router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { obtenirThemeApplication } from '@/constantes/theme';
 import { MatiereCours } from '@/data/cours';
 
-const Couleurs = {
-  background: '#E9ECE4',
-  panel: '#DDE4D5',
-  border: '#243B53',
-  text: '#243B53',
-  muted: '#6E7F73',
-  green: '#7CCFBF',
-  yellow: '#D8A94A',
-  red: '#D97B6C',
-  grid: '#B7C7B0',
-};
-
-const darkColors = {
-  background: '#151C22',
-  panel: '#2A3741',
-  border: '#9DB2C0',
-  text: '#F3F1E7',
-  muted: '#B7C7B0',
-  green: '#7CCFBF',
-  yellow: '#E0B95A',
-  red: '#E08A7B',
-  grid: '#6E7F73',
-};
+const Couleurs = obtenirThemeApplication(false);
 
 export type CoursLocal = {
   id: number | string;
@@ -50,7 +29,7 @@ export default function PanneauCours({
   courses,
   darkMode = false,
 }: ProprietesPanneauCours) {
-  const themeActif = darkMode ? darkColors : Couleurs;
+  const themeActif = obtenirThemeApplication(darkMode);
   const activeCourses = courses.filter((CoursLocal) => CoursLocal.progress > 0 && CoursLocal.subject && CoursLocal.courseId);
 
   function openCourse(CoursLocal: CoursLocal) {

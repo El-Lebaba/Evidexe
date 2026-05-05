@@ -25,10 +25,25 @@ export type Succes = {
   completed: boolean;
 };
 
+export type RangSucces = 'Gris' | 'Bronze' | 'Fer' | 'Or' | 'Diamant';
+
+export type SuccesProgression = {
+  id: string;
+  title: string;
+  description: string;
+  rang: RangSucces;
+  progress: number;
+  target: number;
+  completed: boolean;
+  category: 'course' | 'cards' | 'simulation';
+  subject?: 'java' | 'mathematiques' | 'physique' | 'programmation-java';
+};
+
 export type ParametresApplication = {
   darkMode: boolean;
   language: string;
   notifications: boolean;
+  fpsCounterEnabled: boolean;
 };
 
 type UtilisateurStocke = {
@@ -58,6 +73,10 @@ type ProgressionCoursStockee = {
 type DonneesUtilisateur = {
   courses: Record<string, ProgressionCoursStockee>;
   achievements: Record<string, Succes>;
+  achievementStats: {
+    createdCards: number;
+    simulationClicksBySection: Record<string, string[]>;
+  };
   settings: ParametresApplication;
 };
 
@@ -74,6 +93,7 @@ const parametresDefaut: ParametresApplication = {
   darkMode: false,
   language: 'fr',
   notifications: true,
+  fpsCounterEnabled: true,
 };
 
 const succesDefaut: Succes[] = [
@@ -114,6 +134,61 @@ const succesDefaut: Succes[] = [
     completed: false,
   },
 ];
+
+const seuilsCoursSucces = [2, 4, 8, 16];
+const seuilsSuccesSimple = [1, 2, 3, 4, 5];
+const rangsSucces: RangSucces[] = ['Gris', 'Bronze', 'Fer', 'Or', 'Diamant'];
+
+const succesProgressionDefaut = [
+  {
+    id: 'course-java',
+    title: 'Completer des cours de Java',
+    description: 'Termine les mini-cours Java pour monter de rang.',
+    category: 'course',
+    subject: 'java',
+  },
+  {
+    id: 'course-mathematiques',
+    title: 'Completer des cours de mathematiques',
+    description: 'Termine les mini-cours de mathematiques.',
+    category: 'course',
+    subject: 'mathematiques',
+  },
+  {
+    id: 'course-physique',
+    title: 'Completer des cours de physique',
+    description: 'Termine les mini-cours de physique.',
+    category: 'course',
+    subject: 'physique',
+  },
+  {
+    id: 'cards-created',
+    title: 'Creer 5 cartes',
+    description: 'Cree tes propres cartes de revision.',
+    category: 'cards',
+  },
+  {
+    id: 'simulation-java',
+    title: 'Cliquer sur 5 simulations differentes de Java',
+    description: 'Ouvre des simulations Java differentes.',
+    category: 'simulation',
+    subject: 'programmation-java',
+  },
+  {
+    id: 'simulation-mathematiques',
+    title: 'Cliquer sur 5 simulations differentes de mathematiques',
+    description: 'Ouvre des simulations de mathematiques differentes.',
+    category: 'simulation',
+    subject: 'mathematiques',
+  },
+  {
+    id: 'simulation-physique',
+    title: 'Cliquer sur 5 simulations differentes de physique',
+    description: 'Ouvre des simulations de physique differentes.',
+    category: 'simulation',
+    subject: 'physique',
+  },
+] as const;
 
 let donneesMemoire: DonneesApplication | null = null;
 
@@ -167,6 +242,13 @@ function carteSuccesDefaut() {
   return Object.fromEntries(succesDefaut.map((Succes) => [String(Succes.id), Succes]));
 }
 
+function creerStatsSuccesDefaut() {
+  return {
+    createdCards: 0,
+    simulationClicksBySection: {},
+  };
+}
+
 function creerUtilisateur(name: string): UtilisateurStocke {
   const displayName = normaliserNomUtilisateur(name);
   return {
@@ -184,6 +266,7 @@ function creerDonneesUtilisateur(): DonneesUtilisateur {
   return {
     courses: {},
     achievements: carteSuccesDefaut(),
+    achievementStats: creerStatsSuccesDefaut(),
     settings: { ...parametresDefaut },
   };
 }
@@ -203,6 +286,13 @@ function completerDonneesUtilisateur(donnees?: Partial<DonneesUtilisateur>): Don
     achievements: {
       ...carteSuccesDefaut(),
       ...(donnees?.achievements ?? {}),
+    },
+    achievementStats: {
+      ...creerStatsSuccesDefaut(),
+      ...(donnees?.achievementStats ?? {}),
+      simulationClicksBySection: {
+        ...(donnees?.achievementStats?.simulationClicksBySection ?? {}),
+      },
     },
     settings: {
       ...parametresDefaut,
@@ -338,6 +428,25 @@ function mapperCours(CoursLocal: ProgressionCoursStockee): CoursLocal {
     exerciseCompleted: Boolean(CoursLocal.exerciseCompleted),
     lastOpenedAt: CoursLocal.lastOpenedAt,
   };
+}
+
+function calculerRangSucces(progress: number, thresholds: number[]) {
+  const completedThresholds = thresholds.filter((threshold) => progress >= threshold).length;
+  const rankIndex = Math.min(completedThresholds, rangsSucces.length - 1);
+  const completed = progress >= thresholds[thresholds.length - 1];
+  const target = completed ? thresholds[thresholds.length - 1] : thresholds[completedThresholds] ?? thresholds[thresholds.length - 1];
+
+  return {
+    completed,
+    rang: rangsSucces[rankIndex],
+    target,
+  };
+}
+
+function compterCoursTerminesParMatiere(DonneesUtilisateur: DonneesUtilisateur, subject: string) {
+  return Object.values(DonneesUtilisateur.courses).filter(
+    (CoursLocal) => CoursLocal.subject === subject && CoursLocal.completed,
+  ).length;
 }
 
 function emettreChangementParametres() {
@@ -609,6 +718,56 @@ export const donneesLocales = {
     const identity = identiteCours({ id });
     delete DonneesUtilisateur.courses[identity.id];
     ecrireDonneesApplication(data);
+  },
+
+  enregistrerCreationCarte() {
+    const data = lireDonneesApplication();
+    const DonneesUtilisateur = obtenirDonneesUtilisateurActif(data);
+    DonneesUtilisateur.achievementStats.createdCards = Math.max(
+      0,
+      Math.round(DonneesUtilisateur.achievementStats.createdCards ?? 0),
+    ) + 1;
+    ecrireDonneesApplication(data);
+  },
+
+  enregistrerClicSimulation(section: string, simulationId: string) {
+    const data = lireDonneesApplication();
+    const DonneesUtilisateur = obtenirDonneesUtilisateurActif(data);
+    const currentClicks = DonneesUtilisateur.achievementStats.simulationClicksBySection[section] ?? [];
+
+    if (!currentClicks.includes(simulationId)) {
+      DonneesUtilisateur.achievementStats.simulationClicksBySection[section] = [...currentClicks, simulationId];
+      ecrireDonneesApplication(data);
+    }
+  },
+
+  obtenirSuccesProgression(): SuccesProgression[] {
+    const DonneesUtilisateur = obtenirDonneesUtilisateurActif();
+
+    return succesProgressionDefaut.map((Succes) => {
+      let progress = 0;
+      const thresholds = Succes.category === 'course' ? seuilsCoursSucces : seuilsSuccesSimple;
+
+      if (Succes.category === 'course') {
+        progress = compterCoursTerminesParMatiere(DonneesUtilisateur, Succes.subject);
+      } else if (Succes.category === 'cards') {
+        progress = DonneesUtilisateur.achievementStats.createdCards;
+      } else {
+        progress = DonneesUtilisateur.achievementStats.simulationClicksBySection[Succes.subject]?.length ?? 0;
+      }
+
+      const rankState = calculerRangSucces(progress, thresholds);
+
+      return {
+        id: Succes.id,
+        title: Succes.title,
+        description: Succes.description,
+        category: Succes.category,
+        subject: 'subject' in Succes ? Succes.subject : undefined,
+        progress,
+        ...rankState,
+      };
+    });
   },
 
   obtenirSucces() {

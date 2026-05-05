@@ -1,31 +1,11 @@
 import React, { useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Href, Link, router } from 'expo-router';
+import { Href, Link } from 'expo-router';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
-const lightColors = {
-  background: '#F3F1E7',
-  panel: '#DDE4D5',
-  border: '#243B53',
-  text: '#243B53',
-  muted: '#6E7F73',
-  green: '#7CCFBF',
-  blue: '#7EA6E0',
-  yellow: '#D8A94A',
-};
+import { obtenirThemeApplication } from '@/constantes/theme';
 
-const darkColors = {
-  background: '#1F2A32',
-  panel: '#2A3741',
-  border: '#9DB2C0',
-  text: '#F3F1E7',
-  muted: '#B7C7B0',
-  green: '#7CCFBF',
-  blue: '#8FB7EE',
-  yellow: '#E0B95A',
-};
-
-const Couleurs = lightColors;
+const CouleursBase = obtenirThemeApplication(false);
 
 type InfosUtilisateur = {
   xp?: number;
@@ -40,16 +20,11 @@ type ProprietesBarreSuperieure = {
 
 export default function BarreSuperieure({ darkMode = false, onSettingsClick, user }: ProprietesBarreSuperieure) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const Couleurs = darkMode ? darkColors : lightColors;
+  const Couleurs = obtenirThemeApplication(darkMode);
 
   function openSettings() {
     setMenuOpen(false);
     onSettingsClick();
-  }
-
-  function goToAchievements() {
-    setMenuOpen(false);
-    router.push('/achievements' as never);
   }
 
   return (
@@ -68,13 +43,6 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
         </Pressable>
 
         <View style={styles.nav}>
-          <Link href={'/(tabs)/mathematiques' as Href} asChild>
-            <Pressable style={styles.navButton}>
-              <MaterialIcons name="bolt" size={18} color={Couleurs.yellow} />
-              <Text style={[styles.navText, { color: Couleurs.muted }]}>Simulation</Text>
-            </Pressable>
-          </Link>
-
           <Link href={'/(tabs)/accueil' as Href} asChild>
             <Pressable style={styles.logoButton}>
               <Image
@@ -82,13 +50,6 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
                 source={require('@/assets/images/evidexe-logo.png')}
                 style={styles.logoImage}
               />
-            </Pressable>
-          </Link>
-
-          <Link href={'/(tabs)/mathematiques' as Href} asChild>
-            <Pressable style={styles.navButton}>
-              <MaterialIcons name="menu-book" size={18} color={Couleurs.green} />
-              <Text style={[styles.navText, { color: Couleurs.muted }]}>Cours</Text>
             </Pressable>
           </Link>
         </View>
@@ -131,10 +92,6 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
                 <Text style={[styles.menuText, { color: Couleurs.text }]}>Parametres</Text>
               </Pressable>
 
-              <Pressable onPress={goToAchievements} style={styles.menuItem}>
-                <MaterialIcons name="emoji-events" size={18} color={Couleurs.text} />
-                <Text style={[styles.menuText, { color: Couleurs.text }]}>Succes</Text>
-              </Pressable>
             </View>
           )}
         </View>
@@ -145,7 +102,7 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: Couleurs.background,
+    backgroundColor: '#F3F1E7',
     borderBottomColor: '#243B5340',
     borderBottomWidth: 1,
     elevation: 2,
@@ -172,25 +129,13 @@ const styles = StyleSheet.create({
     gap: 14,
     flexShrink: 1,
   },
-  navButton: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 5,
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-  },
-  navText: {
-    color: Couleurs.muted,
-    fontSize: 14,
-    fontWeight: '700',
-  },
   logo: {
-    color: Couleurs.text,
+    color: CouleursBase.text,
     fontSize: 24,
     fontWeight: '900',
   },
   logoAccent: {
-    color: Couleurs.blue,
+    color: CouleursBase.blue,
   },
   logoButton: {
     alignItems: 'center',
@@ -214,14 +159,14 @@ const styles = StyleSheet.create({
   },
   avatar: {
     alignItems: 'center',
-    backgroundColor: Couleurs.blue,
+    backgroundColor: CouleursBase.blue,
     borderRadius: 20,
     height: 38,
     justifyContent: 'center',
     width: 38,
   },
   menu: {
-    backgroundColor: Couleurs.background,
+    backgroundColor: CouleursBase.background,
     borderColor: '#243B5340',
     borderRadius: 10,
     borderWidth: 1,
@@ -233,17 +178,17 @@ const styles = StyleSheet.create({
     zIndex: 20,
   },
   smallText: {
-    color: Couleurs.muted,
+    color: CouleursBase.muted,
     fontSize: 12,
   },
   name: {
-    color: Couleurs.text,
+    color: CouleursBase.text,
     fontSize: 15,
     fontWeight: '800',
     marginTop: 2,
   },
   level: {
-    color: Couleurs.blue,
+    color: CouleursBase.blue,
     fontSize: 12,
     fontWeight: '700',
     marginTop: 2,
@@ -260,7 +205,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   menuText: {
-    color: Couleurs.text,
+    color: CouleursBase.text,
     fontSize: 14,
     fontWeight: '600',
   },

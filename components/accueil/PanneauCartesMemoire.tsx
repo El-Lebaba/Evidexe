@@ -9,27 +9,10 @@ import {
   View,
 } from 'react-native';
 
-const Couleurs = {
-  background: '#E9ECE4',
-  panel: '#DDE4D5',
-  surface: '#F3F1E7',
-  border: '#243B53',
-  text: '#243B53',
-  muted: '#6E7F73',
-  blue: '#7EA6E0',
-  green: '#7CCFBF',
-};
+import { obtenirThemeApplication } from '@/constantes/theme';
+import { donneesLocales } from '@/db/donnees-principales';
 
-const darkColors = {
-  background: '#151C22',
-  panel: '#2A3741',
-  surface: '#1F2A32',
-  border: '#9DB2C0',
-  text: '#F3F1E7',
-  muted: '#B7C7B0',
-  blue: '#8FB7EE',
-  green: '#7CCFBF',
-};
+const Couleurs = obtenirThemeApplication(false);
 
 type Flashcard = {
   front: string;
@@ -72,7 +55,7 @@ const cardsByTopic: Record<string, Flashcard[]> = {
 };
 
 export default function PanneauCartesMemoire({ darkMode = false }: { darkMode?: boolean }) {
-  const themeActif = darkMode ? darkColors : Couleurs;
+  const themeActif = obtenirThemeApplication(darkMode);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -101,6 +84,7 @@ export default function PanneauCartesMemoire({ darkMode = false }: { darkMode?: 
     }
 
     setCards([...cards, { front: newFront.trim(), back: newBack.trim() }]);
+    donneesLocales.enregistrerCreationCarte();
     setNewFront('');
     setNewBack('');
     setModalOpen(false);
@@ -175,7 +159,7 @@ export default function PanneauCartesMemoire({ darkMode = false }: { darkMode?: 
             <MaterialIcons
               name={showBack ? 'check-circle' : 'auto-awesome'}
               size={26}
-              color={showBack ? Couleurs.green : Couleurs.blue}
+              color={showBack ? themeActif.green : themeActif.blue}
             />
             <Text style={[styles.cardText, { color: themeActif.text }]}>
               {showBack ? currentCard.back : currentCard.front}
@@ -266,7 +250,7 @@ export default function PanneauCartesMemoire({ darkMode = false }: { darkMode?: 
             <TextInput
               multiline
               placeholder="Question"
-              placeholderTextColor={Couleurs.muted}
+              placeholderTextColor={themeActif.muted}
               value={newFront}
               onChangeText={setNewFront}
               style={[
@@ -281,7 +265,7 @@ export default function PanneauCartesMemoire({ darkMode = false }: { darkMode?: 
             <TextInput
               multiline
               placeholder="Reponse"
-              placeholderTextColor={Couleurs.muted}
+              placeholderTextColor={themeActif.muted}
               value={newBack}
               onChangeText={setNewBack}
               style={[

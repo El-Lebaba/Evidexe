@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import CarteCours from '@/components/cours/CarteCours';
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
+import { obtenirThemeApplication } from '@/constantes/theme';
 import {
   COURS_PAR_MATIERE,
   MatiereCours,
@@ -16,6 +17,7 @@ import {
   obtenirResumesCoursApprentissage,
 } from '@/data/cours';
 import { SymbolesMathematiquesFlottants } from '@/features/simulations/core/symboles-mathematiques-flottants';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
 const SUBJECTS: MatiereCours[] = ['java', 'mathematiques', 'physique'];
 
@@ -38,6 +40,9 @@ const themeActif = {
 
 export function EcranCours() {
   const params = useLocalSearchParams<{ subject?: string }>();
+  const schemaCouleur = useSchemaCouleur();
+  const isDarkMode = schemaCouleur === 'dark';
+  const themeApplication = obtenirThemeApplication(isDarkMode);
   const initialSubject = isCourseSubject(params.subject) ? params.subject : 'java';
   const [activeSubject, setActiveSubject] = useState<MatiereCours>(initialSubject);
   const [courseSummaries, setCourseSummaries] = useState(obtenirResumesCoursApprentissage);
@@ -88,23 +93,32 @@ export function EcranCours() {
   }, [activeSubject, courses, courseSummaryMap]);
 
   return (
-      <SafeAreaView style={styles.safeArea}>
-        <VueTheme lightColor={themeActif.background} style={styles.page}>
-          <SymbolesMathematiquesFlottants showGlow={false} style={styles.mathSymbols} />
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: themeApplication.background }]}>
+        <VueTheme lightColor={themeApplication.background} darkColor={themeApplication.background} style={styles.page}>
+          <SymbolesMathematiquesFlottants
+            showGlow={false}
+            style={[
+              styles.mathSymbols,
+              { backgroundColor: themeApplication.background, opacity: isDarkMode ? 0.18 : 0.72 },
+            ]}
+          />
           <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Pressable
               onPress={() => {
                 router.dismissAll();
                 router.push('/(tabs)/accueil' as Href);
               }}
-              style={styles.backButton}>
-              <MaterialCommunityIcons color={themeActif.ink} name="arrow-left" size={18} />
-              <TexteTheme lightColor={themeActif.ink} style={styles.backButtonText}>
+              style={[
+                styles.backButton,
+                isDarkMode ? { backgroundColor: themeApplication.surface, borderColor: themeApplication.border } : null,
+              ]}>
+              <MaterialCommunityIcons color={isDarkMode ? themeApplication.text : themeActif.ink} name="arrow-left" size={18} />
+              <TexteTheme lightColor={isDarkMode ? themeApplication.text : themeActif.ink} style={styles.backButtonText}>
                 Retour
               </TexteTheme>
             </Pressable>
 
-            <TexteTheme lightColor={themeActif.muted} style={styles.screenKicker}>
+            <TexteTheme lightColor={isDarkMode ? themeApplication.muted : themeActif.muted} style={styles.screenKicker}>
               Cours / {ETIQUETTES_MATIERES[activeSubject]}
             </TexteTheme>
 
@@ -117,31 +131,37 @@ export function EcranCours() {
                 />
               </Pressable>
 
-              <TexteTheme lightColor={themeActif.ink} style={styles.title}>
+              <TexteTheme lightColor={isDarkMode ? themeApplication.text : themeActif.ink} style={styles.title}>
                 Apprendre {ETIQUETTES_MATIERES[activeSubject]}
               </TexteTheme>
-              <TexteTheme lightColor="#8f9b8e" style={styles.titleAccent}>
+              <TexteTheme lightColor={isDarkMode ? themeApplication.yellow : '#8f9b8e'} style={styles.titleAccent}>
                 visuellement.
               </TexteTheme>
-              <TexteTheme lightColor={themeActif.muted} style={styles.subtitle}>
+              <TexteTheme lightColor={isDarkMode ? themeApplication.muted : themeActif.muted} style={styles.subtitle}>
                 Mini-cours interactifs avec exemples clairs, suivi de progression et questions rapides.
               </TexteTheme>
 
               <View style={styles.statsRow}>
-                <TexteTheme lightColor={themeActif.muted} style={styles.statText}>
+                <TexteTheme
+                  lightColor={isDarkMode ? themeApplication.text : themeActif.muted}
+                  style={[styles.statText, isDarkMode ? { backgroundColor: themeApplication.surface, borderColor: themeApplication.border } : null]}>
                   {courses.length} mini-cours
                 </TexteTheme>
-                <TexteTheme lightColor={themeActif.muted} style={styles.statText}>
+                <TexteTheme
+                  lightColor={isDarkMode ? themeApplication.text : themeActif.muted}
+                  style={[styles.statText, isDarkMode ? { backgroundColor: themeApplication.surface, borderColor: themeApplication.border } : null]}>
                   {totalSlides} diapos
                 </TexteTheme>
-                <TexteTheme lightColor={themeActif.muted} style={styles.statText}>
+                <TexteTheme
+                  lightColor={isDarkMode ? themeApplication.text : themeActif.muted}
+                  style={[styles.statText, isDarkMode ? { backgroundColor: themeApplication.surface, borderColor: themeApplication.border } : null]}>
                   {subjectProgress}% termine
                 </TexteTheme>
               </View>
             </Animated.View>
 
             <Animated.View style={[styles.courseSection, { opacity: subjectMotion, transform: [{ translateX: subjectTranslate }] }]}>
-              <TexteTheme lightColor={themeActif.muted} style={styles.sectionLabel}>
+              <TexteTheme lightColor={isDarkMode ? themeApplication.muted : themeActif.muted} style={styles.sectionLabel}>
                 Mini-cours
               </TexteTheme>
 

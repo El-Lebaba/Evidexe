@@ -15,7 +15,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
+import { obtenirThemeApplication } from '@/constantes/theme';
+import { donneesLocales } from '@/db/donnees-principales';
 import { SymbolesMathematiquesFlottants } from '@/features/simulations/core/symboles-mathematiques-flottants';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import {
   CATALOGUE_SIMULATIONS,
   EntreeSimulation,
@@ -215,6 +218,8 @@ function EcranSectionTableauBord({
 }) {
   const { width: largeur } = useWindowDimensions();
   const estFocalise = useIsFocused();
+  const schemaCouleur = useSchemaCouleur();
+  const themeApplication = obtenirThemeApplication(schemaCouleur === 'dark');
   const [requete, definirRequete] = useState('');
   const [filtresActifs, definirFiltresActifs] = useState<FiltreTableauBord[]>([]);
   const [menuFiltresOuvert, definirMenuFiltresOuvert] = useState(false);
@@ -360,13 +365,24 @@ function EcranSectionTableauBord({
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <VueTheme lightColor={THEME_MATHS.background} style={styles.mathSafeArea}>
-        <SymbolesMathematiquesFlottants isActive={estFocalise} showGlow={false} style={styles.pageBackground} />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: themeApplication.background }]}>
+      <VueTheme lightColor={themeApplication.background} darkColor={themeApplication.background} style={styles.mathSafeArea}>
+        <SymbolesMathematiquesFlottants
+          isActive={estFocalise}
+          showGlow={false}
+          style={[styles.pageBackground, { backgroundColor: themeApplication.background }]}
+        />
 
         <ScrollView contentContainerStyle={styles.mathScrollContent} showsVerticalScrollIndicator={false}>
           <View style={styles.mathContainer}>
-            <View style={styles.mathHero}>
+            <View
+              style={[
+                styles.mathHero,
+                {
+                  backgroundColor: themeApplication.surface,
+                  borderColor: themeApplication.grid,
+                },
+              ]}>
               <Pressable onPress={() => router.push('/(tabs)/accueil' as Href)} style={styles.heroLogoButton}>
                 <Image
                   contentFit="contain"
@@ -375,29 +391,42 @@ function EcranSectionTableauBord({
                 />
               </Pressable>
 
-              <Pressable onPress={() => router.push('/(tabs)/profil' as Href)} style={styles.heroProfileButton}>
+              <Pressable
+                onPress={() => router.push('/(tabs)/profil' as Href)}
+                style={[
+                  styles.heroProfileButton,
+                  schemaCouleur === 'dark' ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
+                ]}>
                 <MaterialCommunityIcons color="#243B53" name="account-circle-outline" size={18} />
                 <TexteTheme darkColor="#243B53" lightColor="#243B53" style={styles.heroProfileText}>
                   Profil
                 </TexteTheme>
               </Pressable>
 
-              <TexteTheme lightColor={THEME_MATHS.ink} style={styles.heroTitle}>
+              <TexteTheme
+                lightColor={schemaCouleur === 'dark' ? themeApplication.text : THEME_MATHS.ink}
+                style={styles.heroTitle}>
                 {configuration.title}
               </TexteTheme>
 
-              <TexteTheme lightColor={THEME_MATHS.mutedInk} style={styles.heroSubtitle}>
+              <TexteTheme
+                lightColor={schemaCouleur === 'dark' ? themeApplication.muted : THEME_MATHS.mutedInk}
+                style={styles.heroSubtitle}>
                 {configuration.subtitle}
               </TexteTheme>
 
-              <View style={styles.searchShell}>
+              <View
+                style={[
+                  styles.searchShell,
+                  schemaCouleur === 'dark' ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
+                ]}>
                 <MaterialCommunityIcons color={THEME_MATHS.mutedInk} name="magnify" size={18} />
                 <TextInput
                   onChangeText={definirRequete}
                   placeholder="Rechercher une simulation"
                   placeholderTextColor={THEME_MATHS.mutedInk}
                   selectionColor={THEME_MATHS.coral}
-                  style={styles.searchInput}
+                  style={[styles.searchInput, schemaCouleur === 'dark' ? { color: themeApplication.ink } : null]}
                   value={requete}
                 />
               </View>
@@ -408,6 +437,7 @@ function EcranSectionTableauBord({
                   onPress={() => definirMenuFiltresOuvert((currentValue) => !currentValue)}
                   style={({ pressed, hovered }) => [
                     styles.filterButton,
+                    schemaCouleur === 'dark' ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
                     menuFiltresOuvert ? styles.filterButtonOpen : null,
                     pressed || hovered ? styles.filterChipPressed : null,
                   ]}>
@@ -432,7 +462,11 @@ function EcranSectionTableauBord({
                 </Pressable>
 
                 {menuFiltresOuvert ? (
-                  <View style={styles.filterDropdown}>
+                  <View
+                    style={[
+                      styles.filterDropdown,
+                      schemaCouleur === 'dark' ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
+                    ]}>
                     <View style={styles.filterOptionGrid}>
                       {configuration.filters.map((filtre) => {
                         const isActive = filtresActifs.includes(filtre.value);
@@ -442,7 +476,8 @@ function EcranSectionTableauBord({
                             key={filtre.value}
                             onPress={() => basculerFiltre(filtre.value)}
                             style={({ pressed, hovered }) => [
-                              styles.filterOption,
+                            styles.filterOption,
+                            schemaCouleur === 'dark' ? { backgroundColor: '#FFFFFF', borderColor: themeApplication.border } : null,
                               isActive ? styles.filterOptionActive : null,
                               pressed || hovered ? styles.filterChipPressed : null,
                             ]}>
@@ -517,6 +552,7 @@ function EcranSectionTableauBord({
                           onPress={() => definirPageActive(index)}
                           style={({ pressed, hovered }) => [
                             styles.paginationChip,
+                            schemaCouleur === 'dark' ? { backgroundColor: themeApplication.surface, borderColor: themeApplication.border } : null,
                             isActive ? styles.paginationChipActive : null,
                             pressed || hovered ? styles.filterChipPressed : null,
                           ]}>
@@ -549,15 +585,52 @@ function EcranSectionTableauBord({
                     {groupesJava.map((groupe) => {
                       const rangeesGroupe = decouperEntrees(groupe.entrees, deuxColonnes ? 2 : 1);
 
-                      return (
-                        <View key={groupe.valeur} style={styles.groupeJava}>
-                          <View style={styles.enteteGroupeJava}>
-                            <View style={styles.texteGroupeJava}>
-                              <TexteTheme
-                                darkColor={THEME_MATHS.ink}
-                                lightColor={THEME_MATHS.ink}
-                                style={styles.titreGroupeJava}>
-                                {groupe.titre}
+                        return (
+                        <View key={entree.href} style={styles.cardSlot}>
+                            <Pressable
+                                disabled={isClosed}
+                                onPress={() => {
+                                  if (!isClosed) {
+                                    donneesLocales.enregistrerClicSimulation(section, entree.href);
+                                    router.push(entree.href as Href);
+                                  }
+                                }}
+                              style={({ pressed, hovered }) => [
+                              styles.mathCard,
+                              schemaCouleur === 'dark' ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
+                                isClosed ? styles.mathCardClosed : null,
+                                !isClosed && (pressed || hovered) ? styles.mathCardPressed : null,
+                              ]}>
+                              <View style={styles.mathCardTop}>
+                                <View style={styles.iconShell}>
+                                  <MaterialCommunityIcons
+                                    color={THEME_MATHS.coral}
+                                    name={(entree.icon ?? 'book-open-variant') as keyof typeof MaterialCommunityIcons.glyphMap}
+                                    size={22}
+                                  />
+                                </View>
+
+                                <View style={styles.cardStatusRow}>
+                                  <View
+                                    style={[
+                                      styles.statusBadge,
+                                      obtenirStyleStatut(entree.statut),
+                                    ]}>
+                                    <TexteTheme
+                                      lightColor="#243B53"
+                                      style={styles.statusText}>
+                                      {obtenirEtiquetteStatut(entree.statut)}
+                                    </TexteTheme>
+                                  </View>
+                                </View>
+                              </View>
+
+                              <TexteTheme lightColor={THEME_MATHS.ink} style={styles.cardTitle}>
+                                {entree.title}
+                              </TexteTheme>
+
+                              <TexteTheme lightColor={THEME_MATHS.mutedInk} numberOfLines={3} style={styles.cardDescription}>
+                                {entree.description ?? 'Simulation interactive a ouvrir depuis cette fiche.'}
                               </TexteTheme>
                             </View>
                           </View>
@@ -605,7 +678,7 @@ function EcranSectionTableauBord({
   );
 }
 
-function rendreEcranDefaut(title: string, entrees: EntreeSimulation[]) {
+function rendreEcranDefaut(title: string, entrees: EntreeSimulation[], section: SectionSimulation) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <VueTheme style={styles.container}>
@@ -621,6 +694,7 @@ function rendreEcranDefaut(title: string, entrees: EntreeSimulation[]) {
                 disabled={entree.statut === 'ferme'}
                 onPress={() => {
                   if (entree.statut !== 'ferme') {
+                    donneesLocales.enregistrerClicSimulation(section, entree.href);
                     router.push(entree.href as Href);
                   }
                 }}
@@ -643,7 +717,7 @@ export function EcranIndexSection({ section, title }: ProprietesEcranIndexSectio
     return <EcranSectionTableauBord configuration={CONFIG_TABLEAU_BORD[section]} entrees={entrees} section={section} />;
   }
 
-  return rendreEcranDefaut(title, entrees);
+  return rendreEcranDefaut(title, entrees, section);
 }
 
 const styles = StyleSheet.create({
