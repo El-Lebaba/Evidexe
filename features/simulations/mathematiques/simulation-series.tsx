@@ -507,7 +507,7 @@ export function SimulationSeries() {
               transform: [{ translateY: translationEntete }],
             },
           ]}>
-          <EnTeteEcranSimulation title="Series" type="mathematiques" />
+          <EnTeteEcranSimulation titre="Series" domaine="mathematiques" />
         </Animated.View>
 
         <Animated.ScrollView

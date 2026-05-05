@@ -1,6 +1,6 @@
-import { EcranSimulationLigne } from '@/features/simulations/core/ecran-simulation-ligne';
+import { SimulationFrottement } from '@/features/simulations/physique/simulation-frottement';
 
 export default function EcranFrottement() {
-  return <EcranSimulationLigne title="Friction" type="physique" />;
+  return <SimulationFrottement />;
 }
 

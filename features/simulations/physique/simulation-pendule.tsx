@@ -315,7 +315,7 @@ export function SimulationPendule() {
               transform: [{ translateY: headerTranslateY }],
             },
           ]}>
-          <EnteteEcranSimulation title="Pendule" type="physique" />
+          <EnteteEcranSimulation titre="Pendule" domaine="physique" />
         </Animated.View>
 
         <Animated.ScrollView

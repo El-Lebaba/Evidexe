@@ -431,7 +431,7 @@ export function SimulationChampDePentes() {
               transform: [{ translateY: headerTranslateY }],
             },
           ]}>
-          <EnteteEcranSimulation title="Champ de pentes" type="mathematiques"/>
+          <EnteteEcranSimulation titre="Champ de pentes" domaine="mathematiques"/>
         </Animated.View>
 
         <Animated.ScrollView

@@ -1,6 +1,6 @@
 import { EcranSimulationLigne } from '@/features/simulations/core/ecran-simulation-ligne';
 
 export default function EcranJava11() {
-  return <EcranSimulationLigne title="Bientot" type="programmation-java" />;
+  return <EcranSimulationLigne titre="Chaines et caracteres" domaine="programmation-java" />;
 }
 

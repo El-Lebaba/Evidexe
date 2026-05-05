@@ -403,7 +403,7 @@ export function SimulationChampVectoriel() {
               transform: [{ translateY: headerTranslateY }],
             },
           ]}>
-          <EnteteEcranSimulation title="Champ vectoriel" type="mathematiques" />
+          <EnteteEcranSimulation titre="Champ vectoriel" domaine="mathematiques" />
         </Animated.View>
 
         <Animated.ScrollView

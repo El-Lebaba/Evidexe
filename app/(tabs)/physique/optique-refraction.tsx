@@ -1,6 +1,6 @@
-import { EcranSimulationLigne } from '@/features/simulations/core/ecran-simulation-ligne';
+import { SimulationOptiqueRefraction } from '@/features/simulations/physique/simulation-optique-refraction';
 
 export default function EcranOptiqueRefraction() {
-  return <EcranSimulationLigne title="Optics & Refraction" type="physique" />;
+  return <SimulationOptiqueRefraction />;
 }
 

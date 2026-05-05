@@ -8,8 +8,8 @@ import { obtenirThemeApplication } from '@/constantes/theme';
 import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
 type ProprietesEnteteEcranSimulation = {
-  title: string;
-  type: string;
+  domaine: string;
+  titre: string;
 };
 
 export const HAUTEUR_OMBRE_HAUT_ENTETE_SIMULATION = 58;
@@ -18,10 +18,10 @@ export const HAUTEUR_TOTALE_ENTETE_SIMULATION =
   HAUTEUR_OMBRE_HAUT_ENTETE_SIMULATION + HAUTEUR_BARRE_ENTETE_SIMULATION;
 export const ESPACE_CONTENU_ENTETE_SIMULATION = 44;
 
-function obtenirHrefSection(type: string): Href {
-  return (type === 'mathematiques'
+function obtenirHrefSection(domaine: string): Href {
+  return (domaine === 'mathematiques'
     ? '/(tabs)/mathematiques'
-    : type === 'physique'
+    : domaine === 'physique'
       ? '/(tabs)/physique'
       : '/(tabs)/programmation-java') as Href;
 }
@@ -65,17 +65,17 @@ export function EnteteEcranSimulation({ title, type }: ProprietesEnteteEcranSimu
 }
 
 const styles = StyleSheet.create({
-  headerShell: {
+  enveloppeEntete: {
     width: '100%',
   },
-  topShade: {
+  ombreHaute: {
     backgroundColor: '#DDD7C8',
     borderBottomColor: '#243B53',
     borderBottomWidth: 1.5,
     minHeight: HAUTEUR_OMBRE_HAUT_ENTETE_SIMULATION,
     width: '100%',
   },
-  header: {
+  entete: {
     alignItems: 'flex-start',
     backgroundColor: '#EAE3D2',
     borderBottomColor: '#243B53',
@@ -86,23 +86,23 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     width: '100%',
   },
-  headerRow: {
+  rangeeEntete: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
   },
-  leftGroup: {
+  groupeGauche: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: 14,
     justifyContent: 'flex-start',
   },
-  titleGroup: {
+  groupeTitre: {
     alignItems: 'flex-start',
     gap: 8,
   },
-  backButton: {
+  boutonRetour: {
     alignItems: 'center',
     backgroundColor: '#F5F1E6',
     borderColor: '#243B53',
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 38,
   },
-  profileButton: {
+  boutonProfil: {
     alignItems: 'center',
     backgroundColor: '#F5F1E6',
     borderColor: '#243B53',
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 38,
   },
-  title: {
+  titre: {
     fontSize: 30,
     fontWeight: '800',
     lineHeight: 36,
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     height: 44,
     width: 120,
   },
-  logoButton: {
+  boutonLogo: {
     alignSelf: 'flex-start',
   },
 });

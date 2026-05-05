@@ -491,7 +491,7 @@ export function SimulationFourier() {
               transform: [{ translateY: headerTranslateY }],
             },
           ]}>
-          <EnteteEcranSimulation title="Fourier" type="mathematiques"/>
+          <EnteteEcranSimulation titre="Fourier" domaine="mathematiques"/>
         </Animated.View>
 
         <Animated.ScrollView

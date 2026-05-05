@@ -403,7 +403,7 @@ export function SimulationDerivees() {
               transform: [{ translateY: headerTranslateY }],
             },
           ]}>
-          <EnteteEcranSimulation title="Derivees" type="mathematiques"/>
+          <EnteteEcranSimulation titre="Derivees" domaine="mathematiques"/>
         </Animated.View>
         <Animated.ScrollView
           contentContainerStyle={styles.content}

@@ -754,7 +754,7 @@ export function SimulationIntegrales() {
               transform: [{ translateY: headerTranslateY }],
             },
           ]}>
-          <EnteteEcranSimulation title="Integrales" type="mathematiques"/>
+          <EnteteEcranSimulation titre="Integrales" domaine="mathematiques"/>
         </Animated.View>
         <Animated.ScrollView
           contentContainerStyle={styles.content}

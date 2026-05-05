@@ -533,7 +533,7 @@ export function SimulationGravite() {
               transform: [{ translateY: headerTranslateY }],
             },
           ]}>
-          <EnteteEcranSimulation title="Gravite" type="physique" />
+          <EnteteEcranSimulation titre="Gravite" domaine="physique" />
         </Animated.View>
 
         <Animated.ScrollView

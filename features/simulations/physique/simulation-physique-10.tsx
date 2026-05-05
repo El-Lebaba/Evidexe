@@ -1,6 +1,6 @@
-import { EcranSimulationLigne } from '@/features/simulations/core/ecran-simulation-ligne';
+﻿import { EcranSimulationLigne } from '@/features/simulations/core/ecran-simulation-ligne';
 
 export function SimulationPhysique10() {
-  return <EcranSimulationLigne title="Physics 10" type="physique"/>;
+  return <EcranSimulationLigne titre="Physique 10" domaine="physique"/>;
 }
 

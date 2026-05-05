@@ -574,7 +574,7 @@ export function SimulationLimites() {
               transform: [{ translateY: headerTranslateY }],
             },
           ]}>
-          <EnteteEcranSimulation title="Limites" type="mathematiques"/>
+          <EnteteEcranSimulation titre="Limites" domaine="mathematiques"/>
         </Animated.View>
         <Animated.ScrollView
           contentContainerStyle={styles.content}

@@ -1,6 +1,6 @@
-import { EcranSimulationLigne } from '@/features/simulations/core/ecran-simulation-ligne';
+import { SimulationChampsMagnetiques } from '@/features/simulations/physique/simulation-champs-magnetiques';
 
 export default function EcranChampsMagnetiques() {
-  return <EcranSimulationLigne title="Magnetic Fields" type="physique" />;
+  return <SimulationChampsMagnetiques />;
 }
 

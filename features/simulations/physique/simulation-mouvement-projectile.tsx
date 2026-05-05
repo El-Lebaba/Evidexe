@@ -376,7 +376,7 @@ export function SimulationMouvementProjectile() {
               transform: [{ translateY: headerTranslateY }],
             },
           ]}>
-          <EnteteEcranSimulation title="Mouvement projectile" type="physique" />
+          <EnteteEcranSimulation titre="Mouvement projectile" domaine="physique" />
         </Animated.View>
 
         <Animated.ScrollView

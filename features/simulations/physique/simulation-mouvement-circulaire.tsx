@@ -301,7 +301,7 @@ export function SimulationMouvementCirculaire() {
               transform: [{ translateY: headerTranslateY }],
             },
           ]}>
-          <EnteteEcranSimulation title="Mouvement circulaire" type="physique" />
+          <EnteteEcranSimulation titre="Mouvement circulaire" domaine="physique" />
         </Animated.View>
 
         <Animated.ScrollView

@@ -1,6 +1,6 @@
-import { EcranSimulationLigne } from '@/features/simulations/core/ecran-simulation-ligne';
+import { SimulationMecaniqueOrbitale } from '@/features/simulations/physique/simulation-mecanique-orbitale';
 
 export default function EcranMecaniqueOrbitale() {
-  return <EcranSimulationLigne title="Orbital Mechanics" type="physique" />;
+  return <SimulationMecaniqueOrbitale />;
 }
 

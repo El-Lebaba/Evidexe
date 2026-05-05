@@ -1,6 +1,6 @@
 import { EcranSimulationLigne } from '@/features/simulations/core/ecran-simulation-ligne';
 
 export function SimulationJava4() {
-  return <EcranSimulationLigne title="Java 4" type="programmation-java"/>;
+  return <EcranSimulationLigne titre="Java 4" domaine="programmation-java"/>;
 }
 

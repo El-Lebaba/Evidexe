@@ -558,7 +558,7 @@ export function SimulationRessortLoiHooke() {
               transform: [{ translateY: headerTranslateY }],
             },
           ]}>
-          <EnteteEcranSimulation title="Ressort et loi de Hooke" type="physique" />
+          <EnteteEcranSimulation titre="Ressort et loi de Hooke" domaine="physique" />
         </Animated.View>
 
         <Animated.ScrollView

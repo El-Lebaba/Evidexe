@@ -765,7 +765,7 @@ export function SimulationSerieTaylor() {
               transform: [{ translateY: headerTranslateY }],
             },
           ]}>
-          <EnteteEcranSimulation title="Serie de Taylor" type="mathematiques" />
+          <EnteteEcranSimulation titre="Serie de Taylor" domaine="mathematiques" />
         </Animated.View>
         <Animated.ScrollView
           contentContainerStyle={styles.content}

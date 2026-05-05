@@ -118,15 +118,37 @@ const CONFIG_TABLEAU_BORD: Record<
   'programmation-java': {
     categoryLabels: {
       'a-venir': 'A venir',
+      'fonctionnalites-java': 'Fonctionnalites',
+      'structures-donnees': 'Structures',
+      tri: 'Tri',
     },
     filters: [
-      { label: 'Actifs', value: 'pret' },
-      { label: 'A venir', value: 'bientot' },
+      { label: 'Tri', value: 'tri' },
+      { label: 'Structures', value: 'structures-donnees' },
+      { label: 'Fonctionnalites', value: 'fonctionnalites-java' },
     ],
-    subtitle: 'Retrouve tes simulations Java dans le meme espace organise, lisible et facile a parcourir.',
+    subtitle: 'Explore les algorithmes, les structures de donnees et les fonctionnalites Java dans un espace organise.',
     title: 'Simulation Java',
   },
 };
+
+const GROUPES_JAVA = [
+  {
+    icone: 'sort',
+    titre: 'Tri',
+    valeur: 'tri',
+  },
+  {
+    icone: 'database-outline',
+    titre: 'Structures de donnees',
+    valeur: 'structures-donnees',
+  },
+  {
+    icone: 'language-java',
+    titre: 'Fonctionnalites Java',
+    valeur: 'fonctionnalites-java',
+  },
+];
 
 function obtenirDispositionCartesMaths(largeurEcran: number) {
   const largeurConteneur = Math.min(largeurEcran, 980);
@@ -190,7 +212,7 @@ function EcranSectionTableauBord({
   entrees,
   section,
 }: {
-  configuration: (typeof CONFIG_TABLEAU_BORD)['mathematiques'] | (typeof CONFIG_TABLEAU_BORD)['physique'];
+  configuration: (typeof CONFIG_TABLEAU_BORD)[SectionSimulation];
   entrees: EntreeSimulation[];
   section: SectionSimulation;
 }) {
@@ -218,14 +240,26 @@ function EcranSectionTableauBord({
       }),
     [filtresActifs, entrees, requeteNormalisee]
   );
-  const nombrePages = Math.max(1, Math.ceil(entreesFiltrees.length / TAILLE_PAGE));
+  const afficherGroupesJava = section === 'programmation-java';
+  const nombrePages = afficherGroupesJava ? 1 : Math.max(1, Math.ceil(entreesFiltrees.length / TAILLE_PAGE));
   const entreesPage = useMemo(
-    () => entreesFiltrees.slice(pageActive * TAILLE_PAGE, (pageActive + 1) * TAILLE_PAGE),
-    [pageActive, entreesFiltrees]
+    () =>
+      afficherGroupesJava
+        ? entreesFiltrees
+        : entreesFiltrees.slice(pageActive * TAILLE_PAGE, (pageActive + 1) * TAILLE_PAGE),
+    [afficherGroupesJava, pageActive, entreesFiltrees]
   );
   const rangeesCartes = useMemo(
     () => decouperEntrees(entreesPage, deuxColonnes ? 2 : 1),
     [deuxColonnes, entreesPage]
+  );
+  const groupesJava = useMemo(
+    () =>
+      GROUPES_JAVA.map((groupe) => ({
+        ...groupe,
+        entrees: entreesFiltrees.filter((entree) => entree.groupe === groupe.valeur),
+      })).filter((groupe) => groupe.entrees.length > 0),
+    [entreesFiltrees]
   );
 
   useEffect(() => {
@@ -238,11 +272,95 @@ function EcranSectionTableauBord({
     }
   }, [pageActive, nombrePages]);
 
-  const toggleFilter = (filtre: FiltreTableauBord) => {
+  const basculerFiltre = (filtre: FiltreTableauBord) => {
     definirFiltresActifs((filtresCourants) =>
       filtresCourants.includes(filtre)
         ? filtresCourants.filter((filtreCourant) => filtreCourant !== filtre)
         : [...filtresCourants, filtre]
+    );
+  };
+
+  const choisirDivisionJava = (division: FiltreTableauBord) => {
+    definirFiltresActifs((filtresCourants) => (filtresCourants.includes(division) ? [] : [division]));
+  };
+
+  const compterSimulationsDivisionJava = (division: string) =>
+    entrees.filter((entree) => {
+      const texteRecherchable = `${entree.title} ${entree.description ?? ''}`.toLowerCase();
+
+      return entree.groupe === division && texteRecherchable.includes(requeteNormalisee);
+    }).length;
+
+  const rendreCarteSimulation = (entree: EntreeSimulation) => {
+    const estFermee = entree.statut === 'ferme';
+
+    return (
+      <View key={entree.href} style={styles.cardSlot}>
+        <Pressable
+          disabled={estFermee}
+          onPress={() => {
+            if (!estFermee) {
+              router.push(entree.href as Href);
+            }
+          }}
+          style={({ pressed, hovered }) => [
+            styles.mathCard,
+            afficherGroupesJava ? styles.carteJava : null,
+            estFermee ? styles.mathCardClosed : null,
+            !estFermee && (pressed || hovered) ? styles.mathCardPressed : null,
+          ]}>
+          <View style={styles.mathCardTop}>
+            <View style={styles.iconShell}>
+              <MaterialCommunityIcons
+                color={THEME_MATHS.coral}
+                name={(entree.icon ?? 'book-open-variant') as keyof typeof MaterialCommunityIcons.glyphMap}
+                size={22}
+              />
+            </View>
+
+            <View style={styles.cardStatusRow}>
+              <View
+                style={[
+                  styles.statusBadge,
+                  obtenirStyleStatut(entree.statut),
+                ]}>
+                <TexteTheme
+                  lightColor="#243B53"
+                  style={styles.statusText}>
+                  {obtenirEtiquetteStatut(entree.statut)}
+                </TexteTheme>
+              </View>
+            </View>
+          </View>
+
+          <TexteTheme lightColor={THEME_MATHS.ink} style={styles.cardTitle}>
+            {entree.title}
+          </TexteTheme>
+
+          <TexteTheme
+            lightColor={THEME_MATHS.mutedInk}
+            numberOfLines={3}
+            style={[styles.cardDescription, afficherGroupesJava ? styles.descriptionCarteJava : null]}>
+            {entree.description ?? 'Simulation interactive a ouvrir depuis cette fiche.'}
+          </TexteTheme>
+
+          {!afficherGroupesJava ? (
+            <View style={styles.cardFooter}>
+              <View style={styles.categoryRow}>
+                {(entree.tags?.length ? entree.tags : ['a-venir']).slice(0, 3).map((tag) => (
+                  <View key={`${entree.href}-${tag}`} style={styles.categoryBadge}>
+                    <TexteTheme lightColor={THEME_MATHS.ink} style={styles.categoryText}>
+                      {configuration.categoryLabels[tag] ?? tag}
+                    </TexteTheme>
+                  </View>
+                ))}
+              </View>
+
+              <MaterialCommunityIcons color={THEME_MATHS.coral} name="arrow-right" size={20} />
+            </View>
+          ) : null}
+        </Pressable>
+      </View>
     );
   };
 
@@ -313,6 +431,7 @@ function EcranSectionTableauBord({
                 />
               </View>
 
+              {!afficherGroupesJava ? (
               <View style={styles.filterWrap}>
                 <Pressable
                   onPress={() => definirMenuFiltresOuvert((currentValue) => !currentValue)}
@@ -355,7 +474,7 @@ function EcranSectionTableauBord({
                         return (
                           <Pressable
                             key={filtre.value}
-                            onPress={() => toggleFilter(filtre.value)}
+                            onPress={() => basculerFiltre(filtre.value)}
                             style={({ pressed, hovered }) => [
                             styles.filterOption,
                             schemaCouleur === 'dark' ? { backgroundColor: '#FFFFFF', borderColor: themeApplication.border } : null,
@@ -378,6 +497,7 @@ function EcranSectionTableauBord({
                   </View>
                 ) : null}
               </View>
+              ) : null}
             </View>
 
             <View style={[styles.contentColumn, { width: largeurConteneur - 40 }]}>
@@ -391,7 +511,37 @@ function EcranSectionTableauBord({
                   </TexteTheme>
                 </View>
 
-                {nombrePages > 1 ? (
+                {afficherGroupesJava ? (
+                  <View style={styles.rangeeDivisionsJava}>
+                    {GROUPES_JAVA.map((division) => {
+                      const estActive = filtresActifs.includes(division.valeur);
+                      const nombreSimulations = compterSimulationsDivisionJava(division.valeur);
+
+                      return (
+                        <Pressable
+                          key={division.valeur}
+                          onPress={() => choisirDivisionJava(division.valeur)}
+                          style={({ pressed, hovered }) => [
+                            styles.pastilleDivisionJava,
+                            estActive ? styles.pastilleDivisionJavaActive : null,
+                            pressed || hovered ? styles.filterChipPressed : null,
+                          ]}>
+                          <TexteTheme
+                            darkColor={estActive ? '#243B53' : '#5A6A58'}
+                            lightColor={estActive ? '#243B53' : '#5A6A58'}
+                            style={styles.textePastilleDivisionJava}>
+                            {division.titre}
+                          </TexteTheme>
+                          <View style={styles.compteurDivisionJava}>
+                            <TexteTheme darkColor="#243B53" lightColor="#243B53" style={styles.texteCompteurDivisionJava}>
+                              {nombreSimulations}
+                            </TexteTheme>
+                          </View>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                ) : nombrePages > 1 ? (
                   <View style={styles.paginationRow}>
                     {Array.from({ length: nombrePages }, (_, index) => {
                       const isActive = index === pageActive;
@@ -430,17 +580,10 @@ function EcranSectionTableauBord({
                   </TexteTheme>
                 </View>
               ) : (
-                <View style={[styles.cardGrid, { rowGap: espaceRangees }]}>
-                  {rangeesCartes.map((row, rowIndex) => (
-                    <View
-                      key={`row-${rowIndex}`}
-                      style={[
-                        styles.cardRow,
-                        { columnGap: espaceGrille },
-                        !deuxColonnes ? styles.cardRowSingle : null,
-                      ]}>
-                      {row.map((entree) => {
-                        const isClosed = entree.statut === 'ferme';
+                afficherGroupesJava ? (
+                  <View style={styles.groupesJava}>
+                    {groupesJava.map((groupe) => {
+                      const rangeesGroupe = decouperEntrees(groupe.entrees, deuxColonnes ? 2 : 1);
 
                         return (
                         <View key={entree.href} style={styles.cardSlot}>
@@ -489,29 +632,43 @@ function EcranSectionTableauBord({
                               <TexteTheme lightColor={THEME_MATHS.mutedInk} numberOfLines={3} style={styles.cardDescription}>
                                 {entree.description ?? 'Simulation interactive a ouvrir depuis cette fiche.'}
                               </TexteTheme>
+                            </View>
+                          </View>
 
-                              <View style={styles.cardFooter}>
-                                <View style={styles.categoryRow}>
-                                  {(entree.tags?.length ? entree.tags : ['a-venir']).slice(0, 3).map((tag) => (
-                                    <View key={`${entree.href}-${tag}`} style={styles.categoryBadge}>
-                                      <TexteTheme lightColor={THEME_MATHS.ink} style={styles.categoryText}>
-                                        {configuration.categoryLabels[tag] ?? tag}
-                                      </TexteTheme>
-                                    </View>
-                                  ))}
-                                </View>
-
-                                <MaterialCommunityIcons color={THEME_MATHS.coral} name="arrow-right" size={20} />
+                          <View style={[styles.cardGrid, { rowGap: espaceRangees }]}>
+                            {rangeesGroupe.map((rangee, indexRangee) => (
+                              <View
+                                key={`${groupe.valeur}-${indexRangee}`}
+                                style={[
+                                  styles.cardRow,
+                                  { columnGap: espaceGrille },
+                                  !deuxColonnes ? styles.cardRowSingle : null,
+                                ]}>
+                                {rangee.map((entree) => rendreCarteSimulation(entree))}
+                                {deuxColonnes && rangee.length === 1 ? <View style={styles.cardSlot} /> : null}
                               </View>
-                            </Pressable>
+                            ))}
+                          </View>
                         </View>
                       );
                     })}
-
-                      {deuxColonnes && row.length === 1 ? <View style={styles.cardSlot} /> : null}
-                    </View>
-                  ))}
-                </View>
+                  </View>
+                ) : (
+                  <View style={[styles.cardGrid, { rowGap: espaceRangees }]}>
+                    {rangeesCartes.map((rangee, indexRangee) => (
+                      <View
+                        key={`rangee-${indexRangee}`}
+                        style={[
+                          styles.cardRow,
+                          { columnGap: espaceGrille },
+                          !deuxColonnes ? styles.cardRowSingle : null,
+                        ]}>
+                        {rangee.map((entree) => rendreCarteSimulation(entree))}
+                        {deuxColonnes && rangee.length === 1 ? <View style={styles.cardSlot} /> : null}
+                      </View>
+                    ))}
+                  </View>
+                )
               )}
             </View>
           </View>
@@ -851,6 +1008,48 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     lineHeight: 18,
   },
+  rangeeDivisionsJava: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    justifyContent: 'flex-end',
+  },
+  pastilleDivisionJava: {
+    alignItems: 'center',
+    backgroundColor: THEME_MATHS.chip,
+    borderColor: 'rgba(36,59,83,0.08)',
+    borderRadius: 999,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 8,
+    minHeight: 38,
+    paddingHorizontal: 13,
+    paddingVertical: 8,
+  },
+  pastilleDivisionJavaActive: {
+    backgroundColor: THEME_MATHS.chipActive,
+    borderColor: '#243B53',
+  },
+  textePastilleDivisionJava: {
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 18,
+  },
+  compteurDivisionJava: {
+    alignItems: 'center',
+    backgroundColor: '#EEF5ED',
+    borderColor: '#A8B59A',
+    borderRadius: 999,
+    borderWidth: 1,
+    minWidth: 24,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+  },
+  texteCompteurDivisionJava: {
+    fontSize: 12,
+    fontWeight: '900',
+    lineHeight: 15,
+  },
   emptyState: {
     alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -874,6 +1073,29 @@ const styles = StyleSheet.create({
   cardGrid: {
     gap: 0,
     width: '100%',
+  },
+  groupesJava: {
+    gap: 34,
+    width: '100%',
+  },
+  groupeJava: {
+    gap: 16,
+    width: '100%',
+  },
+  enteteGroupeJava: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 14,
+    width: '100%',
+  },
+  texteGroupeJava: {
+    flex: 1,
+    gap: 4,
+  },
+  titreGroupeJava: {
+    fontSize: 22,
+    fontWeight: '900',
+    lineHeight: 27,
   },
   cardRow: {
     alignItems: 'stretch',
@@ -901,6 +1123,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
     shadowRadius: 14,
+  },
+  carteJava: {
+    gap: 10,
+    height: 190,
+    paddingVertical: 16,
   },
   mathCardPressed: {
     borderColor: '#8D9771',
@@ -960,6 +1187,9 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     lineHeight: 21,
+  },
+  descriptionCarteJava: {
+    flex: 0,
   },
   cardFooter: {
     alignItems: 'center',
