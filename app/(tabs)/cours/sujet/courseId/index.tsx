@@ -1,11 +1,13 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Href, router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
+import { obtenirThemeApplication } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
   MatiereCours,
@@ -17,18 +19,7 @@ import {
 } from '@/data/cours';
 import { donneesLocales } from '@/db/donnees-principales';
 
-const themeActif = {
-  background: '#EAE3D2',
-  border: '#243B53',
-  ink: '#243B53',
-  muted: '#6E7F73',
-  panel: '#DDE4D5',
-  soft: '#F3F1E7',
-  blue: '#7EA6E0',
-  yellow: '#D8A94A',
-  green: '#7CCFBF',
-  red: '#D97B6C',
-};
+const themeActif = obtenirThemeApplication(false);
 
 const SUBJECTS: MatiereCours[] = ['java', 'mathematiques', 'physique'];
 
@@ -141,6 +132,8 @@ function renderHighlightedText(value: string) {
 }
 
 export default function EcranLectureCours() {
+  const schemaCouleur = useSchemaCouleur();
+  const themeDynamique = obtenirThemeApplication(schemaCouleur === 'dark');
   const params = useLocalSearchParams<{ courseId?: string; subject?: string }>();
   const subject = params.subject && isCourseSubject(params.subject) ? params.subject : undefined;
   const courseId = params.courseId;
@@ -164,6 +157,9 @@ export default function EcranLectureCours() {
     }
   );
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [wrongAnswers, setWrongAnswers] = useState<number[]>([]);
+  const [quizCompleted, setQuizCompleted] = useState(savedProgressDetails.exerciseCompleted);
+  const [confettiRound, setConfettiRound] = useState(0);
 
   useEffect(() => {
     setSlideIndex(initialSlide);
@@ -176,6 +172,8 @@ export default function EcranLectureCours() {
       }
     );
     setSelectedAnswer(null);
+    setWrongAnswers([]);
+    setQuizCompleted(subject && courseId ? obtenirDetailsProgressionCours(subject, courseId).exerciseCompleted : false);
   }, [courseId, initialSlide, subject]);
 
   // Each opened page is persisted immediately so the home/profile cards can show the same integer percentage.
@@ -195,14 +193,14 @@ export default function EcranLectureCours() {
 
   if (!subject || !courseId || !CoursLocal) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <VueTheme lightColor={themeActif.background} style={styles.emptyPage}>
-          <TexteTheme lightColor={themeActif.ink} style={styles.emptyTitle}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: themeDynamique.background }]}>
+        <VueTheme lightColor={themeDynamique.background} darkColor={themeDynamique.background} style={styles.emptyPage}>
+          <TexteTheme lightColor={themeDynamique.ink} darkColor={themeDynamique.ink} style={[styles.emptyTitle, { color: themeDynamique.ink }]}>
             Cours introuvable
           </TexteTheme>
-          <Pressable onPress={() => router.replace('/(tabs)/cours' as Href)} style={styles.backButton}>
-            <MaterialCommunityIcons color={themeActif.ink} name="arrow-left" size={18} />
-            <TexteTheme lightColor={themeActif.ink} style={styles.backButtonText}>
+          <Pressable onPress={() => router.replace('/(tabs)/cours' as Href)} style={[styles.backButton, { backgroundColor: themeDynamique.panel, borderColor: themeDynamique.border }]}>
+            <MaterialCommunityIcons color={themeDynamique.ink} name="arrow-left" size={18} />
+            <TexteTheme lightColor={themeDynamique.ink} darkColor={themeDynamique.ink} style={styles.backButtonText}>
               Retour
             </TexteTheme>
           </Pressable>
@@ -217,7 +215,8 @@ export default function EcranLectureCours() {
   const isLastSlide = slideIndex === maxSlideIndex;
   const quiz = obtenirQuizCours(subject, courseId);
   const canGoPrevious = slideIndex > 0;
-  const canGoNext = slideIndex < maxSlideIndex;
+  const canGoNext = slideIndex < maxSlideIndex || (isLastSlide && quizCompleted);
+  const nextButtonLabel = isLastSlide ? 'Completer' : 'Suivant';
   const utiliseCarteFormule = subject === 'mathematiques' || subject === 'physique';
   const contenuDiapoTraite = {
     lignesCode: slide.code ? cleanCodeText(slide.code).split('\n') : [],
@@ -230,6 +229,11 @@ export default function EcranLectureCours() {
   }
 
   function goNext() {
+    if (isLastSlide && quizCompleted) {
+      goBackToCourses();
+      return;
+    }
+
     setSlideIndex((currentIndex) => Math.min(currentIndex + 1, maxSlideIndex));
   }
 
@@ -241,10 +245,16 @@ export default function EcranLectureCours() {
   }
 
   function chooseAnswer(answerIndex: number) {
+    if (quizCompleted || wrongAnswers.includes(answerIndex)) {
+      return;
+    }
+
     setSelectedAnswer(answerIndex);
 
     // The final exercise acts as the 100% gate: correct answer sets the boolean flag and awards XP in donneesLocales once.
     if (answerIndex === quiz.answerIndex && subject && courseId && CoursLocal) {
+      setQuizCompleted(true);
+      setConfettiRound((currentRound) => currentRound + 1);
       donneesLocales.saveCourseProgress(
         subject,
         courseId,
@@ -254,22 +264,25 @@ export default function EcranLectureCours() {
         true,
       );
       setSavedProgressDetails(obtenirDetailsProgressionCours(subject, courseId));
+      return;
     }
+
+    setWrongAnswers((answers) => [...answers, answerIndex]);
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <VueTheme lightColor={themeActif.background} style={styles.page}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: themeDynamique.background }]}>
+      <VueTheme lightColor={themeDynamique.background} darkColor={themeDynamique.background} style={[styles.page, { backgroundColor: themeDynamique.background }]}>
         <View style={styles.topBar}>
-          <Pressable onPress={goBackToCourses} style={styles.iconButton}>
-            <MaterialCommunityIcons color={themeActif.ink} name="arrow-left" size={22} />
+          <Pressable onPress={goBackToCourses} style={[styles.iconButton, { backgroundColor: themeDynamique.panel, borderColor: themeDynamique.border }]}>
+            <MaterialCommunityIcons color={themeDynamique.ink} name="arrow-left" size={22} />
           </Pressable>
 
           <View style={styles.topMeta}>
-            <TexteTheme lightColor={themeActif.muted} numberOfLines={1} style={styles.subjectText}>
+            <TexteTheme lightColor={themeDynamique.muted} darkColor={themeDynamique.muted} numberOfLines={1} style={[styles.subjectText, { color: themeDynamique.muted }]}>
               {ETIQUETTES_MATIERES[subject]}
             </TexteTheme>
-            <TexteTheme lightColor={themeActif.ink} numberOfLines={1} style={styles.courseTitle}>
+            <TexteTheme lightColor={themeDynamique.text} darkColor={themeDynamique.text} numberOfLines={1} style={[styles.courseTitle, { color: themeDynamique.text }]}>
               {CoursLocal.title}
             </TexteTheme>
           </View>
@@ -277,27 +290,27 @@ export default function EcranLectureCours() {
 
         <View style={styles.progressWrap}>
           <View style={styles.progressMeta}>
-            <TexteTheme lightColor={themeActif.ink} style={styles.progressLabel}>
+            <TexteTheme lightColor={themeDynamique.text} darkColor={themeDynamique.text} style={[styles.progressLabel, { color: themeDynamique.text }]}>
               Page {slideIndex + 1}/{CoursLocal.totalSlides}
             </TexteTheme>
-            <TexteTheme lightColor={themeActif.ink} style={styles.progressLabel}>
+            <TexteTheme lightColor={themeDynamique.text} darkColor={themeDynamique.text} style={[styles.progressLabel, { color: themeDynamique.text }]}>
               {progress}%
             </TexteTheme>
           </View>
-          <View style={styles.progressTrack}>
-            <View style={[styles.progressFill, { width: `${progress}%` }]} />
+          <View style={[styles.progressTrack, { backgroundColor: themeDynamique.soft, borderColor: themeDynamique.border }]}>
+            <View style={[styles.progressFill, { backgroundColor: themeDynamique.yellow, width: `${progress}%` }]} />
           </View>
         </View>
 
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-          <View style={styles.slideCard}>
-            <TexteTheme lightColor={themeActif.muted} style={styles.slideKicker}>
+          <View style={[styles.slideCard, { backgroundColor: themeDynamique.panel, borderColor: themeDynamique.border }]}>
+            <TexteTheme lightColor={themeDynamique.muted} darkColor={themeDynamique.muted} style={[styles.slideKicker, { color: themeDynamique.muted }]}>
               {CoursLocal.subtitle}
             </TexteTheme>
-            <TexteTheme lightColor={themeActif.ink} style={styles.slideTitle}>
+            <TexteTheme lightColor={themeDynamique.ink} darkColor={themeDynamique.ink} style={[styles.slideTitle, { color: themeDynamique.ink }]}>
               {slide.title}
             </TexteTheme>
-            <TexteTheme lightColor={themeActif.ink} style={styles.theoryText}>
+            <TexteTheme lightColor={themeDynamique.ink} darkColor={themeDynamique.ink} style={[styles.theoryText, { color: themeDynamique.ink }]}>
               {contenuDiapoTraite.theorieRendue}
             </TexteTheme>
 
@@ -330,12 +343,12 @@ export default function EcranLectureCours() {
               <View style={styles.formulaCard}>
                 <View style={styles.formulaCardHeader}>
                   <View style={styles.formulaBadge}>
-                    <MaterialCommunityIcons color={themeActif.ink} name="function-variant" size={18} />
-                    <TexteTheme lightColor={themeActif.ink} style={styles.formulaBadgeText}>
+                    <MaterialCommunityIcons color={themeDynamique.ink} name="function-variant" size={18} />
+                    <TexteTheme lightColor={themeDynamique.ink} darkColor={themeDynamique.ink} style={[styles.formulaBadgeText, { color: themeDynamique.ink }]}>
                       Vue mathematique
                     </TexteTheme>
                   </View>
-                  <TexteTheme lightColor={themeActif.muted} style={styles.formulaHint}>
+                  <TexteTheme lightColor={themeDynamique.muted} darkColor={themeDynamique.muted} style={[styles.formulaHint, { color: themeDynamique.muted }]}>
                     Formule cle
                   </TexteTheme>
                 </View>
@@ -351,30 +364,35 @@ export default function EcranLectureCours() {
             ) : null}
 
             {isLastSlide ? (
-              <View style={styles.quizCard}>
-                <TexteTheme lightColor={themeActif.muted} style={styles.quizKicker}>
+              <View style={[styles.quizCard, { backgroundColor: themeDynamique.soft, borderColor: themeDynamique.border }]}>
+                {confettiRound > 0 ? <QuizConfetti key={confettiRound} /> : null}
+                <TexteTheme lightColor={themeDynamique.muted} darkColor={themeDynamique.muted} style={[styles.quizKicker, { color: themeDynamique.muted }]}>
                   Question rapide
                 </TexteTheme>
-                <TexteTheme lightColor={themeActif.ink} style={styles.quizQuestion}>
+                <TexteTheme lightColor={themeDynamique.ink} darkColor={themeDynamique.ink} style={[styles.quizQuestion, { color: themeDynamique.ink }]}>
                   {quiz.question}
                 </TexteTheme>
                 <View style={styles.choiceList}>
                   {quiz.choices.map((choice, index) => {
                     const selected = selectedAnswer === index;
-                    const correct = selected && index === quiz.answerIndex;
-                    const incorrect = selected && index !== quiz.answerIndex;
+                    const correct = quizCompleted && index === quiz.answerIndex;
+                    const incorrect = wrongAnswers.includes(index);
+                    const locked = quizCompleted || incorrect;
 
                     return (
                       <Pressable
                         key={choice}
+                        disabled={locked}
                         onPress={() => chooseAnswer(index)}
                         style={[
                           styles.choiceButton,
+                          { backgroundColor: themeDynamique.panel, borderColor: themeDynamique.border },
                           selected ? styles.choiceButtonSelected : null,
                           correct ? styles.choiceButtonCorrect : null,
                           incorrect ? styles.choiceButtonIncorrect : null,
+                          locked && !correct ? styles.choiceButtonLocked : null,
                         ]}>
-                        <TexteTheme lightColor={themeActif.ink} style={styles.choiceText}>
+                        <TexteTheme lightColor={themeDynamique.ink} darkColor={themeDynamique.ink} style={[styles.choiceText, { color: themeDynamique.ink }]}>
                           {choice}
                         </TexteTheme>
                       </Pressable>
@@ -386,17 +404,18 @@ export default function EcranLectureCours() {
           </View>
         </ScrollView>
 
-        <View style={styles.footer}>
+        <View style={[styles.footer, { backgroundColor: themeDynamique.background }]}>
           <Pressable
             disabled={!canGoPrevious}
             onPress={goPrevious}
             style={({ pressed }) => [
               styles.navButton,
+              { backgroundColor: themeDynamique.panel, borderColor: themeDynamique.border },
               !canGoPrevious ? styles.navButtonDisabled : null,
               pressed ? styles.pressed : null,
             ]}>
-            <MaterialCommunityIcons color={themeActif.ink} name="chevron-left" size={24} />
-            <TexteTheme lightColor={themeActif.ink} selectable={false} style={styles.navButtonText}>
+            <MaterialCommunityIcons color={themeDynamique.ink} name="chevron-left" size={24} />
+            <TexteTheme lightColor={themeDynamique.ink} darkColor={themeDynamique.ink} selectable={false} style={[styles.navButtonText, { color: themeDynamique.ink }]}>
               Precedent
             </TexteTheme>
           </Pressable>
@@ -406,17 +425,86 @@ export default function EcranLectureCours() {
             onPress={goNext}
             style={({ pressed }) => [
               styles.navButton,
+              { backgroundColor: themeDynamique.panel, borderColor: themeDynamique.border },
               !canGoNext ? styles.navButtonDisabled : null,
               pressed ? styles.pressed : null,
             ]}>
-            <TexteTheme lightColor={themeActif.ink} selectable={false} style={styles.navButtonText}>
-              Suivant
+            <TexteTheme lightColor={themeDynamique.ink} darkColor={themeDynamique.ink} selectable={false} style={[styles.navButtonText, { color: themeDynamique.ink }]}>
+              {nextButtonLabel}
             </TexteTheme>
-            <MaterialCommunityIcons color={themeActif.ink} name="chevron-right" size={24} />
+            <MaterialCommunityIcons color={themeDynamique.ink} name="chevron-right" size={24} />
           </Pressable>
         </View>
       </VueTheme>
     </SafeAreaView>
+  );
+}
+
+function QuizConfetti() {
+  const particles = useRef(
+    Array.from({ length: 18 }, (_, index) => ({
+      color: [themeActif.yellow, themeActif.green, themeActif.blue, themeActif.red][index % 4],
+      left: 12 + ((index * 17) % 76),
+      rotate: `${(index * 29) % 180}deg`,
+      size: 7 + (index % 3) * 3,
+      value: new Animated.Value(0),
+    })),
+  ).current;
+
+  useEffect(() => {
+    const animations = particles.map((particle, index) =>
+      Animated.timing(particle.value, {
+        delay: index * 18,
+        duration: 820,
+        toValue: 1,
+        useNativeDriver: true,
+      }),
+    );
+
+    Animated.parallel(animations).start();
+  }, [particles]);
+
+  return (
+    <View pointerEvents="none" style={styles.confettiLayer}>
+      {particles.map((particle, index) => (
+        <Animated.View
+          key={`confetti-${index}`}
+          style={[
+            styles.confettiPiece,
+            {
+              backgroundColor: particle.color,
+              height: particle.size,
+              left: `${particle.left}%`,
+              opacity: particle.value.interpolate({
+                inputRange: [0, 0.15, 0.8, 1],
+                outputRange: [0, 1, 1, 0],
+              }),
+              transform: [
+                {
+                  translateY: particle.value.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [10, -90 - (index % 5) * 12],
+                  }),
+                },
+                {
+                  translateX: particle.value.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, ((index % 2 === 0 ? 1 : -1) * (18 + (index % 4) * 8))],
+                  }),
+                },
+                {
+                  rotate: particle.value.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', particle.rotate],
+                  }),
+                },
+              ],
+              width: particle.size,
+            },
+          ]}
+        />
+      ))}
+    </View>
   );
 }
 
@@ -682,7 +770,23 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
     gap: 12,
+    overflow: 'visible',
     padding: 16,
+    position: 'relative',
+  },
+  confettiLayer: {
+    bottom: 0,
+    left: 0,
+    overflow: 'visible',
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    zIndex: 4,
+  },
+  confettiPiece: {
+    borderRadius: 2,
+    position: 'absolute',
+    top: 42,
   },
   quizKicker: {
     color: themeActif.muted,
@@ -719,6 +823,9 @@ const styles = StyleSheet.create({
   choiceButtonIncorrect: {
     backgroundColor: 'rgba(217, 123, 108, 0.14)',
     borderColor: themeActif.red,
+  },
+  choiceButtonLocked: {
+    opacity: 0.52,
   },
   choiceText: {
     color: themeActif.ink,

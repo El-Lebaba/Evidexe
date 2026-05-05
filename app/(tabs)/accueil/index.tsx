@@ -16,7 +16,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { obtenirThemeApplication, ThemeApplication } from '@/constantes/theme';
 import { donneesLocales } from '@/db/donnees-principales';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
 const palette = {
   charcoal: '#19191F',
@@ -129,6 +131,8 @@ type PropsVignetteAccueil = {
   slideWidth: number;
   panelHeight: number;
   isCompact: boolean;
+  isDarkMode: boolean;
+  themeApplication: ThemeApplication;
   driftProgress: Animated.Value;
   animatedStyle: any;
   bubbles: BubbleSpec[];
@@ -139,6 +143,9 @@ export default function EcranAccueil() {
 
 
   const { width, height } = useWindowDimensions();
+  const schemaCouleur = useSchemaCouleur();
+  const isDarkMode = schemaCouleur === 'dark';
+  const themeApplication = obtenirThemeApplication(isDarkMode);
   const isCompact = width < 480;
   const slideWidth = Math.max(width - (isCompact ? 24 : 44), 280);
   const hauteurPanneauAccueil = isCompact ? Math.max(height - 150, 570) : Math.max(height - 146, 700);
@@ -540,9 +547,11 @@ export default function EcranAccueil() {
           bubbles={bubblesMarque}
           driftProgress={bubbleDrift}
           isCompact={isCompact}
+          isDarkMode={isDarkMode}
           onExplore={scrollToExplore}
           panelHeight={hauteurPanneauAccueil}
           slideWidth={slideWidth}
+          themeApplication={themeApplication}
         />
       );
     }
@@ -555,9 +564,11 @@ export default function EcranAccueil() {
           bubbles={bubblesAPropos}
           driftProgress={bubbleDrift}
           isCompact={isCompact}
+          isDarkMode={isDarkMode}
           onExplore={scrollToExplore}
           panelHeight={hauteurPanneauAccueil}
           slideWidth={slideWidth}
+          themeApplication={themeApplication}
         />
       );
     }
@@ -570,26 +581,34 @@ export default function EcranAccueil() {
         bubbles={bubblesProfil}
         driftProgress={bubbleDrift}
         isCompact={isCompact}
+        isDarkMode={isDarkMode}
         level={userLevel}
         onExplore={scrollToExplore}
         panelHeight={hauteurPanneauAccueil}
         slideWidth={slideWidth}
+        themeApplication={themeApplication}
         xp={userXp}
       />
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: themeApplication.background }]}>
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { backgroundColor: themeApplication.background }]}
         ref={scrollRef}
         showsVerticalScrollIndicator={false}>
-        <View style={styles.zoneVignettesAccueil}>
+        <View style={[styles.zoneVignettesAccueil, { backgroundColor: themeApplication.background }]}>
           <View style={styles.homeProfileRow}>
-            <Pressable onPress={() => router.push('/(tabs)/profil' as Href)} style={[styles.accountChip, isCompact ? styles.accountChipCompact : null]}>
-              <MaterialIcons name="person-outline" size={18} color={palette.ink} />
-              <Text selectable={false} style={styles.accountText}>Profil</Text>
+            <Pressable
+              onPress={() => router.push('/(tabs)/profil' as Href)}
+              style={[
+                styles.accountChip,
+                isCompact ? styles.accountChipCompact : null,
+                isDarkMode ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
+              ]}>
+              <MaterialIcons name="person-outline" size={18} color={isDarkMode ? themeApplication.ink : palette.ink} />
+              <Text selectable={false} style={[styles.accountText, isDarkMode ? { color: themeApplication.ink } : null]}>Profil</Text>
             </Pressable>
           </View>
 
@@ -648,6 +667,7 @@ export default function EcranAccueil() {
                 style={({ hovered }) => [
                   styles.card,
                   isCompact ? styles.cardCompact : null,
+                  isDarkMode ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
                   coursesExpanded ? styles.simulationCardExpanded : null,
                   hovered && expandedPanel === null ? styles.cardHovered : null,
                   expandedPanel === null ? styles.cardDimmed : null,
@@ -658,13 +678,13 @@ export default function EcranAccueil() {
                   </View>
                 </View>
                 <View style={[styles.cardText, isCompact ? styles.cardTextCompact : null]}>
-                  <Text style={[styles.cardTitle, isCompact ? styles.cardTitleCompact : null]}>Cours</Text>
-                  <Text style={[styles.cardSubtitle, isCompact ? styles.cardSubtitleCompact : null]}>
+                  <Text style={[styles.cardTitle, isCompact ? styles.cardTitleCompact : null, isDarkMode ? { color: themeApplication.ink } : null]}>Cours</Text>
+                  <Text style={[styles.cardSubtitle, isCompact ? styles.cardSubtitleCompact : null, isDarkMode ? { color: '#526071' } : null]}>
                     {coursesExpanded ? 'Choisis une matiere' : 'Explorer les matieres'}
                   </Text>
                 </View>
                 <View style={[styles.cardFooter, isCompact ? styles.cardFooterCompact : null]}>
-                  <Text style={[styles.cardFooterText, isCompact ? styles.cardFooterTextCompact : null]}>
+                  <Text style={[styles.cardFooterText, isCompact ? styles.cardFooterTextCompact : null, isDarkMode ? { color: '#526071' } : null]}>
                     {coursesExpanded ? 'Refermer' : 'Ouvrir'}
                   </Text>
                   <MaterialIcons name={coursesExpanded ? 'expand-less' : 'chevron-right'} size={22} color={palette.slate} />
@@ -681,6 +701,7 @@ export default function EcranAccueil() {
                   styles.card,
                   isCompact ? styles.cardCompact : null,
                   styles.simulationCard,
+                  isDarkMode ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
                   simulationsExpanded ? styles.simulationCardExpanded : null,
                   hovered && expandedPanel === null ? styles.cardHovered : null,
                   expandedPanel === null ? styles.cardDimmed : null,
@@ -692,13 +713,13 @@ export default function EcranAccueil() {
                   </View>
                 </View>
                 <View style={[styles.cardText, isCompact ? styles.cardTextCompact : null]}>
-                  <Text style={[styles.cardTitle, isCompact ? styles.cardTitleCompact : null]}>Simulations</Text>
-                  <Text style={[styles.cardSubtitle, isCompact ? styles.cardSubtitleCompact : null]}>
+                  <Text style={[styles.cardTitle, isCompact ? styles.cardTitleCompact : null, isDarkMode ? { color: themeApplication.ink } : null]}>Simulations</Text>
+                  <Text style={[styles.cardSubtitle, isCompact ? styles.cardSubtitleCompact : null, isDarkMode ? { color: '#526071' } : null]}>
                     {simulationsExpanded ? 'Choisis une section' : 'Explorer les sections'}
                   </Text>
                 </View>
                 <View style={[styles.cardFooter, isCompact ? styles.cardFooterCompact : null]}>
-                  <Text style={[styles.cardFooterText, isCompact ? styles.cardFooterTextCompact : null]}>{simulationsExpanded ? 'Refermer' : 'Ouvrir'}</Text>
+                  <Text style={[styles.cardFooterText, isCompact ? styles.cardFooterTextCompact : null, isDarkMode ? { color: '#526071' } : null]}>{simulationsExpanded ? 'Refermer' : 'Ouvrir'}</Text>
                   <MaterialIcons
                     name={simulationsExpanded ? 'expand-less' : 'chevron-right'}
                     size={22}
@@ -715,10 +736,14 @@ export default function EcranAccueil() {
               isCompact ? styles.sectionRevealCompact : null,
               { height: detailHeight, opacity: detailOpacity, transform: [{ translateY: detailTranslateY }] },
             ]}>
-            <View style={[styles.sectionPanel, isCompact ? styles.sectionPanelCompact : null]}>
+            <View style={[
+              styles.sectionPanel,
+              isCompact ? styles.sectionPanelCompact : null,
+              isDarkMode ? { backgroundColor: themeApplication.surface, borderColor: themeApplication.border } : null,
+            ]}>
               <View style={[styles.sectionPanelHeader, isCompact ? styles.sectionPanelHeaderCompact : null]}>
-                <Text style={[styles.sectionEyebrow, isCompact ? styles.sectionEyebrowCompact : null]}>{expandedEyebrow}</Text>
-                <Text style={[styles.sectionTitle, isCompact ? styles.sectionTitleCompact : null]}>{expandedTitle}</Text>
+                <Text style={[styles.sectionEyebrow, isCompact ? styles.sectionEyebrowCompact : null, isDarkMode ? { color: themeApplication.muted } : null]}>{expandedEyebrow}</Text>
+                <Text style={[styles.sectionTitle, isCompact ? styles.sectionTitleCompact : null, isDarkMode ? { color: themeApplication.text } : null]}>{expandedTitle}</Text>
               </View>
 
               <View style={[styles.sectionCardsGrid, isCompact ? styles.sectionCardsGridCompact : null]}>
@@ -729,6 +754,7 @@ export default function EcranAccueil() {
                     style={({ hovered, pressed }) => [
                       styles.sectionCard,
                       isCompact ? styles.sectionCardCompact : null,
+                      isDarkMode ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
                       pressed || hovered ? styles.sectionCardPressed : null,
                     ]}>
                     <View style={[styles.sectionCardMedia, isCompact ? styles.sectionCardMediaCompact : null, { backgroundColor: `${card.accent}20` }]}>
@@ -736,8 +762,8 @@ export default function EcranAccueil() {
                         <MaterialIcons name={card.icon as never} size={42} color={palette.ink} />
                       </View>
                     </View>
-                    <Text style={[styles.sectionCardTitle, isCompact ? styles.sectionCardTitleCompact : null]}>{card.title}</Text>
-                    <Text style={[styles.sectionCardSubtitle, isCompact ? styles.sectionCardSubtitleCompact : null]}>{card.subtitle}</Text>
+                    <Text style={[styles.sectionCardTitle, isCompact ? styles.sectionCardTitleCompact : null, isDarkMode ? { color: themeApplication.ink } : null]}>{card.title}</Text>
+                    <Text style={[styles.sectionCardSubtitle, isCompact ? styles.sectionCardSubtitleCompact : null, isDarkMode ? { color: '#526071' } : null]}>{card.subtitle}</Text>
                     <View style={[styles.sectionCardFooter, isCompact ? styles.sectionCardFooterCompact : null]}>
                       <Text style={[styles.sectionCardFooterText, isCompact ? styles.sectionCardFooterTextCompact : null]}>Entrer</Text>
                       <MaterialIcons name="chevron-right" size={24} color={palette.slate} />
@@ -753,10 +779,16 @@ export default function EcranAccueil() {
   );
 }
 
-function VignetteAccueilMarque({ animatedStyle, bubbles, driftProgress, isCompact, onExplore, panelHeight, slideWidth }: PropsVignetteAccueil) {
+function VignetteAccueilMarque({ animatedStyle, bubbles, driftProgress, isCompact, isDarkMode, onExplore, panelHeight, slideWidth, themeApplication }: PropsVignetteAccueil) {
   return (
     <Animated.View style={[styles.vignetteAccueil, { width: slideWidth }, animatedStyle]}>
-      <View style={[styles.panneauAccueil, isCompact ? styles.panneauAccueilCompact : null, { height: panelHeight, minHeight: panelHeight }]}>
+      <View
+        style={[
+          styles.panneauAccueil,
+          isCompact ? styles.panneauAccueilCompact : null,
+          isDarkMode ? { backgroundColor: themeApplication.surface, borderColor: themeApplication.border, borderWidth: 1 } : null,
+          { height: panelHeight, minHeight: panelHeight },
+        ]}>
         {bubbles.map((bubble, index) => (
           <Animated.View
             key={`brand-bubble-${index}`}
@@ -791,9 +823,9 @@ function VignetteAccueilMarque({ animatedStyle, bubbles, driftProgress, isCompac
           </Animated.View>
         ))}
         <View style={[styles.blocTexteAccueil, isCompact ? styles.blocTexteAccueilCompact : null]}>
-          <Text style={[styles.eyebrow, isCompact ? styles.eyebrowCompact : null]}>Accueil Evidex</Text>
-          <Text style={[styles.titreAccueil, isCompact ? styles.titreAccueilCompact : null]}>Ton espace</Text>
-          <Text style={[styles.titreAccueil, isCompact ? styles.titreAccueilCompact : null]}>d&apos;apprentissage</Text>
+          <Text style={[styles.eyebrow, isCompact ? styles.eyebrowCompact : null, isDarkMode ? { color: themeApplication.muted } : null]}>Accueil Evidex</Text>
+          <Text style={[styles.titreAccueil, isCompact ? styles.titreAccueilCompact : null, isDarkMode ? { color: themeApplication.text } : null]}>Ton espace</Text>
+          <Text style={[styles.titreAccueil, isCompact ? styles.titreAccueilCompact : null, isDarkMode ? { color: themeApplication.text } : null]}>d&apos;apprentissage</Text>
         </View>
         <View style={[styles.logoStage, isCompact ? styles.logoStageCompact : null]}>
           <View style={[styles.logoAura, isCompact ? styles.logoAuraCompact : null]}/>
@@ -808,10 +840,17 @@ function VignetteAccueilMarque({ animatedStyle, bubbles, driftProgress, isCompac
   );
 }
 
-function VignetteAccueilAPropos({ animatedStyle, bubbles, driftProgress, isCompact, onExplore, panelHeight, slideWidth }: PropsVignetteAccueil) {
+function VignetteAccueilAPropos({ animatedStyle, bubbles, driftProgress, isCompact, isDarkMode, onExplore, panelHeight, slideWidth, themeApplication }: PropsVignetteAccueil) {
   return (
     <Animated.View style={[styles.vignetteAccueil, { width: slideWidth }, animatedStyle]}>
-      <View style={[styles.panneauAccueil, styles.panneauAccueilSecondaire, isCompact ? styles.panneauAccueilCompact : null, { height: panelHeight, minHeight: panelHeight }]}>
+      <View
+        style={[
+          styles.panneauAccueil,
+          styles.panneauAccueilSecondaire,
+          isCompact ? styles.panneauAccueilCompact : null,
+          isDarkMode ? { backgroundColor: themeApplication.surface, borderColor: themeApplication.border, borderWidth: 1 } : null,
+          { height: panelHeight, minHeight: panelHeight },
+        ]}>
         {bubbles.map((bubble, index) => (
           <Animated.View
             key={`about-bubble-${index}`}
@@ -841,9 +880,9 @@ function VignetteAccueilAPropos({ animatedStyle, bubbles, driftProgress, isCompa
         ))}
         <View style={[styles.aboutLayout, isCompact ? styles.aboutLayoutCompact : null]}>
           <View style={[styles.aboutCopyBlock, isCompact ? styles.aboutCopyBlockCompact : null]}>
-            <Text style={[styles.eyebrow, isCompact ? styles.eyebrowCompact : null]}>A propos</Text>
-            <Text style={[styles.aboutTitle, isCompact ? styles.aboutTitleCompact : null]}>Evidex rassemble cours, progression et simulations.</Text>
-            <Text style={[styles.aboutText, isCompact ? styles.aboutTextCompact : null]}>
+            <Text style={[styles.eyebrow, isCompact ? styles.eyebrowCompact : null, isDarkMode ? { color: themeApplication.muted } : null]}>A propos</Text>
+            <Text style={[styles.aboutTitle, isCompact ? styles.aboutTitleCompact : null, isDarkMode ? { color: themeApplication.text } : null]}>Evidex rassemble cours, progression et simulations.</Text>
+            <Text style={[styles.aboutText, isCompact ? styles.aboutTextCompact : null, isDarkMode ? { color: themeApplication.muted } : null]}>
               Un seul espace pour apprendre, tester des idees et suivre ce qui compte vraiment dans ton parcours.
             </Text>
             <View style={[styles.aboutHighlights, isCompact ? styles.aboutHighlightsCompact : null]}>
@@ -877,10 +916,17 @@ type PropsVignetteProfilAccueil = PropsVignetteAccueil & {
   xp: number;
 };
 
-function VignetteAccueilProfil({ activeCourses, animatedStyle, bubbles, driftProgress, isCompact, level, onExplore, panelHeight, slideWidth, xp }: PropsVignetteProfilAccueil) {
+function VignetteAccueilProfil({ activeCourses, animatedStyle, bubbles, driftProgress, isCompact, isDarkMode, level, onExplore, panelHeight, slideWidth, themeApplication, xp }: PropsVignetteProfilAccueil) {
   return (
     <Animated.View style={[styles.vignetteAccueil, { width: slideWidth }, animatedStyle]}>
-      <View style={[styles.panneauAccueil, styles.panneauAccueilSecondaire, isCompact ? styles.panneauAccueilCompact : null, { height: panelHeight, minHeight: panelHeight }]}>
+      <View
+        style={[
+          styles.panneauAccueil,
+          styles.panneauAccueilSecondaire,
+          isCompact ? styles.panneauAccueilCompact : null,
+          isDarkMode ? { backgroundColor: themeApplication.surface, borderColor: themeApplication.border, borderWidth: 1 } : null,
+          { height: panelHeight, minHeight: panelHeight },
+        ]}>
         {bubbles.map((bubble, index) => (
           <Animated.View
             key={`profile-bubble-${index}`}

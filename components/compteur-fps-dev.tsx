@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { donneesLocales } from '@/db/donnees-principales';
+
 export function CompteurFpsDev() {
   const [fps, setFps] = useState(0);
+  const [enabled, setEnabled] = useState(false);
   const frameCountRef = useRef(0);
   const lastSampleRef = useRef(0);
   const rafRef = useRef<number | null>(null);
@@ -12,7 +15,33 @@ export function CompteurFpsDev() {
       return;
     }
 
-    const tick = (timestamp: number) => {
+    function refreshEnabled() {
+      donneesLocales.init();
+      setEnabled(donneesLocales.obtenirParametres().fpsCounterEnabled);
+    }
+
+    refreshEnabled();
+
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+      window.addEventListener('evidex_settings_changed', refreshEnabled);
+      return () => window.removeEventListener('evidex_settings_changed', refreshEnabled);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!__DEV__ || !enabled) {
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+
+      frameCountRef.current = 0;
+      lastSampleRef.current = 0;
+      setFps(0);
+      return;
+    }
+
+    function tick(timestamp: number) {
       if (lastSampleRef.current === 0) {
         lastSampleRef.current = timestamp;
       }
@@ -27,7 +56,7 @@ export function CompteurFpsDev() {
       }
 
       rafRef.current = requestAnimationFrame(tick);
-    };
+    }
 
     rafRef.current = requestAnimationFrame(tick);
 
@@ -36,9 +65,9 @@ export function CompteurFpsDev() {
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, []);
+  }, [enabled]);
 
-  if (!__DEV__) {
+  if (!__DEV__ || !enabled) {
     return null;
   }
 

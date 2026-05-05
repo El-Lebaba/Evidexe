@@ -4,20 +4,24 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
+import { obtenirThemeApplication } from '@/constantes/theme';
 import {
   EnteteEcranSimulation,
   ESPACE_CONTENU_ENTETE_SIMULATION,
   HAUTEUR_TOTALE_ENTETE_SIMULATION,
 } from '@/features/simulations/core/entete-ecran-simulation';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
 type LineSimulationScreenProps = {
   title: string;
   type: string;
 };
 
-const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
+const themeBase = obtenirThemeApplication(false);
 
 export function EcranSimulationLigne({ title, type}: LineSimulationScreenProps) {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  const themeActif = obtenirThemeApplication(modeSombre);
   const scrollY = useRef(new Animated.Value(0)).current;
   const headerTranslateY = scrollY.interpolate({
     inputRange: [0, 120],
@@ -31,8 +35,8 @@ export function EcranSimulationLigne({ title, type}: LineSimulationScreenProps) 
   });
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <VueTheme style={styles.container}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: themeActif.background }]}>
+      <VueTheme lightColor={themeActif.background} darkColor={themeActif.background} style={[styles.container, { backgroundColor: themeActif.background }]}>
         <Animated.View
           style={[
             styles.headerOverlay,
@@ -51,8 +55,8 @@ export function EcranSimulationLigne({ title, type}: LineSimulationScreenProps) 
           )}
           scrollEventThrottle={16}
           showsVerticalScrollIndicator={false}>
-          <VueTheme style={styles.content}>
-            <TexteTheme type="title">{title}</TexteTheme>
+          <VueTheme lightColor={themeActif.background} darkColor={themeActif.background} style={styles.content}>
+            <TexteTheme lightColor={themeActif.text} darkColor={themeActif.text} style={{ color: themeActif.text }} type="title">{title}</TexteTheme>
           </VueTheme>
         </Animated.ScrollView>
       </VueTheme>
@@ -62,11 +66,11 @@ export function EcranSimulationLigne({ title, type}: LineSimulationScreenProps) 
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: SIMULATION_PAGE_BACKGROUND,
+    backgroundColor: themeBase.background,
     flex: 1,
   },
   container: {
-    backgroundColor: SIMULATION_PAGE_BACKGROUND,
+    backgroundColor: themeBase.background,
     flex: 1,
   },
   headerOverlay: {

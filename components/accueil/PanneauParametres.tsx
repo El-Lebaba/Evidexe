@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {
+  Animated,
   Modal,
   Pressable,
   StyleSheet,
@@ -8,36 +9,14 @@ import {
   View,
 } from 'react-native';
 
-const lightColors = {
-  background: '#E9ECE4',
-  panel: '#DDE4D5',
-  surface: '#F3F1E7',
-  border: '#243B53',
-  text: '#243B53',
-  muted: '#6E7F73',
-  blue: '#7EA6E0',
-  grid: '#B7C7B0',
-  red: '#D97B6C',
-};
-
-const darkColors = {
-  background: '#151C22',
-  panel: '#2A3741',
-  surface: '#1F2A32',
-  border: '#9DB2C0',
-  text: '#F3F1E7',
-  muted: '#B7C7B0',
-  blue: '#8FB7EE',
-  grid: '#6E7F73',
-  red: '#E08A7B',
-};
-
-const Couleurs = lightColors;
+import { obtenirThemeApplication, ThemeApplication } from '@/constantes/theme';
+import { donneesLocales } from '@/db/donnees-principales';
 
 export type ParametresApplication = {
   darkMode: boolean;
   language: string;
   notifications: boolean;
+  fpsCounterEnabled: boolean;
 };
 
 type SettingsPanelProps = {
@@ -54,36 +33,46 @@ export default function PanneauParametres({
   onSave,
 }: SettingsPanelProps) {
   const [localSettings, setLocalSettings] = useState(settings);
-  const themeActif = localSettings.darkMode ? darkColors : lightColors;
+  const [slideValue] = useState(() => new Animated.Value(-1));
+  const themeActif = obtenirThemeApplication(localSettings.darkMode);
 
   useEffect(() => {
     setLocalSettings(settings);
   }, [settings]);
 
-  function saveAndClose() {
-    onSave(localSettings);
-    onClose();
-  }
+  useEffect(() => {
+    Animated.timing(slideValue, {
+      duration: open ? 240 : 180,
+      toValue: open ? 0 : -1,
+      useNativeDriver: true,
+    }).start();
+  }, [open, slideValue]);
 
-  function chooseLanguage(language: string) {
-    setLocalSettings({ ...localSettings, language });
-  }
-
-  function resetData() {
-    onClose();
+  function applySettings(nextSettings: ParametresApplication) {
+    setLocalSettings(nextSettings);
+    donneesLocales.enregistrerParametres(nextSettings);
+    onSave(nextSettings);
   }
 
   return (
-    <Modal transparent visible={open} animationType="slide">
-      <View style={[styles.overlay, { backgroundColor: `${themeActif.border}55` }]}>
+    <Modal transparent visible={open} animationType="none">
+      <View style={styles.overlay} pointerEvents="box-none">
         <Pressable style={styles.closeZone} onPress={onClose} />
 
-        <View
+        <Animated.View
           style={[
             styles.panel,
             {
               backgroundColor: themeActif.surface,
               borderRightColor: `${themeActif.border}40`,
+              transform: [
+                {
+                  translateX: slideValue.interpolate({
+                    inputRange: [-1, 0],
+                    outputRange: [-360, 0],
+                  }),
+                },
+              ],
             },
           ]}
         >
@@ -104,76 +93,23 @@ export default function PanneauParametres({
               themeActif={themeActif}
               value={localSettings.darkMode}
               onValueChange={(darkMode) =>
-                setLocalSettings({ ...localSettings, darkMode })
+                applySettings({ ...localSettings, darkMode })
               }
             />
 
-            <Text style={[styles.sectionTitle, { color: themeActif.muted }]}>Notifications</Text>
+            <Text style={[styles.sectionTitle, { color: themeActif.muted }]}>DevTools</Text>
             <ToggleRow
-              icon="notifications"
-              label="Rappels d'apprentissage"
-              description="Active ou desactive les rappels"
+              icon="speed"
+              label="Compteur FPS"
+              description="Active ou coupe totalement la mesure FPS"
               themeActif={themeActif}
-              value={localSettings.notifications}
-              onValueChange={(notifications) =>
-                setLocalSettings({ ...localSettings, notifications })
+              value={localSettings.fpsCounterEnabled}
+              onValueChange={(fpsCounterEnabled) =>
+                applySettings({ ...localSettings, fpsCounterEnabled })
               }
             />
-
-            <Text style={[styles.sectionTitle, { color: themeActif.muted }]}>Langue</Text>
-            <View style={styles.languageRow}>
-              {['fr', 'en', 'ar'].map((language) => (
-                <Pressable
-                  key={language}
-                  onPress={() => chooseLanguage(language)}
-                  style={[
-                    styles.languageButton,
-                    {
-                      backgroundColor: themeActif.panel,
-                      borderColor: `${themeActif.border}25`,
-                    },
-                    localSettings.language === language && {
-                      backgroundColor: themeActif.blue,
-                      borderColor: themeActif.blue,
-                    },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.languageText,
-                      { color: themeActif.text },
-                      localSettings.language === language && styles.languageTextSelected,
-                    ]}
-                  >
-                    {language.toUpperCase()}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-
-            <Text style={[styles.sectionTitle, { color: themeActif.red }]}>
-              Zone dangereuse
-            </Text>
-            <Pressable
-              onPress={resetData}
-              style={[styles.dangerButton, { borderColor: `${themeActif.red}70` }]}
-            >
-              <MaterialIcons name="delete-outline" size={20} color={themeActif.red} />
-              <Text style={[styles.dangerText, { color: themeActif.red }]}>
-                Reinitialiser les donnees
-              </Text>
-            </Pressable>
           </View>
-
-          <View style={[styles.footer, { borderTopColor: `${themeActif.border}20` }]}>
-            <Pressable
-              onPress={saveAndClose}
-              style={[styles.saveButton, { backgroundColor: themeActif.blue }]}
-            >
-              <Text style={styles.saveText}>Enregistrer</Text>
-            </Pressable>
-          </View>
-        </View>
+        </Animated.View>
       </View>
     </Modal>
   );
@@ -183,7 +119,7 @@ type ToggleRowProps = {
   icon: keyof typeof MaterialIcons.glyphMap;
   label: string;
   description: string;
-  themeActif: typeof lightColors;
+  themeActif: ThemeApplication;
   value: boolean;
   onValueChange: (value: boolean) => void;
 };
@@ -235,18 +171,25 @@ function ToggleRow({
 
 const styles = StyleSheet.create({
   overlay: {
-    backgroundColor: '#243B5355',
     flex: 1,
     flexDirection: 'row',
   },
   closeZone: {
-    flex: 1,
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   panel: {
-    backgroundColor: Couleurs.surface,
+    backgroundColor: '#F3F1E7',
     borderRightColor: '#243B5340',
     borderRightWidth: 1,
+    bottom: 0,
+    left: 0,
     maxWidth: 360,
+    position: 'absolute',
+    top: 0,
     width: '86%',
   },
   header: {
@@ -258,7 +201,7 @@ const styles = StyleSheet.create({
     padding: 18,
   },
   title: {
-    color: Couleurs.text,
+    color: '#243B53',
     fontSize: 20,
     fontWeight: '900',
   },
@@ -271,7 +214,7 @@ const styles = StyleSheet.create({
     padding: 18,
   },
   sectionTitle: {
-    color: Couleurs.muted,
+    color: '#6E7F73',
     fontSize: 12,
     fontWeight: '900',
     marginTop: 8,
@@ -288,18 +231,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   toggleLabel: {
-    color: Couleurs.text,
+    color: '#243B53',
     fontSize: 14,
     fontWeight: '800',
   },
   toggleDescription: {
-    color: Couleurs.muted,
+    color: '#6E7F73',
     fontSize: 12,
     marginTop: 2,
   },
   toggleSlider: {
-    backgroundColor: Couleurs.surface,
-    borderColor: Couleurs.border,
+    backgroundColor: '#F3F1E7',
+    borderColor: '#243B53',
     borderRadius: 999,
     borderWidth: 1.5,
     height: 30,
@@ -308,7 +251,7 @@ const styles = StyleSheet.create({
     width: 60,
   },
   toggleFill: {
-    backgroundColor: Couleurs.grid,
+    backgroundColor: '#B7C7B0',
     bottom: 0,
     left: 0,
     position: 'absolute',
@@ -316,8 +259,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   toggleThumb: {
-    backgroundColor: Couleurs.text,
-    borderColor: Couleurs.panel,
+    backgroundColor: '#243B53',
+    borderColor: '#DDE4D5',
     borderRadius: 9,
     borderWidth: 2,
     height: 18,
@@ -329,59 +272,5 @@ const styles = StyleSheet.create({
   },
   toggleThumbOn: {
     right: 6,
-  },
-  languageRow: {
-    flexDirection: 'row',
-    gap: 9,
-  },
-  languageButton: {
-    backgroundColor: Couleurs.panel,
-    borderColor: '#243B5325',
-    borderRadius: 8,
-    borderWidth: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  languageSelected: {
-    backgroundColor: Couleurs.blue,
-    borderColor: Couleurs.blue,
-  },
-  languageText: {
-    color: Couleurs.text,
-    fontWeight: '800',
-  },
-  languageTextSelected: {
-    color: 'white',
-  },
-  dangerTitle: {
-    color: Couleurs.red,
-  },
-  dangerButton: {
-    alignItems: 'center',
-    borderColor: '#D97B6C70',
-    borderRadius: 8,
-    borderWidth: 1,
-    flexDirection: 'row',
-    gap: 8,
-    padding: 12,
-  },
-  dangerText: {
-    color: Couleurs.red,
-    fontWeight: '700',
-  },
-  footer: {
-    borderTopColor: '#243B5320',
-    borderTopWidth: 1,
-    padding: 18,
-  },
-  saveButton: {
-    alignItems: 'center',
-    backgroundColor: Couleurs.blue,
-    borderRadius: 8,
-    padding: 13,
-  },
-  saveText: {
-    color: 'white',
-    fontWeight: '900',
   },
 });

@@ -2,31 +2,10 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { obtenirThemeApplication } from '@/constantes/theme';
 import { donneesLocales } from '@/db/donnees-principales';
 
-const Couleurs = {
-  background: '#E9ECE4',
-  panel: '#DDE4D5',
-  border: '#243B53',
-  text: '#243B53',
-  muted: '#6E7F73',
-  blue: '#7EA6E0',
-  yellow: '#D8A94A',
-  grid: '#B7C7B0',
-  hero: '#243B53',
-};
-
-const darkColors = {
-  background: '#151C22',
-  panel: '#2A3741',
-  border: '#9DB2C0',
-  text: '#F3F1E7',
-  muted: '#B7C7B0',
-  blue: '#8FB7EE',
-  yellow: '#E0B95A',
-  grid: '#6E7F73',
-  hero: '#10161B',
-};
+const Couleurs = obtenirThemeApplication(false);
 
 export type InfosUtilisateur = {
   xp: number;
@@ -49,7 +28,7 @@ type XPPanelProps = {
 const xpPerLevel = 100;
 
 export default function PanneauXP({ darkMode = false, user }: XPPanelProps) {
-  const themeActif = darkMode ? darkColors : Couleurs;
+  const themeActif = obtenirThemeApplication(darkMode);
   const achievements: Succes[] = donneesLocales.obtenirSucces();
   const completedAchievements = achievements.filter((item) => item.completed);
   const xpInLevel = user.xp % xpPerLevel;

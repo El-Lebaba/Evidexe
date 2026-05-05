@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { Animated, Easing, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
+import { obtenirThemeApplication } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
+
 type PercentString = `${number}%`;
 
 type ProprietesSymbolesMathematiquesFlottants = {
@@ -9,11 +12,7 @@ type ProprietesSymbolesMathematiquesFlottants = {
   style?: StyleProp<ViewStyle>;
 };
 
-const palette = {
-  cream: '#EEF5ED',
-  sageGlow: 'rgba(184, 199, 177, 0.42)',
-  symbol: '#19191F',
-};
+const palette = obtenirThemeApplication(false);
 
 const reserveSymboles = [
   '+',
@@ -62,6 +61,10 @@ function creerGraineSymbole(index: number) {
 }
 
 export function SymbolesMathematiquesFlottants({ isActive = true, showGlow = true, style }: ProprietesSymbolesMathematiquesFlottants) {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  const themeActif = obtenirThemeApplication(modeSombre);
+  const glowColor = modeSombre ? 'rgba(145, 164, 142, 0.22)' : 'rgba(184, 199, 177, 0.42)';
+  const symbolColor = modeSombre ? themeActif.muted : '#19191F';
   const grainesSymboles = useMemo(
     () => Array.from({ length: nombreSymboles }, (_, index) => creerGraineSymbole(index)),
     []
@@ -101,8 +104,10 @@ export function SymbolesMathematiquesFlottants({ isActive = true, showGlow = tru
   }, [valeursFlottement, isActive, grainesSymboles]);
 
   return (
-    <View pointerEvents="none" style={[styles.container, style]}>
-      {showGlow ? <View style={styles.glow} /> : null}
+    <View
+      pointerEvents="none"
+      style={[styles.container, { backgroundColor: themeActif.background }, style]}>
+      {showGlow ? <View style={[styles.glow, { backgroundColor: glowColor }]} /> : null}
 
       {grainesSymboles.map((item, index) => {
         const valeurAnimee = valeursFlottement[index];
@@ -113,6 +118,7 @@ export function SymbolesMathematiquesFlottants({ isActive = true, showGlow = tru
             style={[
               styles.mathSymbol,
               {
+                color: symbolColor,
                 fontSize: item.size,
                 left: item.left,
                 opacity: valeurAnimee.interpolate({
@@ -153,11 +159,11 @@ export function SymbolesMathematiquesFlottants({ isActive = true, showGlow = tru
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: palette.cream,
+    backgroundColor: palette.background,
     overflow: 'hidden',
   },
   glow: {
-    backgroundColor: palette.sageGlow,
+    backgroundColor: 'rgba(184, 199, 177, 0.42)',
     borderRadius: 220,
     height: 440,
     left: '50%',
@@ -168,7 +174,7 @@ const styles = StyleSheet.create({
     width: 440,
   },
   mathSymbol: {
-    color: palette.symbol,
+    color: palette.text,
     fontWeight: '700',
     position: 'absolute',
   },

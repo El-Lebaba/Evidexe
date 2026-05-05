@@ -1,21 +1,21 @@
 import { useEffect, useState } from 'react';
-import { useColorScheme as useSchemaCouleurRN } from 'react-native';
 
-/**
- * Pour le rendu statique, cette valeur doit etre recalculee cote client sur le web.
- */
+import { donneesLocales } from '@/db/donnees-principales';
+
 export function useSchemaCouleur() {
-  const [estHydrate, definirEstHydrate] = useState(false);
+  const [schemaCouleur, setSchemaCouleur] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    definirEstHydrate(true);
+    function rafraichirSchemaCouleur() {
+      donneesLocales.init();
+      setSchemaCouleur(donneesLocales.obtenirParametres().darkMode ? 'dark' : 'light');
+    }
+
+    rafraichirSchemaCouleur();
+    window.addEventListener('evidex_settings_changed', rafraichirSchemaCouleur);
+
+    return () => window.removeEventListener('evidex_settings_changed', rafraichirSchemaCouleur);
   }, []);
 
-  const schemaCouleur = useSchemaCouleurRN();
-
-  if (estHydrate) {
-    return schemaCouleur;
-  }
-
-  return 'light';
+  return schemaCouleur;
 }

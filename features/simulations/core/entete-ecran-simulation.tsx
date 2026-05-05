@@ -4,6 +4,8 @@ import { Href, router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { TexteTheme } from '@/components/texte-theme';
+import { obtenirThemeApplication } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
 type ProprietesEnteteEcranSimulation = {
   title: string;
@@ -25,18 +27,20 @@ function obtenirHrefSection(type: string): Href {
 }
 
 export function EnteteEcranSimulation({ title, type }: ProprietesEnteteEcranSimulation) {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  const themeActif = obtenirThemeApplication(modeSombre);
   const closeSimulation = () => {
     router.replace(obtenirHrefSection(type));
   };
 
   return (
     <View style={styles.headerShell}>
-      <View style={styles.topShade} />
-      <View style={styles.header}>
+      <View style={[styles.topShade, { backgroundColor: themeActif.surface, borderBottomColor: themeActif.border }]} />
+      <View style={[styles.header, { backgroundColor: themeActif.background, borderBottomColor: themeActif.border }]}>
         <View style={styles.headerRow}>
           <View style={styles.leftGroup}>
-          <Pressable onPress={closeSimulation} style={styles.backButton}>
-            <MaterialCommunityIcons color="#243B53" name="arrow-left" size={20} />
+          <Pressable onPress={closeSimulation} style={[styles.backButton, { backgroundColor: themeActif.panel, borderColor: themeActif.border }]}>
+            <MaterialCommunityIcons color={themeActif.ink} name="arrow-left" size={20} />
           </Pressable>
           <View style={styles.titleGroup}>
             <Pressable onPress={() => router.replace('/(tabs)/accueil' as Href)} style={styles.logoButton}>
@@ -46,13 +50,13 @@ export function EnteteEcranSimulation({ title, type }: ProprietesEnteteEcranSimu
                 style={styles.logo}
               />
             </Pressable>
-            <TexteTheme darkColor="#243B53" lightColor="#243B53" style={styles.title}>
+            <TexteTheme darkColor={themeActif.text} lightColor={themeActif.text} style={[styles.title, { color: themeActif.text }]}>
               {title}
             </TexteTheme>
           </View>
           </View>
-          <Pressable onPress={() => router.replace('/(tabs)/profil' as Href)} style={styles.profileButton}>
-            <MaterialCommunityIcons color="#243B53" name="account-circle-outline" size={20} />
+          <Pressable onPress={() => router.replace('/(tabs)/profil' as Href)} style={[styles.profileButton, { backgroundColor: themeActif.panel, borderColor: themeActif.border }]}>
+            <MaterialCommunityIcons color={themeActif.ink} name="account-circle-outline" size={20} />
           </Pressable>
         </View>
       </View>
