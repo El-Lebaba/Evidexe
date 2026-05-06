@@ -1,4 +1,4 @@
-# Evid.exe
+# Evidexe
 
 Application educative interactive construite avec **Expo**, **React Native** et **TypeScript** pour explorer des notions de **mathematiques**, de **physique** et de **programmation Java** avec des cours, des simulations et un suivi de progression local.
 
