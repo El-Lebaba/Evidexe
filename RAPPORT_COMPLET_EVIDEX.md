@@ -1,4 +1,4 @@
-# Evidex - Application d'apprentissage interactive
+# Evidexe - Application d'apprentissage interactive
 
 Projet final - Programmation  
 Tony Khabbaz & Aris Hadjeb  
