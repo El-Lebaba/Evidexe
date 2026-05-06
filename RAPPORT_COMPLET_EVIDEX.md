@@ -2,7 +2,6 @@
 
 Projet final - Programmation  
 Tony Khabbaz & Aris Hadjeb  
-Version complete corrigee
 
 ## 1. Introduction
 
@@ -345,7 +344,6 @@ flowchart TB
 | Tri a bulles | choisir ou melanger un tableau; avancer les comparaisons et les echanges | visualisation pas a pas du tri par comparaisons adjacentes |
 | Tri par selection | choisir ou melanger un tableau; avancer les recherches du minimum et les placements | visualisation pas a pas du minimum selectionne et de la partie triee |
 
-Les autres routes Java existent dans le catalogue, mais elles ne doivent pas etre presentees comme simulations terminees.
 
 ## 12. Fonctions internes importantes
 
