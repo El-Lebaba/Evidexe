@@ -40,12 +40,13 @@ Le module de cours est organise par matiere. Les cours actuellement presents dan
 
 Chaque cours contient des diapositives de theorie, parfois du code d'exemple, puis un quiz. La progression est sauvegardee par utilisateur actif. Un cours n'est considere complet qu'apres avoir atteint la fin et valide l'exercice final.
 
-Le module de simulations contient un catalogue separe des cours. Les simulations deja marquees comme pretes sont:
+Le module de simulations contient un catalogue separe des cours. Les simulations deja disponibles sont:
 
 - mathematiques: derivees, integrales, serie de Taylor, limites, Fourier, champ de pentes et series;
-- physique: gravite, pendule, mouvement projectile, ressort et loi de Hooke, mouvement circulaire.
+- physique: gravite, pendule, mouvement projectile, ressort et loi de Hooke, mouvement circulaire, champs magnetiques, champs electriques, optique et refraction, mecanique orbitale et frottement;
+- programmation Java: tri a bulles et tri par selection.
 
-Certaines simulations sont encore indiquees comme a venir ou fermees dans le catalogue, par exemple les champs magnetiques, les champs electriques, l'optique, la mecanique orbitale, les frottements, les collisions elastiques et les simulations Java avancees. Elles doivent donc etre presentees comme limites actuelles, pas comme fonctionnalites terminees.
+Certaines simulations sont encore indiquees comme a venir ou fermees dans le catalogue, par exemple le champ vectoriel, les collisions elastiques et plusieurs simulations Java avancees. Elles doivent donc etre presentees comme limites actuelles, pas comme fonctionnalites terminees.
 
 Le profil utilisateur permet de consulter les cours recents, les cours actifs, les cours termines, l'XP, le niveau et les parametres. Les parametres incluent le mode sombre, la langue et les notifications. L'application gere aussi plusieurs utilisateurs locaux par nom.
 
@@ -88,7 +89,7 @@ Les notions abordees incluent:
 
 ### 6.2 Physique
 
-Les cours de physique presents dans le code portent sur la cinematique, les forces et l'energie. Les simulations pretes ajoutent des experiences visuelles sur la gravite, le pendule, le mouvement projectile, la loi de Hooke et le mouvement circulaire.
+Les cours de physique presents dans le code portent sur la cinematique, les forces et l'energie. Les simulations disponibles ajoutent des experiences visuelles sur la gravite, le pendule, le mouvement projectile, la loi de Hooke, le mouvement circulaire, les champs magnetiques, les champs electriques, l'optique, les orbites et les frottements.
 
 Les notions abordees incluent:
 
@@ -98,10 +99,14 @@ Les notions abordees incluent:
 - attraction gravitationnelle;
 - oscillations et periode;
 - trajectoires et mouvements circulaires.
+- champs electriques et magnetiques;
+- reflexion, refraction et loi de Snell;
+- orbites, perihelie, aphelie et periode orbitale;
+- frottement statique, frottement cinetique et force nette.
 
 ### 6.3 Programmation Java
 
-Le module Java contient surtout des cours structures et des exercices. Les simulations Java dans le catalogue sont encore indiquees comme "Bientot", il faut donc eviter de les presenter comme terminees.
+Le module Java contient surtout des cours structures et des exercices. Le catalogue contient aussi deux simulations disponibles sur les tris, tandis que les autres simulations Java restent a venir.
 
 Les cours Java couvrent:
 
@@ -120,7 +125,7 @@ Les cours Java couvrent:
 
 L'innovation principale du projet vient de l'association entre contenu academique, visualisation et suivi de progression. L'utilisateur n'est pas seulement en train de lire un texte: il peut explorer des cours, observer des animations, ouvrir des simulations et voir sa progression evoluer.
 
-Le projet se distingue aussi par son approche modulaire. Les cours et les simulations sont separes, ce qui permet d'ajouter du contenu progressivement sans devoir modifier toute l'application. Le catalogue de simulations indique clairement ce qui est pret, ce qui est ferme et ce qui est a venir.
+Le projet se distingue aussi par son approche modulaire. Les cours et les simulations sont separes, ce qui permet d'ajouter du contenu progressivement sans devoir modifier toute l'application. Le catalogue de simulations indique clairement ce qui est disponible, ce qui est ferme et ce qui est a venir.
 
 ## 8. Difficultes rencontrees
 
@@ -144,9 +149,9 @@ Enfin, le projet contient deja plusieurs simulations et de nombreuses entrees a 
 | Semaine 4 | Donnees de cours | Creation des cours par matiere, des diapositives, des quiz et du systeme de resume de cours |
 | Semaine 5 | Progression utilisateur | Ajout de la couche `donneesLocales`, sauvegarde locale, utilisateurs, XP, niveaux, cours recents et accomplissements |
 | Semaine 6 | Simulations mathematiques | Ajout des simulations de derivees, integrales, limites, Taylor, Fourier, champs et series |
-| Semaine 7 | Simulations physiques | Ajout des simulations de gravite, pendule, projectile, ressort et mouvement circulaire |
+| Semaine 7 | Simulations physiques | Ajout des simulations de gravite, pendule, projectile, ressort, mouvement circulaire, champs, optique, orbites et frottement |
 | Semaine 8 | Interface et experience utilisateur | Amelioration de l'accueil, cartes, animations, profil, mode sombre et responsive design |
-| Semaine 9 | Stabilisation | Correction d'incoherences, distinction entre contenu pret et contenu a venir, verification du catalogue |
+| Semaine 9 | Stabilisation | Correction d'incoherences, distinction entre contenu disponible et contenu a venir, verification du catalogue |
 | Semaine 10 | Rapport et presentation | Mise a jour du rapport, ajout des difficultes, echeancier, UML, perspectives et conclusion |
 
 ## 10. UML et flux de l'application
@@ -184,18 +189,20 @@ flowchart TD
   ChoixSimulations -->|Physique| IndexSimPhysique[EcranIndexSection physique]
   ChoixSimulations -->|Java| IndexSimJava[EcranIndexSection programmation Java]
 
-  IndexSimMath --> SimMathPrete[Simulation mathematiques pret]
-  IndexSimMath --> SimMathBientot[Simulation mathematiques bientot]
+  IndexSimMath --> SimMathDisponible[Simulation mathematiques disponible]
+  IndexSimMath --> SimMathLimitee[Simulation mathematiques non disponible]
   IndexSimMath --> SimMathFermee[Simulation mathematiques ferme]
-  IndexSimPhysique --> SimPhysiquePrete[Simulation physique pret]
-  IndexSimPhysique --> SimPhysiqueBientot[Simulation physique bientot]
-  IndexSimJava --> SimJavaBientot[Simulation Java bientot]
+  IndexSimPhysique --> SimPhysiqueDisponible[Simulation physique disponible]
+  IndexSimPhysique --> SimPhysiqueLimitee[Simulation physique non disponible]
+  IndexSimJava --> SimJavaDisponible[Simulation Java disponible]
+  IndexSimJava --> SimJavaLimitee[Simulation Java non disponible]
 
-  SimMathPrete --> EcranSimulation[Ecran de simulation]
-  SimPhysiquePrete --> EcranSimulation
-  SimMathBientot --> EcranAttente[Ecran a venir ou ferme]
-  SimPhysiqueBientot --> EcranAttente
-  SimJavaBientot --> EcranAttente
+  SimMathDisponible --> EcranSimulation[Ecran de simulation]
+  SimPhysiqueDisponible --> EcranSimulation
+  SimJavaDisponible --> EcranSimulation
+  SimMathLimitee --> EcranAttente[Ecran a venir ou ferme]
+  SimPhysiqueLimitee --> EcranAttente
+  SimJavaLimitee --> EcranAttente
   SimMathFermee --> EcranAttente
 
   EcranSimulation -->|Modifier controles| Recalcul[Recalculer et redessiner]
@@ -224,30 +231,42 @@ flowchart LR
   Simulations --> Physique[Physique]
   Simulations --> Java[Java]
 
-  Mathematiques --> M1[Derivees pret]
-  Mathematiques --> M2[Integrales pret]
-  Mathematiques --> M3[Serie de Taylor pret]
-  Mathematiques --> M4[Limites pret]
-  Mathematiques --> M5[Fourier pret]
-  Mathematiques --> M6[Champ de pentes pret]
-  Mathematiques --> M7[Champ vectoriel ferme]
-  Mathematiques --> M8[Series pret]
-  Mathematiques --> M9[Mathematiques 9 a 20 bientot]
+  Mathematiques --> M1[Derivees]
+  Mathematiques --> M2[Integrales]
+  Mathematiques --> M3[Serie de Taylor]
+  Mathematiques --> M4[Limites]
+  Mathematiques --> M5[Fourier]
+  Mathematiques --> M6[Champ de pentes]
+  Mathematiques --> M7[Champ vectoriel]
+  Mathematiques --> M8[Series]
 
-  Physique --> P1[Gravite pret]
-  Physique --> P2[Pendule pret]
-  Physique --> P3[Mouvement projectile pret]
-  Physique --> P4[Ressort et loi de Hooke pret]
-  Physique --> P5[Mouvement circulaire pret]
-  Physique --> P6[Champs magnetiques bientot]
-  Physique --> P7[Champs electriques bientot]
-  Physique --> P8[Optique et refraction bientot]
-  Physique --> P9[Mecanique orbitale bientot]
-  Physique --> P10[Frottement bientot]
-  Physique --> P11[Collisions elastiques bientot]
-  Physique --> P12[Physique 12 a 20 bientot]
+  Physique --> P1[Gravite]
+  Physique --> P2[Pendule]
+  Physique --> P3[Mouvement projectile]
+  Physique --> P4[Ressort et loi de Hooke]
+  Physique --> P5[Mouvement circulaire]
+  Physique --> P6[Champs magnetiques]
+  Physique --> P7[Champs electriques]
+  Physique --> P8[Optique et refraction]
+  Physique --> P9[Mecanique orbitale]
+  Physique --> P10[Frottement]
+  Physique --> P11[Collisions elastiques]
 
-  Java --> J1[Java 1 a 20 bientot]
+  Java --> J1[Tri a bulles]
+  Java --> J2[Tri par selection]
+  Java --> J3[Tri par insertion]
+  Java --> J4[Tri fusion]
+  Java --> J5[Tri rapide]
+  Java --> J6[Pile - LIFO]
+  Java --> J7[File - FIFO]
+  Java --> J8[Liste chainee]
+  Java --> J9[ArrayList]
+  Java --> J10[Tableaux]
+  Java --> J11[Chaines et caracteres]
+  Java --> J12[Transtypage]
+  Java --> J13[Multithreading]
+  Java --> J14[Collisions de hachage]
+  Java --> J15[Heritage]
 ```
 
 ### 10.3 Flux commun d'une simulation
@@ -275,109 +294,7 @@ sequenceDiagram
   H->>R: Navigation
 ```
 
-### 10.4 Diagramme de classes logique
-
-```mermaid
-classDiagram
-  class InfosUtilisateur {
-    id
-    name
-    xp
-    level
-  }
-
-  class ParametresApplication {
-    darkMode
-    language
-    notifications
-  }
-
-  class CoursApprentissage {
-    id
-    title
-    subtitle
-    description
-    slides
-    totalSlides
-  }
-
-  class DiapositiveCours {
-    title
-    theory
-    code
-  }
-
-  class QuizCours {
-    question
-    choices
-    answerIndex
-  }
-
-  class ProgressionCoursStockee {
-    subject
-    courseId
-    progress
-    completed
-    highestSlideIndex
-    exerciseCompleted
-  }
-
-  class EntreeSimulation {
-    title
-    href
-    statut
-    tags
-    misEnAvant
-  }
-
-  class EcranSimulation {
-    etat local
-    controles
-    graphique
-    statistiques
-  }
-
-  class donneesLocales {
-    init()
-    definirUtilisateurActif()
-    mettreAJourProgressionCours()
-    obtenirCoursRecents()
-    enregistrerParametres()
-  }
-
-  InfosUtilisateur "1" --> "1" ParametresApplication
-  InfosUtilisateur "1" --> "*" ProgressionCoursStockee
-  CoursApprentissage "1" --> "*" DiapositiveCours
-  CoursApprentissage "1" --> "0..1" QuizCours
-  EntreeSimulation "1" --> "0..1" EcranSimulation
-  donneesLocales --> InfosUtilisateur
-  donneesLocales --> ProgressionCoursStockee
-  donneesLocales --> ParametresApplication
-```
-
-### 10.5 Sequence: completion d'un cours
-
-```mermaid
-sequenceDiagram
-  participant U as Utilisateur
-  participant UI as EcranLectureCours
-  participant C as data/cours.tsx
-  participant DB as db/donnees-principales.tsx
-  participant P as EcranProfil
-
-  U->>UI: Ouvre un cours
-  UI->>C: Charge les diapositives et le quiz
-  U->>UI: Avance dans les diapositives
-  UI->>DB: mettreAJourProgressionCours(subject, courseId, slideIndex)
-  U->>UI: Termine l'exercice final
-  UI->>DB: mettreAJourProgressionCours(..., exerciseCompleted=true)
-  DB->>DB: Calcule progression = 100%
-  DB->>DB: Ajoute 25 XP si pas deja attribue
-  P->>DB: Lit cours recents, XP et niveau
-  DB-->>P: Retourne les donnees mises a jour
-```
-
-### 10.6 Architecture logique
+### Architecture logique
 
 ```mermaid
 flowchart TB
@@ -415,10 +332,20 @@ flowchart TB
 | Mouvement projectile | modifier vitesse, angle, gravite; lancer; pause/reprise | affichage de la trajectoire et des statistiques de vol |
 | Ressort et loi de Hooke | modifier constante `k`, masse, amplitude, amortissement; pause; reset | affichage du ressort, de l'oscillation et de la projection de phase |
 | Mouvement circulaire | modifier rayon, vitesse et masse | calcul de l'acceleration et de la force centripete |
+| Champs magnetiques | modifier le nombre de fils, le courant, le sens et le point d'observation | affichage des lignes de champ, vecteurs et intensite locale |
+| Champs electriques | choisir une configuration de charges et un point d'observation | affichage des vecteurs de champ, lignes de champ et intensite resultante |
+| Optique et refraction | modifier les indices de refraction et l'angle incident | calcul des angles, de la reflexion totale et de la vitesse de la lumiere dans chaque milieu |
+| Mecanique orbitale | modifier perihelie, aphelie, masse de l'astre et vitesse temporelle | affichage de l'orbite, de la position et des statistiques orbitales |
+| Frottement | modifier masse, force appliquee, coefficients de frottement et gravite | calcul des forces, de l'etat du bloc et de l'acceleration |
 
 ### 11.3 Simulations Java
 
-Les routes Java 1 a 20 existent dans le catalogue, mais elles sont indiquees comme `bientot`. Le rapport doit donc les presenter comme perspectives d'amelioration plutot que comme simulations terminees.
+| Simulation | Options utilisateur principales | Resultat |
+| --- | --- | --- |
+| Tri a bulles | choisir ou melanger un tableau; avancer les comparaisons et les echanges | visualisation pas a pas du tri par comparaisons adjacentes |
+| Tri par selection | choisir ou melanger un tableau; avancer les recherches du minimum et les placements | visualisation pas a pas du minimum selectionne et de la partie triee |
+
+Les autres routes Java existent dans le catalogue, mais elles ne doivent pas etre presentees comme simulations terminees.
 
 ## 12. Fonctions internes importantes
 
@@ -457,33 +384,15 @@ Les routes Java 1 a 20 existent dans le catalogue, mais elles sont indiquees com
 | Projectile | `borner`, `arrondirAuPas`, `formaterNombre`, `obtenirValeursProjectile`, `creerCheminTrajectoire`, `CurseurNumerique`, `GraphiqueProjectile`, `SimulationMouvementProjectile` |
 | Ressort et Hooke | `borner`, `arrondirAuPas`, `formaterNombre`, `formaterNombreMath`, `obtenirPhysiqueRessort`, `creerCheminRessort`, `CurseurNumerique`, `GraphiqueRessort`, `creerCheminProjection`, `GraphiqueProjectionPhase`, `SimulationRessortLoiHooke` |
 | Mouvement circulaire | `borner`, `arrondirAuPas`, `formaterNombre`, `formaterNombreMath`, `cheminPointeFleche`, `CurseurNumerique`, `GraphiqueMouvementCirculaire`, `SimulationMouvementCirculaire` |
+| Champs magnetiques | `borner`, `arrondirAuPas`, `formaterNombre`, `cheminPointeFleche`, `calculerFils`, `calculerVecteursChamp`, `calculerChampTotalAuPoint`, `GraphiqueChampsMagnetiques`, `SimulationChampsMagnetiques` |
+| Champs electriques | `borner`, `formaterNombre`, `cheminPointeFleche`, `calculerCharges`, `calculerChampElectriqueAuPoint`, `obtenirPositionMetres`, `calculerVecteursChamp`, `GraphiqueChampsElectriques`, `SimulationChampsElectriques` |
+| Optique et refraction | `borner`, `arrondirAuPas`, `formaterNombre`, `convertirDegresEnRadians`, `convertirRadiansEnDegres`, `calculerAngleCritique`, `verifierReflexionTotale`, `calculerAngleRefracte`, `calculerVitesseLumiere`, `calculerSnell`, `GraphiqueOptiqueRefraction`, `SimulationOptiqueRefraction` |
+| Mecanique orbitale | `borner`, `arrondirAuPas`, `formaterNombre`, `resoudreKepler`, `obtenirPointOrbital`, `calculerDemiGrandAxe`, `calculerPerihelie`, `calculerAphelie`, `calculerPeriodeOrbitale`, `calculerVitesseVisViva`, `calculerOrbite`, `GraphiqueMecaniqueOrbitale`, `SimulationMecaniqueOrbitale` |
+| Frottement | `borner`, `arrondirAuPas`, `formaterNombre`, `calculerForceNormale`, `calculerFrottementStatiqueMax`, `calculerFrottementCinetique`, `verifierBlocEnMouvement`, `calculerFrottementActuel`, `calculerForceNette`, `calculerAcceleration`, `GraphiqueFrottement`, `SimulationFrottement` |
 
-## 13. Options utilisateur hors simulations
+## Perspectives et ameliorations
 
-```mermaid
-flowchart TD
-  Profil[EcranProfil] --> PanneauCours[PanneauCours]
-  Profil --> PanneauCartesMemoire[PanneauCartesMemoire]
-  Profil --> PanneauXP[PanneauXP]
-  Profil --> PanneauParametres[PanneauParametres]
-
-  PanneauCours -->|Ouvrir cours recent| DetailCours[Detail cours]
-  PanneauCartesMemoire -->|Choisir sujet| Sujet[Sujet cartes memoire]
-  PanneauCartesMemoire -->|Retourner carte| RetournerCarte[Voir reponse]
-  PanneauCartesMemoire -->|Carte precedente| Precedente[Precedente]
-  PanneauCartesMemoire -->|Carte suivante| Suivante[Suivante]
-  PanneauCartesMemoire -->|Creer carte| CreerCarte[Nouvelle carte memoire]
-  PanneauXP -->|Voir succes| Succes[Route succes non presente dans app actuel]
-  PanneauParametres -->|Mode sombre| ModeSombre[Changer theme]
-  PanneauParametres -->|Langue| Langue[Changer langue]
-  PanneauParametres -->|Notifications| Notifications[Changer notifications]
-  PanneauParametres -->|Reset| Reinitialisation[reinitialiserDonneesUtilisateurActif]
-  PanneauParametres -->|Sauvegarder| Sauvegarde[enregistrerParametres]
-```
-
-## 14. Perspectives et ameliorations
-
-Avec le double du temps, la priorite serait de terminer toutes les simulations marquees "Bientot", surtout en Java, car le module Java possede beaucoup de cours mais peu de simulations finalisees. Des simulations visuelles pour les variables, conditions, boucles, tableaux et methodes rendraient cette partie plus coherente avec l'objectif principal du projet.
+Avec le double du temps, la priorite serait de terminer les simulations encore a venir, surtout en Java, car le module Java possede beaucoup de cours mais peu de simulations finalisees. Des simulations visuelles pour les variables, conditions, boucles, tableaux et methodes rendraient cette partie plus coherente avec l'objectif principal du projet.
 
 Une deuxieme amelioration serait de remplacer ou completer le stockage local actuel par une vraie base SQLite sur mobile, ou par une synchronisation distante. Cela permettrait de conserver les donnees entre plusieurs appareils, d'avoir des comptes utilisateurs reels et de sauvegarder la progression de maniere plus robuste.
 
@@ -493,30 +402,10 @@ L'application pourrait ensuite integrer un mode enseignant. Un enseignant pourra
 
 Enfin, l'experience utilisateur pourrait etre enrichie avec des objectifs quotidiens, des badges plus visibles, des statistiques detaillees, des animations plus completes et une meilleure accessibilite pour les petits ecrans.
 
-## 15. Conclusion
+## Conclusion
 
 Evidex est une application educative interactive qui combine cours, simulations et suivi de progression pour faciliter la comprehension de notions abstraites. Le projet montre une base technique solide avec Expo, React Native, TypeScript, une navigation structuree, des donnees de cours organisees et une couche locale de progression utilisateur.
 
 La version actuelle est deja fonctionnelle pour consulter des cours, explorer plusieurs simulations de mathematiques et de physique, suivre son profil et sauvegarder localement l'avancement. Le rapport a ete ajuste pour mieux refleter le code reel: le projet utilise TypeScript, ne possede pas de backend Node.js, n'utilise pas encore SQLite comme stockage effectif et contient certaines simulations encore en preparation.
 
 La suite naturelle du projet serait de completer les simulations restantes, renforcer la persistance des donnees, ajouter des tests et developper des fonctionnalites collaboratives ou enseignantes. Avec ces ameliorations, Evidex pourrait devenir une application d'apprentissage plus complete, plus fiable et plus utile pour accompagner les etudiants dans la comprehension des concepts scientifiques et informatiques.
-
-## 16. Corrections principales par rapport a la V1
-
-- Le nom du projet est uniformise sous "Evidex", avec "Evid.exe" comme reference possible au logo/branding.
-- JavaScript seul a ete remplace par TypeScript/TSX lorsque l'on parle du code reel.
-- SQLite a ete corrige: la dependance existe, mais le stockage actuel utilise `localStorage` ou la memoire via `db/donnees-principales.tsx`.
-- Node.js a ete repositionne comme outil de developpement, pas comme backend actif.
-- Les cours et simulations ont ete separes pour respecter l'architecture du code.
-- Les simulations `pret`, `bientot` et `ferme` sont distinguees pour ne pas presenter des fonctionnalites non terminees comme livrees.
-- Le module Java est presente comme un module de cours avance, avec simulations encore majoritairement a venir.
-
-## 17. Consultation interactive des UML
-
-Pour zoomer et naviguer dans les diagrammes Mermaid:
-
-- option locale recommandee: VS Code avec l'extension "Markdown Mermaid Zoom";
-- option web: Mermaid Editor, qui permet de coller un bloc Mermaid, zoomer, deplacer et exporter;
-- option web locale/privee: Tidecharts, qui rend les diagrammes dans le navigateur avec pan/zoom.
-
-Dans WebStorm, le Markdown peut rendre Mermaid, mais l'interaction zoom/pan est generalement meilleure dans VS Code avec l'extension dediee ou dans un editeur web Mermaid.
