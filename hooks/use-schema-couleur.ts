@@ -6,17 +6,29 @@ export function useSchemaCouleur() {
   const [schemaCouleur, setSchemaCouleur] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
+    let isMounted = true;
+
     function rafraichirSchemaCouleur() {
-      donneesLocales.init();
-      setSchemaCouleur(donneesLocales.obtenirParametres().darkMode ? 'dark' : 'light');
+      void donneesLocales.init().then(() => {
+        if (isMounted) {
+          setSchemaCouleur(donneesLocales.obtenirParametres().darkMode ? 'dark' : 'light');
+        }
+      });
     }
 
     rafraichirSchemaCouleur();
 
     if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
       window.addEventListener('evidex_settings_changed', rafraichirSchemaCouleur);
-      return () => window.removeEventListener('evidex_settings_changed', rafraichirSchemaCouleur);
+      return () => {
+        isMounted = false;
+        window.removeEventListener('evidex_settings_changed', rafraichirSchemaCouleur);
+      };
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return schemaCouleur;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {
   Modal,
@@ -11,53 +11,17 @@ import {
 
 import { obtenirThemeApplication } from '@/constantes/theme';
 import { donneesLocales } from '@/db/donnees-principales';
+import type { CarteMemoire } from '@/db/donnees-principales';
 
 const Couleurs = obtenirThemeApplication(false);
 
-type Flashcard = {
-  front: string;
-  back: string;
-};
-
-const topics = [
-  'Java - If Statement',
-  'Java - Variables',
-  'Java - For Loops',
-  'Java - Methods',
-  'Java - Arrays',
-];
-
-const cardsByTopic: Record<string, Flashcard[]> = {
-  'Java - If Statement': [
-    {
-      front: "C'est quoi un if statement?",
-      back: 'Une condition qui execute du code seulement si elle est vraie.',
-    },
-    {
-      front: 'Quelle est la syntaxe de base?',
-      back: 'if (condition) { // code }',
-    },
-    {
-      front: 'A quoi sert else?',
-      back: 'Else donne un autre bloc de code si la condition est fausse.',
-    },
-  ],
-  'Java - Variables': [
-    {
-      front: 'Comment declarer un entier?',
-      back: 'int nombre = 42;',
-    },
-    {
-      front: "C'est quoi une variable final?",
-      back: 'Une valeur qui ne peut plus changer apres son initialisation.',
-    },
-  ],
-};
+const topicPersonnel = 'Cartes personnelles';
 
 export default function PanneauCartesMemoire({ darkMode = false }: { darkMode?: boolean }) {
   const themeActif = obtenirThemeApplication(darkMode);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
-  const [cards, setCards] = useState<Flashcard[]>([]);
+  const [cartesSauvegardees, setCartesSauvegardees] = useState<Record<string, CarteMemoire[]>>({});
+  const [cards, setCards] = useState<CarteMemoire[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showBack, setShowBack] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -65,15 +29,36 @@ export default function PanneauCartesMemoire({ darkMode = false }: { darkMode?: 
   const [newBack, setNewBack] = useState('');
 
   const currentCard = cards[currentIndex];
+  const topics = useMemo(
+    () => Array.from(new Set([...Object.keys(cartesSauvegardees), topicPersonnel])),
+    [cartesSauvegardees],
+  );
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function chargerCartesMemoire() {
+      await donneesLocales.init();
+
+      if (isMounted) {
+        setCartesSauvegardees(donneesLocales.obtenirCartesMemoire());
+      }
+    }
+
+    void chargerCartesMemoire();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  function getCardsForTopic(topic: string, savedCardsByTopic = cartesSauvegardees) {
+    return savedCardsByTopic[topic] ?? [];
+  }
 
   function selectTopic(topic: string) {
-    const savedCards = cardsByTopic[topic] ?? [
-      { front: `Question 1 sur ${topic}`, back: 'Reponse 1' },
-      { front: `Question 2 sur ${topic}`, back: 'Reponse 2' },
-    ];
-
     setSelectedTopic(topic);
-    setCards(savedCards);
+    setCards(getCardsForTopic(topic));
     setCurrentIndex(0);
     setShowBack(false);
   }
@@ -83,8 +68,22 @@ export default function PanneauCartesMemoire({ darkMode = false }: { darkMode?: 
       return;
     }
 
-    setCards([...cards, { front: newFront.trim(), back: newBack.trim() }]);
-    donneesLocales.enregistrerCreationCarte();
+    const topic = selectedTopic ?? topicPersonnel;
+    const savedTopicCards = donneesLocales.enregistrerCarteMemoire(topic, {
+      front: newFront,
+      back: newBack,
+    });
+    const nextSavedCards = {
+      ...cartesSauvegardees,
+      [topic]: savedTopicCards,
+    };
+
+    setCartesSauvegardees(nextSavedCards);
+    setSelectedTopic(topic);
+    const nextCards = getCardsForTopic(topic, nextSavedCards);
+    setCards(nextCards);
+    setCurrentIndex(nextCards.length - 1);
+    setShowBack(false);
     setNewFront('');
     setNewBack('');
     setModalOpen(false);
@@ -144,6 +143,26 @@ export default function PanneauCartesMemoire({ darkMode = false }: { darkMode?: 
       )}
 
       {/* Flashcard viewer */}
+      {selectedTopic && !currentCard && (
+        <View style={styles.emptyTopic}>
+          <MaterialIcons name="style" size={30} color={themeActif.muted} />
+          <Text style={[styles.emptyTitle, { color: themeActif.text }]}>Aucune carte</Text>
+          <Text style={[styles.emptyText, { color: themeActif.muted }]}>
+            Cree une premiere carte pour ce sujet.
+          </Text>
+          <Pressable
+            onPress={() => {
+              setSelectedTopic(null);
+              setCards([]);
+            }}
+          >
+            <Text style={[styles.changeTopic, { color: themeActif.muted }]}>
+              Changer de sujet
+            </Text>
+          </Pressable>
+        </View>
+      )}
+
       {selectedTopic && currentCard && (
         <View style={styles.viewer}>
           <Pressable
@@ -348,6 +367,24 @@ const styles = StyleSheet.create({
   viewer: {
     flex: 1,
     gap: 13,
+  },
+  emptyTopic: {
+    alignItems: 'center',
+    flex: 1,
+    gap: 10,
+    justifyContent: 'center',
+    minHeight: 230,
+    padding: 22,
+  },
+  emptyTitle: {
+    color: Couleurs.text,
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  emptyText: {
+    color: Couleurs.muted,
+    fontSize: 12,
+    textAlign: 'center',
   },
   card: {
     alignItems: 'center',

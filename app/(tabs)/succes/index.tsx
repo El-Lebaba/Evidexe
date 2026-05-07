@@ -23,9 +23,24 @@ export default function PageSucces() {
   const themeActif = obtenirThemeApplication(settings.darkMode);
 
   const refresh = useCallback(() => {
-    donneesLocales.init();
-    setSettings(donneesLocales.obtenirParametres());
-    setSuccesses(donneesLocales.obtenirSuccesProgression());
+    let isActive = true;
+
+    async function chargerSucces() {
+      await donneesLocales.init();
+
+      if (!isActive) {
+        return;
+      }
+
+      setSettings(donneesLocales.obtenirParametres());
+      setSuccesses(donneesLocales.obtenirSuccesProgression());
+    }
+
+    void chargerSucces();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
   useFocusEffect(refresh);

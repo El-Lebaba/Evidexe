@@ -49,10 +49,25 @@ export default function EvidexProfile() {
   const [activePanel, setActivePanel] = useState(0);
 
   useEffect(() => {
-    donneesLocales.init();
-    setCourses(obtenirCoursApprentissageRecents().filter((CoursLocal) => CoursLocal.progress > 0));
-    setUser(donneesLocales.obtenirUtilisateur());
-    setSettings(donneesLocales.obtenirParametres());
+    let isMounted = true;
+
+    async function chargerProfil() {
+      await donneesLocales.init();
+
+      if (!isMounted) {
+        return;
+      }
+
+      setCourses(obtenirCoursApprentissageRecents().filter((CoursLocal) => CoursLocal.progress > 0));
+      setUser(donneesLocales.obtenirUtilisateur());
+      setSettings(donneesLocales.obtenirParametres());
+    }
+
+    void chargerProfil();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const refreshCourses = useCallback(() => {
@@ -61,7 +76,21 @@ export default function EvidexProfile() {
 
   useFocusEffect(
     useCallback(() => {
-      refreshCourses();
+      let isActive = true;
+
+      async function chargerCours() {
+        await donneesLocales.init();
+
+        if (isActive) {
+          refreshCourses();
+        }
+      }
+
+      void chargerCours();
+
+      return () => {
+        isActive = false;
+      };
     }, [refreshCourses])
   );
 

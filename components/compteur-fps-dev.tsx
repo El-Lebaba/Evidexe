@@ -15,17 +15,29 @@ export function CompteurFpsDev() {
       return;
     }
 
+    let isMounted = true;
+
     function refreshEnabled() {
-      donneesLocales.init();
-      setEnabled(donneesLocales.obtenirParametres().fpsCounterEnabled);
+      void donneesLocales.init().then(() => {
+        if (isMounted) {
+          setEnabled(donneesLocales.obtenirParametres().fpsCounterEnabled);
+        }
+      });
     }
 
     refreshEnabled();
 
     if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
       window.addEventListener('evidex_settings_changed', refreshEnabled);
-      return () => window.removeEventListener('evidex_settings_changed', refreshEnabled);
+      return () => {
+        isMounted = false;
+        window.removeEventListener('evidex_settings_changed', refreshEnabled);
+      };
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {

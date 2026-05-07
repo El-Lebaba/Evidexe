@@ -213,12 +213,27 @@ export default function EcranAccueil() {
   ];
 
   useEffect(() => {
-    donneesLocales.init();
-    const user = donneesLocales.obtenirUtilisateur();
-    const courses = donneesLocales.obtenirCoursRecents();
-    setUserLevel(user.level);
-    setUserXp(user.xp);
-    setActiveCourses(courses.filter((CoursLocal) => !CoursLocal.completed).length);
+    let isMounted = true;
+
+    async function chargerDonneesAccueil() {
+      await donneesLocales.init();
+
+      if (!isMounted) {
+        return;
+      }
+
+      const user = donneesLocales.obtenirUtilisateur();
+      const courses = donneesLocales.obtenirCoursRecents();
+      setUserLevel(user.level);
+      setUserXp(user.xp);
+      setActiveCourses(courses.filter((CoursLocal) => !CoursLocal.completed).length);
+    }
+
+    void chargerDonneesAccueil();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {

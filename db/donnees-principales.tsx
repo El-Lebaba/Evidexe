@@ -1,3 +1,5 @@
+import { ecrireValeurStockee, lireValeurStockee } from '@/db/stockage-application';
+
 export type CoursLocal = {
   id: number | string;
   name: string;
@@ -16,6 +18,11 @@ export type InfosUtilisateur = {
   name?: string;
   xp: number;
   level: number;
+};
+
+export type CarteMemoire = {
+  front: string;
+  back: string;
 };
 
 export type Succes = {
@@ -72,6 +79,7 @@ type ProgressionCoursStockee = {
 
 type DonneesUtilisateur = {
   courses: Record<string, ProgressionCoursStockee>;
+  cartesMemoire: Record<string, CarteMemoire[]>;
   achievements: Record<string, Succes>;
   achievementStats: {
     createdCards: number;
@@ -135,6 +143,36 @@ const succesDefaut: Succes[] = [
   },
 ];
 
+const cartesMemoireDefaut: Record<string, CarteMemoire[]> = {
+  'Java - If Statement': [
+    {
+      front: "C'est quoi un if statement?",
+      back: 'Une condition qui execute du code seulement si elle est vraie.',
+    },
+    {
+      front: 'Quelle est la syntaxe de base?',
+      back: 'if (condition) { // code }',
+    },
+    {
+      front: 'A quoi sert else?',
+      back: 'Else donne un autre bloc de code si la condition est fausse.',
+    },
+  ],
+  'Java - Variables': [
+    {
+      front: 'Comment declarer un entier?',
+      back: 'int nombre = 42;',
+    },
+    {
+      front: "C'est quoi une variable final?",
+      back: 'Une valeur qui ne peut plus changer apres son initialisation.',
+    },
+  ],
+  'Java - For Loops': [],
+  'Java - Methods': [],
+  'Java - Arrays': [],
+};
+
 const seuilsCoursSucces = [2, 4, 8, 16];
 const seuilsSuccesSimple = [1, 2, 3, 4, 5];
 const rangsSucces: RangSucces[] = ['Gris', 'Bronze', 'Fer', 'Or', 'Diamant'];
@@ -191,10 +229,7 @@ const succesProgressionDefaut = [
 ] as const;
 
 let donneesMemoire: DonneesApplication | null = null;
-
-function peutUtiliserStockageLocal() {
-  return typeof localStorage !== 'undefined';
-}
+let chargementDonneesMemoire: Promise<DonneesApplication> | null = null;
 
 function maintenantIso() {
   return new Date().toISOString();
@@ -242,6 +277,15 @@ function carteSuccesDefaut() {
   return Object.fromEntries(succesDefaut.map((Succes) => [String(Succes.id), Succes]));
 }
 
+function carteMemoireDefaut() {
+  return Object.fromEntries(
+    Object.entries(cartesMemoireDefaut).map(([topic, cards]) => [
+      topic,
+      cards.map((card) => ({ ...card })),
+    ]),
+  );
+}
+
 function creerStatsSuccesDefaut() {
   return {
     createdCards: 0,
@@ -265,6 +309,7 @@ function creerUtilisateur(name: string): UtilisateurStocke {
 function creerDonneesUtilisateur(): DonneesUtilisateur {
   return {
     courses: {},
+    cartesMemoire: carteMemoireDefaut(),
     achievements: carteSuccesDefaut(),
     achievementStats: creerStatsSuccesDefaut(),
     settings: { ...parametresDefaut },
@@ -283,6 +328,7 @@ function creerDonneesApplicationDefaut() {
 function completerDonneesUtilisateur(donnees?: Partial<DonneesUtilisateur>): DonneesUtilisateur {
   return {
     courses: donnees?.courses ?? {},
+    cartesMemoire: donnees?.cartesMemoire ?? carteMemoireDefaut(),
     achievements: {
       ...carteSuccesDefaut(),
       ...(donnees?.achievements ?? {}),
@@ -336,22 +382,32 @@ function normaliserDonneesApplication(valeur: unknown): DonneesApplication {
   };
 }
 
+async function lireDonneesApplicationStockee(): Promise<DonneesApplication> {
+  try {
+    const savedValue = await lireValeurStockee(cleStockage);
+    return savedValue ? normaliserDonneesApplication(JSON.parse(savedValue)) : creerDonneesApplicationDefaut();
+  } catch {
+    return creerDonneesApplicationDefaut();
+  }
+}
+
 function lireDonneesApplication(): DonneesApplication {
   if (donneesMemoire) {
     return donneesMemoire;
   }
 
-  if (!peutUtiliserStockageLocal()) {
-    donneesMemoire = creerDonneesApplicationDefaut();
-    return donneesMemoire;
+  donneesMemoire = creerDonneesApplicationDefaut();
+  void initialiserDonneesApplication();
+
+  return donneesMemoire;
+}
+
+async function initialiserDonneesApplication() {
+  if (!chargementDonneesMemoire) {
+    chargementDonneesMemoire = lireDonneesApplicationStockee();
   }
 
-  try {
-    const savedValue = localStorage.getItem(cleStockage);
-    donneesMemoire = savedValue ? normaliserDonneesApplication(JSON.parse(savedValue)) : creerDonneesApplicationDefaut();
-  } catch {
-    donneesMemoire = creerDonneesApplicationDefaut();
-  }
+  donneesMemoire = await chargementDonneesMemoire;
 
   if (!donneesMemoire) {
     donneesMemoire = creerDonneesApplicationDefaut();
@@ -362,10 +418,7 @@ function lireDonneesApplication(): DonneesApplication {
 
 function ecrireDonneesApplication(nextData: DonneesApplication) {
   donneesMemoire = nextData;
-
-  if (peutUtiliserStockageLocal()) {
-    localStorage.setItem(cleStockage, JSON.stringify(nextData));
-  }
+  void ecrireValeurStockee(cleStockage, JSON.stringify(nextData));
 }
 
 function garantirUtilisateurActif(data = lireDonneesApplication()) {
@@ -456,13 +509,12 @@ function emettreChangementParametres() {
 }
 
 export const donneesLocales = {
-  init(userName?: string) {
-    const data = lireDonneesApplication();
+  async init(userName?: string) {
+    const data = await initialiserDonneesApplication();
     garantirUtilisateurActif(data);
 
     if (userName) {
-      donneesLocales.definirUtilisateurActif(userName);
-      return;
+      return donneesLocales.definirUtilisateurActif(userName);
     }
 
     ecrireDonneesApplication(data);
@@ -728,6 +780,45 @@ export const donneesLocales = {
       Math.round(DonneesUtilisateur.achievementStats.createdCards ?? 0),
     ) + 1;
     ecrireDonneesApplication(data);
+  },
+
+  obtenirCartesMemoire() {
+    const DonneesUtilisateur = obtenirDonneesUtilisateurActif();
+    return Object.fromEntries(
+      Object.entries(DonneesUtilisateur.cartesMemoire).map(([topic, cards]) => [
+        topic,
+        cards.map((card) => ({ ...card })),
+      ]),
+    );
+  },
+
+  obtenirCartesMemoireSujet(topic: string) {
+    const DonneesUtilisateur = obtenirDonneesUtilisateurActif();
+    return (DonneesUtilisateur.cartesMemoire[topic] ?? []).map((card) => ({ ...card }));
+  },
+
+  enregistrerCarteMemoire(topic: string, card: CarteMemoire) {
+    const trimmedTopic = topic.trim();
+    const front = card.front.trim();
+    const back = card.back.trim();
+
+    if (!trimmedTopic || !front || !back) {
+      return [];
+    }
+
+    const data = lireDonneesApplication();
+    const DonneesUtilisateur = obtenirDonneesUtilisateurActif(data);
+    const currentCards = DonneesUtilisateur.cartesMemoire[trimmedTopic] ?? [];
+    const nextCards = [...currentCards, { front, back }];
+
+    DonneesUtilisateur.cartesMemoire[trimmedTopic] = nextCards;
+    DonneesUtilisateur.achievementStats.createdCards = Math.max(
+      0,
+      Math.round(DonneesUtilisateur.achievementStats.createdCards ?? 0),
+    ) + 1;
+    ecrireDonneesApplication(data);
+
+    return nextCards.map((savedCard) => ({ ...savedCard }));
   },
 
   enregistrerClicSimulation(section: string, simulationId: string) {
