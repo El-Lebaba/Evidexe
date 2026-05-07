@@ -15,6 +15,7 @@ import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
+import { themesSimulationEcrans } from '@/constantes/theme';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -50,20 +51,7 @@ type LimitFunction = {
 const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
 const APPROACH_MIN = 0.1;
 const APPROACH_MAX = 2;
-const themeActif = {
-  background: '#E9ECE4',
-  border: '#243B53',
-  function: '#7CCFBF',
-  grid: '#B7C7B0',
-  gridSoft: 'rgba(167, 184, 158, 0.35)',
-  hole: '#AAB18E',
-  ink: '#243B53',
-  limit: '#D8A94A',
-  marker: '#D97B6C',
-  mutedInk: '#6E7F73',
-  panel: '#DDE4D5',
-  surface: '#F3F1E7',
-};
+const themeActif = themesSimulationEcrans.light.limites;
 
 const WEB_SLIDER_INTERACTION_STYLE =
   Platform.OS === 'web'

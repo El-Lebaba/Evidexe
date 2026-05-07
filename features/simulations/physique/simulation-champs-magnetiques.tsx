@@ -14,6 +14,7 @@ import Svg, { Circle, G, Line, Path, Rect } from 'react-native-svg';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
+import { themesSimulationEcrans } from '@/constantes/theme';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -59,23 +60,7 @@ const DISTANCE_REFERENCE_METRES = 0.08;
 const DISTANCE_REFERENCE_PIXELS = 80;
 const DISTANCE_MINIMALE_METRES = 0.005;
 
-const themeActif = {
-  accent: '#D8A94A',
-  background: '#E9ECE4',
-  border: '#243B53',
-  champ: '#7CCFBF',
-  courantEntrant: '#D97B6C',
-  courantSortant: '#7CCFBF',
-  grid: '#B7C7B0',
-  gridSoft: 'rgba(167, 184, 158, 0.35)',
-  champFort: '#2F7E8D',
-  champMoyen: '#3F8D83',
-  champFaible: '#5FAFA7',
-  ink: '#243B53',
-  mutedInk: '#6E7F73',
-  panel: '#DDE4D5',
-  surface: '#F3F1E7',
-};
+const themeActif = themesSimulationEcrans.light.champsMagnetiques;
 
 const STYLE_INTERACTION_WEB =
   Platform.OS === 'web'

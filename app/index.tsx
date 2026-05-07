@@ -1,11 +1,10 @@
 import { Href, router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { LogoEvidexe } from '@/components/logo-evidexe';
 import { SymbolesMathematiquesFlottants } from '@/features/simulations/core/symboles-mathematiques-flottants';
-
-const introLogo = require('@/assets/images/evidexe-logo.png');
 
 const palette = {
   charcoal: '#19191F',
@@ -116,9 +115,8 @@ export default function IntroScreen() {
                   transform: [{ scale }],
                 },
               ]}>
-              <Image
+              <LogoEvidexe
                 resizeMode="contain"
-                source={introLogo}
                 style={styles.logo}
               />
             </Animated.View>

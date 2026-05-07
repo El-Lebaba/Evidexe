@@ -1,5 +1,4 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import { useFocusEffect } from '@react-navigation/native';
 import { Href, router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -7,6 +6,7 @@ import { Animated, Easing, Pressable, ScrollView, StyleSheet, View } from 'react
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import CarteCours from '@/components/cours/CarteCours';
+import { LogoEvidexe } from '@/components/logo-evidexe';
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
 import { obtenirThemeApplication } from '@/constantes/theme';
@@ -124,9 +124,8 @@ export function EcranCours() {
 
             <Animated.View style={[styles.hero, { opacity: subjectMotion, transform: [{ translateY: subjectTranslate }] }]}>
               <Pressable onPress={() => router.push('/(tabs)/accueil' as Href)} style={styles.logoBadge}>
-                <Image
-                  contentFit="contain"
-                  source={require('@/assets/images/evidexe-logo.png')}
+                <LogoEvidexe
+                  resizeMode="contain"
                   style={styles.logoBadgeImage}
                 />
               </Pressable>

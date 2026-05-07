@@ -15,6 +15,7 @@ import Svg, { Circle, Defs, Line, Path, RadialGradient, Rect, Stop } from 'react
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
+import { themesSimulationEcrans } from '@/constantes/theme';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -60,23 +61,7 @@ const CONSTANTE_GRAVITATIONNELLE_SIMULATION = 1;
 const NOMBRE_POINTS_ORBITE = 180;
 const NOMBRE_POINTS_TRACE = 46;
 
-const themeActif = {
-  accent: '#D8A94A',
-  background: '#E9ECE4',
-  border: '#243B53',
-  grid: '#B7C7B0',
-  gridSoft: 'rgba(167, 184, 158, 0.35)',
-  ink: '#243B53',
-  mutedInk: '#6E7F73',
-  orbit: '#7CCFBF',
-  panel: '#DDE4D5',
-  planet: '#7CCFBF',
-  planetDeep: '#3F8D83',
-  star: '#D8A94A',
-  starDeep: '#9A7432',
-  surface: '#F3F1E7',
-  sweep: '#D97B6C',
-};
+const themeActif = themesSimulationEcrans.light.mecaniqueOrbitale;
 
 const STYLE_INTERACTION_WEB =
   Platform.OS === 'web'

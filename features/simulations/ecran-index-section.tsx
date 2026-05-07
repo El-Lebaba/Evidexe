@@ -1,6 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
-import { Image } from 'expo-image';
 import { Href, router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -13,6 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { LogoEvidexe } from '@/components/logo-evidexe';
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
 import { obtenirThemeApplication } from '@/constantes/theme';
@@ -384,9 +384,8 @@ function EcranSectionTableauBord({
                 },
               ]}>
               <Pressable onPress={() => router.push('/(tabs)/accueil' as Href)} style={styles.heroLogoButton}>
-                <Image
-                  contentFit="contain"
-                  source={require('@/assets/images/evidexe-logo.png')}
+                <LogoEvidexe
+                  resizeMode="contain"
                   style={styles.heroLogo}
                 />
               </Pressable>
