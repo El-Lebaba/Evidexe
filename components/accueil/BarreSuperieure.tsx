@@ -9,6 +9,7 @@ import { obtenirThemeApplication } from '@/constantes/theme';
 const CouleursBase = obtenirThemeApplication(false);
 
 type InfosUtilisateur = {
+  name?: string;
   xp?: number;
   level?: number;
 };
@@ -39,9 +40,7 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
       ]}
     >
       <View style={styles.content}>
-        <Pressable onPress={openSettings} style={styles.iconButton}>
-          <MaterialIcons name="settings" size={23} color={Couleurs.muted} />
-        </Pressable>
+        <View style={styles.headerSpacer} />
 
         <View style={styles.nav}>
           <Link href={'/(tabs)/accueil' as Href} asChild>
@@ -80,16 +79,24 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
               ]}
             >
               <Text style={[styles.smallText, { color: Couleurs.muted }]}>Connecte en tant que</Text>
-              <Text style={[styles.name, { color: Couleurs.text }]}>Utilisateur</Text>
-              <Text style={[styles.level, { color: Couleurs.blue }]}>
-                Niveau {user?.level ?? 1} - {user?.xp ?? 0} XP
-              </Text>
+              <Text style={[styles.name, { color: Couleurs.text }]}>{user?.name ?? 'Utilisateur'}</Text>
+
+              <View style={styles.statsGrid}>
+                <View style={[styles.statBox, { backgroundColor: `${Couleurs.blue}18`, borderColor: `${Couleurs.blue}60` }]}>
+                  <Text style={[styles.statValue, { color: Couleurs.blue }]}>{user?.level ?? 1}</Text>
+                  <Text style={[styles.statLabel, { color: Couleurs.muted }]}>Niveau</Text>
+                </View>
+                <View style={[styles.statBox, { backgroundColor: `${Couleurs.yellow}18`, borderColor: `${Couleurs.yellow}60` }]}>
+                  <Text style={[styles.statValue, { color: Couleurs.yellow }]}>{user?.xp ?? 0}</Text>
+                  <Text style={[styles.statLabel, { color: Couleurs.muted }]}>XP</Text>
+                </View>
+              </View>
 
               <View style={[styles.line, { backgroundColor: `${Couleurs.border}20` }]} />
 
               <Pressable onPress={openSettings} style={styles.menuItem}>
                 <MaterialIcons name="settings" size={18} color={Couleurs.text} />
-                <Text style={[styles.menuText, { color: Couleurs.text }]}>Parametres</Text>
+                <Text style={[styles.menuText, { color: Couleurs.text }]}>Parametres du profil</Text>
               </Pressable>
 
             </View>
@@ -116,11 +123,8 @@ const styles = StyleSheet.create({
     minHeight: 100,
     paddingHorizontal: 16,
   },
-  iconButton: {
-    alignItems: 'center',
-    borderRadius: 8,
+  headerSpacer: {
     height: 42,
-    justifyContent: 'center',
     width: 42,
   },
   nav: {
@@ -192,6 +196,32 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     marginTop: 2,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 10,
+  },
+  statBox: {
+    alignItems: 'center',
+    borderColor: '#7EA6E060',
+    borderRadius: 8,
+    borderWidth: 1,
+    flex: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 9,
+  },
+  statValue: {
+    color: CouleursBase.blue,
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  statLabel: {
+    color: CouleursBase.muted,
+    fontSize: 10,
+    fontWeight: '800',
+    marginTop: 2,
+    textTransform: 'uppercase',
   },
   line: {
     backgroundColor: '#243B5320',
