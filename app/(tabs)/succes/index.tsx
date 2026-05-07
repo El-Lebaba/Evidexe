@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCallback, useState } from 'react';
 
+import PanneauParametres from '@/components/accueil/PanneauParametres';
 import { LogoEvidexe } from '@/components/logo-evidexe';
 import ListeSucces from '@/components/profil/ListeSucces';
 import { obtenirThemeApplication } from '@/constantes/theme';
@@ -19,6 +20,7 @@ export default function PageSucces() {
     language: 'fr',
     notifications: true,
   });
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const themeActif = obtenirThemeApplication(settings.darkMode);
 
   const refresh = useCallback(() => {
@@ -46,18 +48,30 @@ export default function PageSucces() {
 
   const completedCount = successes.filter((success) => success.completed).length;
 
+  function enregistrerParametres(nextSettings: ParametresApplication) {
+    setSettings(nextSettings);
+  }
+
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: themeActif.background }]}>
+      <PanneauParametres
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        settings={settings}
+        onSave={enregistrerParametres}
+      />
       <View style={styles.topRow}>
+        <Pressable
+          onPress={() => setSettingsOpen(true)}
+          style={[styles.utilityButton, { backgroundColor: themeActif.surface, borderColor: `${themeActif.border}25` }]}>
+          <MaterialIcons name="menu" size={24} color={themeActif.text} />
+        </Pressable>
+
         <Pressable onPress={() => router.push('/(tabs)/accueil' as Href)} style={styles.logoButton}>
           <LogoEvidexe resizeMode="contain" style={styles.logo} />
         </Pressable>
 
-        <Pressable
-          onPress={() => router.push('/(tabs)/profil' as Href)}
-          style={[styles.profileButton, { backgroundColor: themeActif.surface, borderColor: `${themeActif.border}25` }]}>
-          <MaterialIcons name="person" size={21} color={themeActif.blue} />
-        </Pressable>
+        <View style={styles.topSpacer} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -100,13 +114,17 @@ const styles = StyleSheet.create({
     height: 44,
     width: 142,
   },
-  profileButton: {
+  topSpacer: {
+    height: 44,
+    width: 44,
+  },
+  utilityButton: {
     alignItems: 'center',
     borderRadius: 999,
     borderWidth: 1,
-    height: 42,
+    height: 44,
     justifyContent: 'center',
-    width: 42,
+    width: 44,
   },
   content: {
     alignSelf: 'center',

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Href, Link } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Href, Link, router } from 'expo-router';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { LogoEvidexe } from '@/components/logo-evidexe';
 import { obtenirThemeApplication } from '@/constantes/theme';
@@ -10,6 +10,7 @@ const CouleursBase = obtenirThemeApplication(false);
 
 type InfosUtilisateur = {
   name?: string;
+  avatarUri?: string;
   xp?: number;
   level?: number;
 };
@@ -29,6 +30,26 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
     onSettingsClick();
   }
 
+  function openProfileCustomization() {
+    setMenuOpen(false);
+    router.push('/(tabs)/profil/personnalisation' as Href);
+  }
+
+  function renderAvatar(size: 'small' | 'large') {
+    const avatarStyle = size === 'large' ? styles.menuAvatar : styles.avatar;
+    const iconSize = size === 'large' ? 24 : 20;
+
+    return (
+      <View style={[avatarStyle, { backgroundColor: Couleurs.blue }]}>
+        {user?.avatarUri ? (
+          <Image source={{ uri: user.avatarUri }} style={styles.avatarImage} />
+        ) : (
+          <MaterialIcons name="person" size={iconSize} color="white" />
+        )}
+      </View>
+    );
+  }
+
   return (
     <View
       style={[
@@ -40,7 +61,9 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
       ]}
     >
       <View style={styles.content}>
-        <View style={styles.headerSpacer} />
+        <Pressable onPress={openSettings} style={styles.utilityButton}>
+          <MaterialIcons name="menu" size={24} color={Couleurs.text} />
+        </Pressable>
 
         <View style={styles.nav}>
           <Link href={'/(tabs)/accueil' as Href} asChild>
@@ -58,9 +81,7 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
             onPress={() => setMenuOpen(!menuOpen)}
             style={styles.profileButton}
           >
-            <View style={[styles.avatar, { backgroundColor: Couleurs.blue }]}>
-              <MaterialIcons name="person" size={20} color="white" />
-            </View>
+            {renderAvatar('small')}
             <MaterialIcons
               name={menuOpen ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
               size={18}
@@ -79,7 +100,10 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
               ]}
             >
               <Text style={[styles.smallText, { color: Couleurs.muted }]}>Connecte en tant que</Text>
-              <Text style={[styles.name, { color: Couleurs.text }]}>{user?.name ?? 'Utilisateur'}</Text>
+              <View style={styles.menuIdentityRow}>
+                {renderAvatar('large')}
+                <Text style={[styles.name, { color: Couleurs.text }]} numberOfLines={1}>{user?.name ?? 'Utilisateur'}</Text>
+              </View>
 
               <View style={styles.statsGrid}>
                 <View style={[styles.statBox, { backgroundColor: `${Couleurs.blue}18`, borderColor: `${Couleurs.blue}60` }]}>
@@ -94,9 +118,15 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
 
               <View style={[styles.line, { backgroundColor: `${Couleurs.border}20` }]} />
 
-              <Pressable onPress={openSettings} style={styles.menuItem}>
-                <MaterialIcons name="settings" size={18} color={Couleurs.text} />
-                <Text style={[styles.menuText, { color: Couleurs.text }]}>Parametres du profil</Text>
+              <Pressable onPress={openProfileCustomization} style={styles.menuItem}>
+                {user?.avatarUri ? (
+                  <View style={styles.menuItemAvatar}>
+                    <Image source={{ uri: user.avatarUri }} style={styles.avatarImage} />
+                  </View>
+                ) : (
+                  <MaterialIcons name="manage-accounts" size={18} color={Couleurs.text} />
+                )}
+                <Text style={[styles.menuText, { color: Couleurs.text }]}>Profile customization</Text>
               </Pressable>
 
             </View>
@@ -123,8 +153,14 @@ const styles = StyleSheet.create({
     minHeight: 100,
     paddingHorizontal: 16,
   },
-  headerSpacer: {
+  utilityButton: {
+    alignItems: 'center',
+    backgroundColor: CouleursBase.panel,
+    borderColor: '#243B5355',
+    borderRadius: 999,
+    borderWidth: 1,
     height: 42,
+    justifyContent: 'center',
     width: 42,
   },
   nav: {
@@ -167,7 +203,27 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     height: 38,
     justifyContent: 'center',
+    overflow: 'hidden',
     width: 38,
+  },
+  avatarImage: {
+    height: '100%',
+    width: '100%',
+  },
+  menuAvatar: {
+    alignItems: 'center',
+    backgroundColor: CouleursBase.blue,
+    borderRadius: 24,
+    height: 48,
+    justifyContent: 'center',
+    overflow: 'hidden',
+    width: 48,
+  },
+  menuIdentityRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 8,
   },
   menu: {
     backgroundColor: CouleursBase.background,
@@ -187,9 +243,9 @@ const styles = StyleSheet.create({
   },
   name: {
     color: CouleursBase.text,
+    flex: 1,
     fontSize: 15,
     fontWeight: '800',
-    marginTop: 2,
   },
   level: {
     color: CouleursBase.blue,
@@ -233,6 +289,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     paddingVertical: 8,
+  },
+  menuItemAvatar: {
+    borderRadius: 9,
+    height: 18,
+    overflow: 'hidden',
+    width: 18,
   },
   menuText: {
     color: CouleursBase.text,

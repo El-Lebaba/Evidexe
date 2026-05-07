@@ -16,6 +16,7 @@ export type CoursLocal = {
 export type InfosUtilisateur = {
   id?: string;
   name?: string;
+  avatarUri?: string;
   xp: number;
   level: number;
 };
@@ -57,6 +58,7 @@ type UtilisateurStocke = {
   id: string;
   key: string;
   name: string;
+  avatarUri?: string;
   xp: number;
   level: number;
   createdAt: string;
@@ -573,6 +575,7 @@ export const donneesLocales = {
       .map((user) => ({
         id: user.id,
         name: user.name,
+        avatarUri: user.avatarUri,
         xp: user.xp,
         level: user.level,
       }));
@@ -584,6 +587,7 @@ export const donneesLocales = {
     return {
       id: user.id,
       name: user.name,
+      avatarUri: user.avatarUri,
       xp: user.xp,
       level: user.level,
     };
@@ -598,6 +602,7 @@ export const donneesLocales = {
       user.key = cleUtilisateur(user.name);
     }
 
+    user.avatarUri = InfosUtilisateur.avatarUri;
     user.xp = Math.max(0, Math.round(InfosUtilisateur.xp));
     user.level = Math.max(1, Math.round(InfosUtilisateur.level));
     user.lastSeenAt = maintenantIso();

@@ -27,6 +27,13 @@ export default function DispositionOnglets() {
         options={{ title: 'Profil' }}
       />
       <Tabs.Screen
+        name="profil/personnalisation"
+        options={{
+          href: null,
+          title: 'Profile customization',
+        }}
+      />
+      <Tabs.Screen
         name="succes/index"
         options={{ title: 'Succes' }}
       />
