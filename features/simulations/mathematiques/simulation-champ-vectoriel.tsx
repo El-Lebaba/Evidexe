@@ -439,6 +439,7 @@ export function SimulationChampVectoriel() {
                   centered
                   fallback={'F(x,y)=P(x,y)i + Q(x,y)j'}
                   mathematiques={'\\vec{F}(x,y)=P(x,y)\\hat{i}+Q(x,y)\\hat{j}'}
+                  mathViewMobile
                   size="md"
                 />
               </View>
@@ -536,13 +537,13 @@ export function SimulationChampVectoriel() {
 
       <InfobulleDefinition
         body={[
-          'Un champ vectoriel associe un vecteur a chaque point du plan. Chaque fleche montre la direction locale et l intensite du mouvement.',
-          'La rotation mesure l effet tourbillon du champ, tandis que la divergence mesure si le champ agit comme une source ou un puits.',
+          'Un champ vectoriel associe un vecteur à chaque point du plan. Chaque flèche montre la direction locale et l’intensité du mouvement.',
+          'La rotation mesure l’effet tourbillon du champ, tandis que la divergence indique si le champ agit comme une source ou un puits.',
         ]}
         exampleLabel="Lecture rapide"
-        exampleText="Les fleches indiquent la direction locale et les points dores suivent ce flux pour reveler la structure globale."
-        eyebrow="Definition"
-        title="Qu est ce qu un champ vectoriel ?"
+        exampleText="Les flèches indiquent la direction locale et les points dorés suivent ce flux pour révéler la structure globale."
+        eyebrow="Définition"
+        title="Qu’est-ce qu’un champ vectoriel ?"
       />
     </SafeAreaView>
   );

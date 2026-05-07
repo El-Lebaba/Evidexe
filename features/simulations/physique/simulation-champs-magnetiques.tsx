@@ -509,6 +509,7 @@ export function SimulationChampsMagnetiques() {
                   centered
                   fallback="B = mu0 I / 2 pi r"
                   mathematiques={'B=\\frac{\\mu_0 I}{2\\pi r}'}
+                  mathViewMobile
                   size="md"
                 />
               </View>
@@ -577,13 +578,13 @@ export function SimulationChampsMagnetiques() {
 
       <InfobulleDefinition
         body={[
-          'Autour d un fil parcouru par un courant, le champ magnetique forme des cercles.',
-          'Le sens du champ depend du sens du courant et les champs de plusieurs fils se superposent.',
+          'Autour d’un fil parcouru par un courant, le champ magnétique forme des cercles.',
+          'Le sens du champ dépend du sens du courant et les champs de plusieurs fils se superposent.',
         ]}
         exampleLabel="Lecture rapide"
-        exampleText="Un point vert sort de l ecran. Une croix rouge entre dans l ecran."
-        eyebrow="Definition"
-        title="Qu est ce qu un champ magnetique ?"
+        exampleText="Un point vert sort de l’écran. Une croix rouge entre dans l’écran."
+        eyebrow="Définition"
+        title="Qu’est-ce qu’un champ magnétique ?"
       />
     </SafeAreaView>
   );

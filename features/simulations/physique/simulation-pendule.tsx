@@ -220,7 +220,7 @@ function GraphiquePendule({
         <Circle cx={bob.x} cy={bob.y} fill="url(#pendulumBob)" r={bobRadius} stroke={themeActif.surface} strokeOpacity={0.55} strokeWidth={1.5} />
 
         <SvgText fill={themeActif.ink} fontSize="12" fontWeight="800" textAnchor="middle" x={pivotX} y={pivotY + 54}>
-          {formaterNombre(angleDeg, 1)}Â°
+          {formaterNombre(angleDeg, 1)}°
         </SvgText>
       </Svg>
     </View>
@@ -256,7 +256,7 @@ export function SimulationPendule() {
   utiliserIntervalleSimulation(isFocused && isRunning, () => {
     const state = stateRef.current;
     const lengthM = lengthCm / 100;
-    const dt = 0.032;
+    const dt = 0.048;
     const angularAcceleration = -(gravity / lengthM) * Math.sin(state.angle);
 
     state.angularVelocity = (state.angularVelocity + angularAcceleration * dt) * Math.pow(damping, dt / 0.016);
@@ -272,7 +272,7 @@ export function SimulationPendule() {
     }
 
     setFrame((current) => current + 1);
-  }, 32);
+  }, 48);
 
   const horizontalPadding = width >= 1200 ? 12 : 16;
   const contentWidth = width - horizontalPadding * 2;
@@ -351,6 +351,7 @@ export function SimulationPendule() {
                   centered
                   fallback="T = 2pi sqrt(L / g)"
                   mathematiques={'T=2\\pi\\sqrt{\\frac{L}{g}}'}
+                  mathViewMobile
                   size="md"
                 />
               </View>
@@ -359,7 +360,7 @@ export function SimulationPendule() {
                 <CurseurNumerique label="Longueur" max={250} min={50} onChange={setLengthCm} step={1} unit="cm" value={lengthCm} />
                 <CurseurNumerique label="Gravite" max={25} min={1} onChange={setGravity} precision={1} step={0.1} unit="m/s^2" value={gravity} />
                 <CurseurNumerique label="Amortissement" max={1} min={0.95} onChange={setDamping} precision={3} step={0.001} value={damping} />
-                <CurseurNumerique label="Angle initial" max={80} min={10} onChange={setInitialAngle} step={1} unit="Â°" value={initialAngle} />
+                <CurseurNumerique label="Angle initial" max={80} min={10} onChange={setInitialAngle} step={1} unit="°" value={initialAngle} />
                 <Pressable onPress={() => setIsRunning((current) => !current)} style={styles.toggleButton}>
                   <TexteTheme lightColor={themeActif.ink} style={styles.toggleText}>
                     {isRunning ? 'Pause' : 'Reprendre'}
@@ -391,7 +392,7 @@ export function SimulationPendule() {
                     Angle
                   </TexteTheme>
                   <TexteTheme lightColor={themeActif.ink} style={styles.statValueSmall}>
-                    {formaterNombre((state.angle * 180) / Math.PI, 1)}Â°
+                    {formaterNombre((state.angle * 180) / Math.PI, 1)}°
                   </TexteTheme>
                 </View>
               </View>
@@ -431,13 +432,13 @@ export function SimulationPendule() {
 
       <InfobulleDefinition
         body={[
-          'Un pendule convertit continuellement energie potentielle et energie cinetique pendant son mouvement.',
-          'Pour de petits angles, sa periode depend surtout de la longueur L et de la gravite g, pas de la masse.',
+          'Un pendule convertit continuellement énergie potentielle et énergie cinétique pendant son mouvement.',
+          'Pour de petits angles, sa période dépend surtout de la longueur L et de la gravité g, pas de la masse.',
         ]}
         exampleLabel="Lecture rapide"
-        exampleText="Allonger le pendule augmente la periode. Augmenter g rend les oscillations plus rapides."
-        eyebrow="Definition"
-        title="Qu est ce qu un pendule simple ?"
+        exampleText="Allonger le pendule augmente la période. Augmenter g rend les oscillations plus rapides."
+        eyebrow="Définition"
+        title="Qu’est-ce qu’un pendule simple ?"
       />
     </SafeAreaView>
   );

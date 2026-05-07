@@ -49,6 +49,7 @@ const DENSITY_MAX = 24;
 const Y0_MIN = -4;
 const Y0_MAX = 4;
 const themeActif = {
+  activeButton: '#7EA6E0',
   background: '#E9ECE4',
   border: '#243B53',
   fieldStrong: '#4E7FC4',
@@ -75,7 +76,7 @@ const WEB_SLIDER_INTERACTION_STYLE =
 const EQUATIONS: SlopeEquation[] = [
   { desc: 'y = x^2/2 + C', fn: (x) => x, label: "y' = x", latex: "y'=x" },
   { desc: 'y = Ce^x', fn: (_x, y) => y, label: "y' = y", latex: "y'=y" },
-  { desc: 'y = Ce^(x^2/2)', fn: (x, y) => x * y, label: "y' = xÂ·y", latex: "y'=xy" },
+  { desc: 'y = Ce^(x^2/2)', fn: (x, y) => x * y, label: "y' = x·y", latex: "y'=xy" },
   { desc: 'y = -cos(x) + C', fn: (x) => Math.sin(x), label: "y' = sin(x)", latex: "y'=\\sin(x)" },
   { desc: 'y = Ce^(-x)', fn: (_x, y) => -y, label: "y' = -y", latex: "y'=-y" },
   { desc: 'y = x - 1 + Ce^(-x)', fn: (x, y) => x - y, label: "y' = x-y", latex: "y'=x-y" },
@@ -465,7 +466,7 @@ export function SimulationChampDePentes() {
 
             <View style={[styles.sidebar, { paddingRight: isWide ? 44 : 0, width: sideWidth }]}>
               <View style={styles.formulaCard}>
-                <RenduFormule centered fallback={"y' = f(x, y)"} mathematiques={"y'=f(x,y)"} size="md" />
+                <RenduFormule centered fallback={"y' = f(x, y)"} mathematiques={"y'=f(x,y)"} mathViewMobile size="md" />
               </View>
 
               <View style={styles.panel}>
@@ -544,13 +545,13 @@ export function SimulationChampDePentes() {
 
       <InfobulleDefinition
         body={[
-          'Un champ de pentes dessine une petite pente en chaque point du plan pour representer une equation differentielle.',
-          "On ne voit pas directement une seule courbe, mais toute la direction que suivraient les solutions possibles. La courbe orange montre une solution particuliere qui part du point initial choisi.",
+          'Un champ de pentes dessine une petite pente en chaque point du plan pour représenter une équation différentielle.',
+          'On ne voit pas directement une seule courbe, mais toutes les directions que suivraient les solutions possibles. La courbe orange montre une solution particulière qui part du point initial choisi.',
         ]}
         exampleLabel="Lecture rapide"
         exampleText="Les petits segments bleus donnent la direction locale, et la courbe orange suit ce flux."
-        eyebrow="Definition"
-        title="Qu est ce qu un champ de pentes ?"
+        eyebrow="Définition"
+        title="Qu’est-ce qu’un champ de pentes ?"
       />
     </SafeAreaView>
   );
@@ -681,8 +682,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   equationButtonActive: {
-    backgroundColor: themeActif.fieldStrong,
-    borderColor: themeActif.fieldStrong,
+    backgroundColor: themeActif.activeButton,
+    borderColor: themeActif.activeButton,
   },
   equationButtonFormula: {
     alignItems: 'center',

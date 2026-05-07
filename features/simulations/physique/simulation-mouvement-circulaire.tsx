@@ -266,8 +266,8 @@ export function SimulationMouvementCirculaire() {
   }, [omega, radiusCm]);
 
   utiliserIntervalleSimulation(isFocused && !isPaused, () => {
-    setElapsed((current) => current + 0.032);
-  }, 32);
+    setElapsed((current) => current + 0.048);
+  }, 48);
 
   const horizontalPadding = width >= 1200 ? 12 : 16;
   const contentWidth = width - horizontalPadding * 2;
@@ -337,6 +337,7 @@ export function SimulationMouvementCirculaire() {
                   centered
                   fallback="Fc = m omega^2 r, v = omega r"
                   mathematiques={'F_c=m\\omega^2r,\\quad v=\\omega r'}
+                  mathViewMobile
                   size="md"
                 />
               </View>
@@ -366,7 +367,7 @@ export function SimulationMouvementCirculaire() {
                 </Pressable>
               </View>
 
-              <View style={[styles.statsGrid, isCompact ? styles.statsGridCompact : null]}>
+              <View style={styles.statsGrid}>
                 <View style={styles.statCard}>
                   <TexteTheme lightColor={themeActif.mutedInk} style={styles.statLabel}>
                     Force centripete
@@ -422,12 +423,12 @@ export function SimulationMouvementCirculaire() {
 
         <InfobulleDefinition
           body={[
-            'Dans un mouvement circulaire uniforme, la vitesse est tangentielle a la trajectoire.',
-            'La force centripete pointe toujours vers le centre et change la direction de la vitesse.',
+            'Dans un mouvement circulaire uniforme, la vitesse est tangentielle à la trajectoire.',
+            'La force centripète pointe toujours vers le centre et change la direction de la vitesse.',
           ]}
           exampleLabel="Lecture rapide"
-          exampleText="Augmente omega ou le rayon pour augmenter la vitesse et la force centripete."
-          eyebrow="Mecanique"
+          exampleText="Augmente oméga ou le rayon pour augmenter la vitesse et la force centripète."
+          eyebrow="Mécanique"
           title="Pourquoi une force vers le centre ?"
         />
       </VueTheme>
@@ -594,9 +595,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10,
-  },
-  statsGridCompact: {
-    flexDirection: 'column',
   },
   statCard: {
     backgroundColor: themeActif.panel,

@@ -571,6 +571,7 @@ export function SimulationGravite() {
                   centered
                   fallback="F = (G * m1 * m2) / d^2"
                   mathematiques={'F=\\frac{G\\,m_1m_2}{d^2}'}
+                  mathViewMobile
                   size="md"
                 />
               </View>
@@ -684,13 +685,13 @@ export function SimulationGravite() {
 
       <InfobulleDefinition
         body={[
-          'La gravitation universelle dit que deux objets avec une masse s attirent toujours.',
-          'La force est proportionnelle au produit des masses et inversement proportionnelle au carre de la distance.',
+          'La gravitation universelle dit que deux objets avec une masse s’attirent toujours.',
+          'La force est proportionnelle au produit des masses et inversement proportionnelle au carré de la distance.',
         ]}
         exampleLabel="Lecture rapide"
         exampleText="Si tu doubles une masse, la force double. Si tu doubles la distance, la force devient quatre fois plus petite."
-        eyebrow="Definition"
-        title="Qu est ce que la gravitation ?"
+        eyebrow="Définition"
+        title="Qu’est-ce que la gravitation ?"
       />
     </SafeAreaView>
   );
@@ -747,7 +748,6 @@ const styles = StyleSheet.create({
     borderColor: themeActif.border,
     borderRadius: 8,
     borderWidth: 1.5,
-    bottom: 12,
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
@@ -756,6 +756,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     position: 'absolute',
+    top: 12,
   },
   legendItem: {
     alignItems: 'center',

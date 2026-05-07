@@ -1,5 +1,4 @@
-import { useIsFocused } from '@react-navigation/native';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   Animated,
   Pressable,
@@ -45,8 +44,6 @@ type PointGraphique = {
   x: number;
   y: number;
 };
-
-const CercleAnime = Animated.createAnimatedComponent(Circle);
 
 const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
 const CONSTANTE_COULOMB = 8.9875517923e9;
@@ -227,14 +224,12 @@ function GraphiqueChampsElectriques({
   largeur,
   onSelectionPoint,
   pointSelectionne,
-  progressionFlux,
 }: {
   chargesNormalisees: ChargeNormalisee[];
   hauteur: number;
   largeur: number;
   onSelectionPoint: (point: PointGraphique) => void;
   pointSelectionne: PointGraphique | null;
-  progressionFlux: Animated.Value;
 }) {
   const charges = useMemo(() => calculerCharges(chargesNormalisees, largeur, hauteur), [chargesNormalisees, hauteur, largeur]);
   const vecteurs = useMemo(() => calculerVecteursChamp(charges, largeur, hauteur), [charges, hauteur, largeur]);
@@ -276,44 +271,6 @@ function GraphiqueChampsElectriques({
       }),
     [vecteurs]
   );
-  const coucheFlux = useMemo(
-    () =>
-      vecteurs
-        .filter((_vecteur, index) => index % 2 === 0)
-        .map((vecteur, index) => {
-          const couleur =
-            vecteur.longueur > 13
-              ? themeActif.champFort
-              : vecteur.longueur > 10
-                ? themeActif.champMoyen
-                : themeActif.champFaible;
-          const cx = progressionFlux.interpolate({
-            inputRange: [0, 1],
-            outputRange: [vecteur.x1, vecteur.x2],
-          });
-          const cy = progressionFlux.interpolate({
-            inputRange: [0, 1],
-            outputRange: [vecteur.y1, vecteur.y2],
-          });
-          const opacity = progressionFlux.interpolate({
-            inputRange: [0, 0.18, 0.82, 1],
-            outputRange: [0, 0.78, 0.78, 0],
-          });
-
-          return (
-            <CercleAnime
-              key={`flux-${index}`}
-              cx={cx as any}
-              cy={cy as any}
-              fill={couleur}
-              opacity={opacity as any}
-              r={2.4}
-            />
-          );
-        }),
-    [progressionFlux, vecteurs]
-  );
-
   return (
     <View
       onStartShouldSetResponder={() => true}
@@ -331,7 +288,6 @@ function GraphiqueChampsElectriques({
         ))}
 
         {coucheVecteurs}
-        {coucheFlux}
 
         {charges.map((charge, index) => {
           const positive = charge.q > 0;
@@ -406,10 +362,8 @@ function GraphiqueChampsElectriques({
 }
 
 export function SimulationChampsElectriques() {
-  const estFocalise = useIsFocused();
   const [indexConfiguration, definirIndexConfiguration] = useState(0);
   const [pointSelectionne, definirPointSelectionne] = useState<PointGraphique | null>(null);
-  const progressionFlux = useRef(new Animated.Value(0)).current;
   const defilementY = useRef(new Animated.Value(0)).current;
   const { width } = useWindowDimensions();
   const configurationActive = CONFIGURATIONS[indexConfiguration];
@@ -441,28 +395,6 @@ export function SimulationChampsElectriques() {
   const positionSelectionnee = useMemo(() => obtenirPositionMetres(pointSelectionne), [pointSelectionne]);
   const nombreChargesPositives = configurationActive.charges.filter((charge) => charge.q > 0).length;
   const nombreChargesNegatives = configurationActive.charges.length - nombreChargesPositives;
-
-  useEffect(() => {
-    if (!estFocalise) {
-      progressionFlux.stopAnimation();
-      return;
-    }
-
-    const animationFlux = Animated.loop(
-      Animated.timing(progressionFlux, {
-        duration: 1350,
-        toValue: 1,
-        useNativeDriver: false,
-      })
-    );
-
-    progressionFlux.setValue(0);
-    animationFlux.start();
-
-    return () => {
-      animationFlux.stop();
-    };
-  }, [estFocalise, progressionFlux]);
 
   const deplacementEnteteY = defilementY.interpolate({
     extrapolate: 'clamp',
@@ -508,14 +440,13 @@ export function SimulationChampsElectriques() {
                 width: largeurContenu,
               },
             ]}>
-            <GraphiqueChampsElectriques
-              chargesNormalisees={configurationActive.charges}
-              hauteur={hauteurGraphique}
-              largeur={largeurGraphique}
-              onSelectionPoint={definirPointSelectionne}
-              pointSelectionne={pointSelectionne}
-              progressionFlux={progressionFlux}
-            />
+              <GraphiqueChampsElectriques
+                chargesNormalisees={configurationActive.charges}
+                hauteur={hauteurGraphique}
+                largeur={largeurGraphique}
+                onSelectionPoint={definirPointSelectionne}
+                pointSelectionne={pointSelectionne}
+              />
 
             <View style={[styles.sidebar, { paddingRight: affichageLarge ? 44 : 0, width: largeurPanneau }]}>
               <View style={styles.formulaCard}>
@@ -523,6 +454,7 @@ export function SimulationChampsElectriques() {
                   centered
                   fallback="E = k |q| / r^2"
                   mathematiques={'E=\\frac{k|q|}{r^2}'}
+                  mathViewMobile
                   size="md"
                 />
               </View>
@@ -556,8 +488,8 @@ export function SimulationChampsElectriques() {
                 </TexteTheme>
               </View>
 
-              <View style={[styles.statsGrid, { flexDirection: affichageCompact ? 'column' : 'row' }]}>
-                <View style={styles.statCard}>
+              <View style={styles.statsGrid}>
+                <View style={[styles.statCard, affichageCompact ? styles.statCardFull : styles.statCardHalf]}>
                   <TexteTheme lightColor={themeActif.mutedInk} style={styles.statLabel}>
                     Charges positives
                   </TexteTheme>
@@ -565,7 +497,7 @@ export function SimulationChampsElectriques() {
                     {nombreChargesPositives}
                   </TexteTheme>
                 </View>
-                <View style={styles.statCard}>
+                <View style={[styles.statCard, affichageCompact ? styles.statCardFull : styles.statCardHalf]}>
                   <TexteTheme lightColor={themeActif.mutedInk} style={styles.statLabel}>
                     Charges negatives
                   </TexteTheme>
@@ -573,7 +505,7 @@ export function SimulationChampsElectriques() {
                     {nombreChargesNegatives}
                   </TexteTheme>
                 </View>
-                <View style={styles.statCard}>
+                <View style={[styles.statCard, styles.statCardFull]}>
                   <TexteTheme lightColor={themeActif.mutedInk} style={styles.statLabel}>
                     Champ total au centre
                   </TexteTheme>
@@ -581,7 +513,7 @@ export function SimulationChampsElectriques() {
                     {formaterNombre(champCentre.norme, 2)} N/C
                   </TexteTheme>
                 </View>
-                <View style={styles.statCard}>
+                <View style={[styles.statCard, styles.statCardFull]}>
                   <TexteTheme lightColor={themeActif.mutedInk} style={styles.statLabel}>
                     Champ total au point sélectionné
                   </TexteTheme>
@@ -607,13 +539,13 @@ export function SimulationChampsElectriques() {
 
       <InfobulleDefinition
         body={[
-          'Une charge electrique cree un champ qui agit sur les autres charges.',
-          'Le champ sort des charges positives et pointe vers les charges negatives.',
+          'Une charge électrique crée un champ qui agit sur les autres charges.',
+          'Le champ sort des charges positives et pointe vers les charges négatives.',
         ]}
         exampleLabel="Lecture rapide"
-        exampleText="Une charge test positive suivrait le sens des fleches affichees dans le graphe."
-        eyebrow="Definition"
-        title="Qu est ce qu un champ electrique ?"
+        exampleText="Une charge test positive suivrait le sens des flèches affichées dans le graphe."
+        eyebrow="Définition"
+        title="Qu’est-ce qu’un champ électrique ?"
       />
     </SafeAreaView>
   );
@@ -735,6 +667,7 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
   statsGrid: {
+    flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 12,
     width: '100%',
@@ -752,6 +685,12 @@ const styles = StyleSheet.create({
     minHeight: 104,
     paddingHorizontal: 12,
     paddingVertical: 16,
+  },
+  statCardHalf: {
+    width: '48%',
+  },
+  statCardFull: {
+    width: '100%',
   },
   statLabel: {
     color: themeActif.mutedInk,

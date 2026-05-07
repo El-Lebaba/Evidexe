@@ -704,22 +704,6 @@ function CurseurTermes({
         <View style={[styles.sliderFill, { width: `${percent}%` }]} />
         <View style={[styles.sliderThumb, WEB_SLIDER_INTERACTION_STYLE, { left: `${percent}%` }]} />
       </View>
-      <View style={styles.stepperRow}>
-        <Pressable
-          onPress={() => onChange(borner(value - 1, ORDER_MIN, ORDER_MAX))}
-          style={styles.stepButton}>
-          <TexteTheme lightColor={themeActif.ink} style={styles.stepText}>
-            -1
-          </TexteTheme>
-        </Pressable>
-        <Pressable
-          onPress={() => onChange(borner(value + 1, ORDER_MIN, ORDER_MAX))}
-          style={styles.stepButton}>
-          <TexteTheme lightColor={themeActif.ink} style={styles.stepText}>
-            +1
-          </TexteTheme>
-        </Pressable>
-      </View>
     </View>
   );
 }
@@ -802,6 +786,7 @@ export function SimulationSerieTaylor() {
                   centered
                   fallback={'f(x) = somme f^(n)(0) / n! * x^n'}
                   mathematiques={'f(x)=\\sum_{n=0}^{\\infty}\\frac{f^{(n)}(0)}{n!}x^n'}
+                  mathViewMobile
                   size="md"
                 />
               </View>
@@ -844,8 +829,9 @@ export function SimulationSerieTaylor() {
                     />
                   </View>
                   <ScrollView
+                    horizontal
                     nestedScrollEnabled
-                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator
                     style={styles.approximationFormulaWrap}
                     contentContainerStyle={styles.approximationFormulaContent}>
                     {activeFunction.termLines(order).map((term, index) => (
@@ -900,13 +886,13 @@ export function SimulationSerieTaylor() {
       </VueTheme>
       <InfobulleDefinition
         body={[
-          "Une serie de Taylor approxime une fonction par un polynome construit a partir de ses derivees en un point de reference.",
-          "Quand on ajoute des termes, le polynome colle mieux a la courbe originale autour du centre de developpement, puis sur une zone de plus en plus large.",
+          'Une série de Taylor approxime une fonction par un polynôme construit à partir de ses dérivées en un point de référence.',
+          'Quand on ajoute des termes, le polynôme colle mieux à la courbe originale autour du centre de développement, puis sur une zone de plus en plus large.',
         ]}
         exampleLabel="Lecture rapide"
-        exampleText="La courbe verte est la vraie fonction, et la courbe bleue montre le polynome de Taylor actif."
-        eyebrow="Definition"
-        title="Qu est ce qu une serie de Taylor ?"
+        exampleText="La courbe verte est la vraie fonction, et la courbe bleue montre le polynôme de Taylor actif."
+        eyebrow="Définition"
+        title="Qu’est-ce qu’une série de Taylor ?"
       />
     </SafeAreaView>
   );
@@ -1089,16 +1075,24 @@ const styles = StyleSheet.create({
   },
   approximationFormulaWrap: {
     flexGrow: 0,
-    height: 220,
+    minHeight: 54,
     width: '100%',
   },
   approximationFormulaContent: {
+    alignItems: 'stretch',
     gap: 10,
-    paddingBottom: 4,
+    paddingBottom: 6,
+    paddingRight: 14,
   },
   approximationTermRow: {
-    minHeight: 30,
-    width: '100%',
+    backgroundColor: themeActif.panel,
+    borderColor: themeActif.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: 'center',
+    minHeight: 46,
+    minWidth: 180,
+    paddingHorizontal: 12,
   },
   approximationTermText: {
     color: '#000000',
@@ -1169,26 +1163,6 @@ const styles = StyleSheet.create({
     marginLeft: -9,
     position: 'absolute',
     width: 18,
-  },
-  stepperRow: {
-    alignSelf: 'center',
-    flexDirection: 'row',
-    gap: 8,
-  },
-  stepButton: {
-    alignItems: 'center',
-    backgroundColor: themeActif.surface,
-    borderColor: themeActif.border,
-    borderRadius: 8,
-    borderWidth: 1.5,
-    height: 34,
-    justifyContent: 'center',
-    paddingHorizontal: 18,
-  },
-  stepText: {
-    color: themeActif.ink,
-    fontSize: 14,
-    fontWeight: '800',
   },
   statsGrid: {
     gap: 12,

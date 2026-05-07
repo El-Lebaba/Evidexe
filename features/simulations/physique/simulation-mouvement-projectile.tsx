@@ -298,12 +298,6 @@ function GraphiqueProjectile({
           <Circle cx={0} cy={groundY} fill="url(#projectileDot)" r={8} stroke={themeActif.surface} strokeOpacity={0.7} strokeWidth={1.3} />
         )}
 
-        <SvgText fill={themeActif.ink} fontSize="11" fontWeight="800" textAnchor="start" x={12} y={22}>
-          portee {formaterNombre(values.range)} m
-        </SvgText>
-        <SvgText fill={themeActif.mutedInk} fontSize="11" fontWeight="800" textAnchor="start" x={12} y={38}>
-          hauteur max {formaterNombre(values.maxHeight)} m
-        </SvgText>
       </Svg>
     </View>
   );
@@ -413,13 +407,14 @@ export function SimulationMouvementProjectile() {
                   centered
                   fallback="R = v0^2 sin(2 theta) / g"
                   mathematiques={'R=\\frac{v_0^2\\sin(2\\theta)}{g}'}
+                  mathViewMobile
                   size="md"
                 />
               </View>
 
               <View style={styles.panel}>
                 <CurseurNumerique label="Vitesse initiale" max={50} min={5} onChange={setSpeed} step={1} unit="m/s" value={speed} />
-                <CurseurNumerique label="Angle de tir" max={85} min={5} onChange={setAngle} step={1} unit="Â°" value={angle} />
+                <CurseurNumerique label="Angle de tir" max={85} min={5} onChange={setAngle} step={1} unit="°" value={angle} />
                 <CurseurNumerique label="Gravite" max={25} min={1} onChange={setGravity} precision={1} step={0.1} unit="m/s^2" value={gravity} />
                 <Pressable
                   onPress={() => {
@@ -498,13 +493,13 @@ export function SimulationMouvementProjectile() {
 
       <InfobulleDefinition
         body={[
-          'Un projectile suit une trajectoire parabolique quand on neglige la resistance de l air.',
-          'La vitesse horizontale reste constante, tandis que la vitesse verticale diminue sous l effet de la gravite.',
+          'Un projectile suit une trajectoire parabolique quand on néglige la résistance de l’air.',
+          'La vitesse horizontale reste constante, tandis que la vitesse verticale diminue sous l’effet de la gravité.',
         ]}
         exampleLabel="Lecture rapide"
-        exampleText="A 45 deg, la portee est maximale si le projectile revient a la meme hauteur."
-        eyebrow="Definition"
-        title="Qu est ce qu un mouvement projectile ?"
+        exampleText="À 45°, la portée est maximale si le projectile revient à la même hauteur."
+        eyebrow="Définition"
+        title="Qu’est-ce qu’un mouvement projectile ?"
       />
     </SafeAreaView>
   );
