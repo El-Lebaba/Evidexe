@@ -31,14 +31,21 @@ export default function PanneauSucces({ darkMode = false, user }: PanneauSuccesP
         </View>
       </View>
 
-      <View style={[styles.summaryCard, { backgroundColor: themeActif.text }]}>
+      <View
+        style={[
+          styles.summaryCard,
+          {
+            backgroundColor: themeActif.panel,
+            borderColor: `${themeActif.border}30`,
+          },
+        ]}>
         <View>
-          <Text style={styles.summaryLabel}>Niveau actuel</Text>
-          <Text style={styles.summaryNumber}>{user.level}</Text>
+          <Text style={[styles.summaryLabel, { color: themeActif.muted }]}>Niveau actuel</Text>
+          <Text style={[styles.summaryNumber, { color: themeActif.text }]}>{user.level}</Text>
         </View>
         <View style={styles.summaryRight}>
-          <Text style={styles.summaryStat}>{user.xp} XP</Text>
-          <Text style={styles.summarySubStat}>
+          <Text style={[styles.summaryStat, { color: themeActif.yellow }]}>{user.xp} XP</Text>
+          <Text style={[styles.summarySubStat, { color: themeActif.muted }]}>
             {completedSuccesses}/{successes.length} succes
           </Text>
         </View>
@@ -85,17 +92,16 @@ const styles = StyleSheet.create({
   summaryCard: {
     alignItems: 'flex-end',
     borderRadius: 10,
+    borderWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 16,
   },
   summaryLabel: {
-    color: '#FFFFFFAA',
     fontSize: 12,
     fontWeight: '800',
   },
   summaryNumber: {
-    color: 'white',
     fontSize: 38,
     fontWeight: '900',
     lineHeight: 44,
@@ -105,12 +111,10 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   summaryStat: {
-    color: '#FFFFFFCC',
     fontSize: 13,
     fontWeight: '900',
   },
   summarySubStat: {
-    color: '#FFFFFF99',
     fontSize: 12,
     fontWeight: '800',
     marginTop: 3,

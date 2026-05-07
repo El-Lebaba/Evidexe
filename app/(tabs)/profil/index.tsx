@@ -3,6 +3,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ComponentProps, ReactNode } from 'react';
 import {
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -59,7 +60,8 @@ export default function EvidexProfile() {
       }
 
       setCourses(obtenirCoursApprentissageRecents().filter((CoursLocal) => CoursLocal.progress > 0));
-      setUser(donneesLocales.obtenirUtilisateur());
+      const loadedUser = donneesLocales.obtenirUtilisateur();
+      setUser(loadedUser);
       setSettings(donneesLocales.obtenirParametres());
     }
 
@@ -74,6 +76,12 @@ export default function EvidexProfile() {
     setCourses(obtenirCoursApprentissageRecents().filter((CoursLocal) => CoursLocal.progress > 0));
   }, []);
 
+  const refreshProfile = useCallback(() => {
+    refreshCourses();
+    setUser(donneesLocales.obtenirUtilisateur());
+    setSettings(donneesLocales.obtenirParametres());
+  }, [refreshCourses]);
+
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
@@ -82,7 +90,7 @@ export default function EvidexProfile() {
         await donneesLocales.init();
 
         if (isActive) {
-          refreshCourses();
+          refreshProfile();
         }
       }
 
@@ -91,12 +99,8 @@ export default function EvidexProfile() {
       return () => {
         isActive = false;
       };
-    }, [refreshCourses])
+    }, [refreshProfile])
   );
-
-  function enregistrerParametres(nextSettings: ParametresApplication) {
-    setSettings(nextSettings);
-  }
 
   const activeCount = courses.filter((CoursLocal) => !CoursLocal.completed).length;
   const completedCount = courses.filter((CoursLocal) => CoursLocal.completed).length;
@@ -112,6 +116,10 @@ export default function EvidexProfile() {
   function handlePanelScrollEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
     const nextIndex = Math.round(event.nativeEvent.contentOffset.x / panelWidth);
     setActivePanel(Math.max(0, Math.min(profileTabs.length - 1, nextIndex)));
+  }
+
+  function enregistrerParametres(nextSettings: ParametresApplication) {
+    setSettings(nextSettings);
   }
 
   const stats = [
@@ -152,7 +160,11 @@ export default function EvidexProfile() {
             <View style={styles.profileHeader}>
               <View style={styles.profileTopRow}>
                 <View style={[styles.avatar, { backgroundColor: themeActif.blue }]}>
-                  <MaterialIcons name="person" size={28} color="white" />
+                  {user.avatarUri ? (
+                    <Image source={{ uri: user.avatarUri }} style={styles.avatarImage} />
+                  ) : (
+                    <MaterialIcons name="person" size={28} color="white" />
+                  )}
                 </View>
                 <View style={styles.profileIdentity}>
                   <Text style={[styles.profileName, { color: themeActif.text }]}>
@@ -317,7 +329,12 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     height: 48,
     justifyContent: 'center',
+    overflow: 'hidden',
     width: 48,
+  },
+  avatarImage: {
+    height: '100%',
+    width: '100%',
   },
   profileIdentity: {
     flex: 1,

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { router, type Href, usePathname } from 'expo-router';
 import {
   Animated,
   Modal,
@@ -34,7 +35,9 @@ export default function PanneauParametres({
 }: SettingsPanelProps) {
   const [localSettings, setLocalSettings] = useState(settings);
   const [slideValue] = useState(() => new Animated.Value(-1));
+  const pathname = usePathname();
   const themeActif = obtenirThemeApplication(localSettings.darkMode);
+  const profileLocked = pathname.includes('/profil');
 
   useEffect(() => {
     setLocalSettings(settings);
@@ -52,6 +55,15 @@ export default function PanneauParametres({
     setLocalSettings(nextSettings);
     donneesLocales.enregistrerParametres(nextSettings);
     onSave(nextSettings);
+  }
+
+  function openProfile() {
+    if (profileLocked) {
+      return;
+    }
+
+    onClose();
+    router.push('/(tabs)/profil' as Href);
   }
 
   return (
@@ -85,11 +97,25 @@ export default function PanneauParametres({
           </View>
 
           <View style={styles.content}>
+            <Pressable
+              disabled={profileLocked}
+              onPress={openProfile}
+              style={[
+                styles.profileShortcut,
+                {
+                  backgroundColor: `${themeActif.blue}18`,
+                  borderColor: `${themeActif.blue}70`,
+                },
+                profileLocked && styles.profileShortcutLocked,
+              ]}>
+              <MaterialIcons name={profileLocked ? 'lock' : 'person-outline'} size={20} color={themeActif.blue} />
+              <Text style={[styles.profileShortcutText, { color: themeActif.text }]}>Profile</Text>
+            </Pressable>
+
             <Text style={[styles.sectionTitle, { color: themeActif.muted }]}>Apparence</Text>
             <ToggleRow
               icon={localSettings.darkMode ? 'dark-mode' : 'light-mode'}
               label="Mode sombre"
-              description="Change le themeActif de l'interface"
               themeActif={themeActif}
               value={localSettings.darkMode}
               onValueChange={(darkMode) =>
@@ -101,7 +127,6 @@ export default function PanneauParametres({
             <ToggleRow
               icon="speed"
               label="Compteur FPS"
-              description="Active ou coupe totalement la mesure FPS"
               themeActif={themeActif}
               value={localSettings.fpsCounterEnabled}
               onValueChange={(fpsCounterEnabled) =>
@@ -118,7 +143,6 @@ export default function PanneauParametres({
 type ToggleRowProps = {
   icon: keyof typeof MaterialIcons.glyphMap;
   label: string;
-  description: string;
   themeActif: ThemeApplication;
   value: boolean;
   onValueChange: (value: boolean) => void;
@@ -127,7 +151,6 @@ type ToggleRowProps = {
 function ToggleRow({
   icon,
   label,
-  description,
   themeActif,
   value,
   onValueChange,
@@ -138,9 +161,6 @@ function ToggleRow({
 
       <View style={styles.toggleTextBox}>
         <Text style={[styles.toggleLabel, { color: themeActif.text }]}>{label}</Text>
-        <Text style={[styles.toggleDescription, { color: themeActif.muted }]}>
-          {description}
-        </Text>
       </View>
 
       <Pressable
@@ -185,6 +205,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F3F1E7',
     borderRightColor: '#243B5340',
     borderRightWidth: 1,
+    borderBottomRightRadius: 22,
+    borderTopRightRadius: 22,
     bottom: 0,
     left: 0,
     maxWidth: 360,
@@ -220,6 +242,23 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textTransform: 'uppercase',
   },
+  profileShortcut: {
+    alignItems: 'center',
+    borderColor: '#7EA6E070',
+    borderRadius: 10,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 10,
+    padding: 13,
+  },
+  profileShortcutLocked: {
+    opacity: 0.48,
+  },
+  profileShortcutText: {
+    color: '#243B53',
+    fontSize: 14,
+    fontWeight: '900',
+  },
   toggleRow: {
     alignItems: 'center',
     borderRadius: 8,
@@ -234,11 +273,6 @@ const styles = StyleSheet.create({
     color: '#243B53',
     fontSize: 14,
     fontWeight: '800',
-  },
-  toggleDescription: {
-    color: '#6E7F73',
-    fontSize: 12,
-    marginTop: 2,
   },
   toggleSlider: {
     backgroundColor: '#F3F1E7',

@@ -51,6 +51,8 @@ type BubbleSpec = {
   width: number;
 };
 
+type FeaturePanel = 'cours' | 'simulations';
+
 function seededValue(seed: number) {
   const x = Math.sin(seed) * 10000;
   return x - Math.floor(x);
@@ -100,7 +102,6 @@ function createBubblesAccueil(panelWidth: number, panelHeight: number, isCompact
       }
     }
   }
-
   return bubbles;
 }
 
@@ -157,6 +158,8 @@ export default function EcranAccueil() {
   const [indexPointVignetteAccueil, setIndexPointVignetteAccueil] = useState(0);
   const [userLevel, setUserLevel] = useState(1);
   const [userXp, setUserXp] = useState(0);
+  const [userName, setUserName] = useState('Utilisateur');
+  const [userAvatarUri, setUserAvatarUri] = useState<string | undefined>();
   const [activeCourses, setActiveCourses] = useState(0);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settings, setSettings] = useState<ParametresApplication>({
@@ -233,6 +236,8 @@ export default function EcranAccueil() {
 
       const user = donneesLocales.obtenirUtilisateur();
       const courses = donneesLocales.obtenirCoursRecents();
+      setUserName(user.name ?? 'Utilisateur');
+      setUserAvatarUri(user.avatarUri);
       setUserLevel(user.level);
       setUserXp(user.xp);
       setActiveCourses(courses.filter((CoursLocal) => !CoursLocal.completed).length);
@@ -405,6 +410,101 @@ export default function EcranAccueil() {
 
   function enregistrerParametres(nextSettings: ParametresApplication) {
     setSettings(nextSettings);
+  }
+
+  function renderFeatureCard({
+    accent,
+    expanded,
+    footerText,
+    icon,
+    panel,
+    subtitle,
+    title,
+  }: {
+    accent: string;
+    expanded: boolean;
+    footerText: string;
+    icon: keyof typeof MaterialIcons.glyphMap;
+    panel: FeaturePanel;
+    subtitle: string;
+    title: string;
+  }) {
+    const isSimulationCard = panel === 'simulations';
+
+    return (
+      <Animated.View
+        key={panel}
+        style={[
+          styles.cardWrap,
+          { transform: [{ translateY: simulationCardLift }], width: cardWidth },
+        ]}>
+        <Pressable
+          onPress={() => togglePanel(panel)}
+          style={({ hovered, pressed }) => [
+            styles.card,
+            isCompact ? styles.cardCompact : null,
+            expandedPanel === null ? styles.cardDimmed : null,
+            isSimulationCard ? styles.simulationCard : null,
+            isDarkMode
+              ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border }
+              : null,
+            expanded ? styles.simulationCardExpanded : null,
+            hovered && expandedPanel === null ? styles.cardHovered : null,
+            pressed ? styles.cardPressed : null,
+          ]}>
+          <View
+            style={[
+              styles.cardMedia,
+              isCompact ? styles.cardMediaCompact : null,
+              { backgroundColor: `${accent}20` },
+            ]}>
+            <View
+              style={[
+                styles.cardIconWrap,
+                isCompact ? styles.cardIconWrapCompact : null,
+                { backgroundColor: accent },
+              ]}>
+              <MaterialIcons name={icon} size={34} color={palette.ink} />
+            </View>
+          </View>
+
+          <View style={[styles.cardText, isCompact ? styles.cardTextCompact : null]}>
+            <Text
+              style={[
+                styles.cardTitle,
+                isCompact ? styles.cardTitleCompact : null,
+                isDarkMode ? { color: themeApplication.ink } : null,
+              ]}>
+              {title}
+            </Text>
+            <Text
+              style={[
+                styles.cardSubtitle,
+                isCompact ? styles.cardSubtitleCompact : null,
+                isDarkMode ? { color: '#526071' } : null,
+              ]}>
+              {subtitle}
+            </Text>
+          </View>
+
+          <View style={[styles.cardFooter, isCompact ? styles.cardFooterCompact : null]}>
+            <Text
+              style={[
+                styles.cardFooterText,
+                isCompact ? styles.cardFooterTextCompact : null,
+                isDarkMode ? { color: '#526071' } : null,
+              ]}>
+              {footerText}
+            </Text>
+            <MaterialIcons
+              name={expanded ? 'expand-less' : 'chevron-right'}
+              size={22}
+              color={palette.slate}
+            />
+          </View>
+        </Pressable>
+      </Animated.View>
+    );
   }
 
   const scrollToExplore = useCallback(() => {
@@ -612,10 +712,12 @@ export default function EcranAccueil() {
         isCompact={isCompact}
         isDarkMode={isDarkMode}
         level={userLevel}
+        avatarUri={userAvatarUri}
         onExplore={scrollToExplore}
         panelHeight={hauteurPanneauAccueil}
         slideWidth={slideWidth}
         themeApplication={themeApplication}
+        userName={userName}
         xp={userXp}
       />
     );
@@ -644,17 +746,7 @@ export default function EcranAccueil() {
               ]}>
               <MaterialIcons name="menu" size={24} color={isDarkMode ? themeApplication.ink : palette.ink} />
             </Pressable>
-
-            <Pressable
-              onPress={() => router.push('/(tabs)/profil' as Href)}
-              style={[
-                styles.accountChip,
-                isCompact ? styles.accountChipCompact : null,
-                isDarkMode ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
-              ]}>
-              <MaterialIcons name="person-outline" size={18} color={isDarkMode ? themeApplication.ink : palette.ink} />
-              <Text selectable={false} style={[styles.accountText, isDarkMode ? { color: themeApplication.ink } : null]}>Profil</Text>
-            </Pressable>
+            <View style={styles.homeProfileSpacer} />
           </View>
 
           <View
@@ -706,73 +798,24 @@ export default function EcranAccueil() {
           onLayout={(event) => setFeaturesAnchorY(event.nativeEvent.layout.y)}
           style={[styles.featuresSection, isCompact ? styles.featuresSectionCompact : null]}>
           <View style={[styles.cardsGrid, isCompact ? styles.cardsGridCompact : null]}>
-            <Animated.View style={[styles.cardWrap, { transform: [{ translateY: simulationCardLift }], width: cardWidth }]}>
-              <Pressable
-                onPress={() => togglePanel('cours')}
-                style={({ hovered }) => [
-                  styles.card,
-                  isCompact ? styles.cardCompact : null,
-                  isDarkMode ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
-                  coursesExpanded ? styles.simulationCardExpanded : null,
-                  hovered && expandedPanel === null ? styles.cardHovered : null,
-                  expandedPanel === null ? styles.cardDimmed : null,
-                ]}>
-                <View style={[styles.cardMedia, isCompact ? styles.cardMediaCompact : null, { backgroundColor: `${palette.yellow}20` }]}>
-                  <View style={[styles.cardIconWrap, isCompact ? styles.cardIconWrapCompact : null, { backgroundColor: palette.yellow }]}>
-                    <MaterialIcons name="menu-book" size={34} color={palette.ink} />
-                  </View>
-                </View>
-                <View style={[styles.cardText, isCompact ? styles.cardTextCompact : null]}>
-                  <Text style={[styles.cardTitle, isCompact ? styles.cardTitleCompact : null, isDarkMode ? { color: themeApplication.ink } : null]}>Cours</Text>
-                  <Text style={[styles.cardSubtitle, isCompact ? styles.cardSubtitleCompact : null, isDarkMode ? { color: '#526071' } : null]}>
-                    {coursesExpanded ? 'Choisis une matiere' : 'Explorer les matieres'}
-                  </Text>
-                </View>
-                <View style={[styles.cardFooter, isCompact ? styles.cardFooterCompact : null]}>
-                  <Text style={[styles.cardFooterText, isCompact ? styles.cardFooterTextCompact : null, isDarkMode ? { color: '#526071' } : null]}>
-                    {coursesExpanded ? 'Refermer' : 'Ouvrir'}
-                  </Text>
-                  <MaterialIcons name={coursesExpanded ? 'expand-less' : 'chevron-right'} size={22} color={palette.slate} />
-                </View>
-              </Pressable>
-            </Animated.View>
-
-            <Animated.View
-              style={[styles.cardWrap, { transform: [{ translateY: simulationCardLift }], width: cardWidth },
-              ]}>
-              <Pressable
-                onPress={() => togglePanel('simulations')}
-                style={({ hovered, pressed }) => [
-                  styles.card,
-                  isCompact ? styles.cardCompact : null,
-                  styles.simulationCard,
-                  isDarkMode ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
-                  simulationsExpanded ? styles.simulationCardExpanded : null,
-                  hovered && expandedPanel === null ? styles.cardHovered : null,
-                  expandedPanel === null ? styles.cardDimmed : null,
-                  pressed ? styles.cardPressed : null,
-                ]}>
-                <View style={[styles.cardMedia, isCompact ? styles.cardMediaCompact : null, { backgroundColor: `${palette.blue}20` }]}>
-                  <View style={[styles.cardIconWrap, isCompact ? styles.cardIconWrapCompact : null, { backgroundColor: palette.blue }]}>
-                    <MaterialIcons name="bolt" size={34} color={palette.ink} />
-                  </View>
-                </View>
-                <View style={[styles.cardText, isCompact ? styles.cardTextCompact : null]}>
-                  <Text style={[styles.cardTitle, isCompact ? styles.cardTitleCompact : null, isDarkMode ? { color: themeApplication.ink } : null]}>Simulations</Text>
-                  <Text style={[styles.cardSubtitle, isCompact ? styles.cardSubtitleCompact : null, isDarkMode ? { color: '#526071' } : null]}>
-                    {simulationsExpanded ? 'Choisis une section' : 'Explorer les sections'}
-                  </Text>
-                </View>
-                <View style={[styles.cardFooter, isCompact ? styles.cardFooterCompact : null]}>
-                  <Text style={[styles.cardFooterText, isCompact ? styles.cardFooterTextCompact : null, isDarkMode ? { color: '#526071' } : null]}>{simulationsExpanded ? 'Refermer' : 'Ouvrir'}</Text>
-                  <MaterialIcons
-                    name={simulationsExpanded ? 'expand-less' : 'chevron-right'}
-                    size={22}
-                    color={palette.slate}
-                  />
-                </View>
-              </Pressable>
-            </Animated.View>
+            {renderFeatureCard({
+              accent: palette.yellow,
+              expanded: coursesExpanded,
+              footerText: coursesExpanded ? 'Refermer' : 'Ouvrir',
+              icon: 'menu-book',
+              panel: 'cours',
+              subtitle: coursesExpanded ? 'Choisis une matiere' : 'Explorer les matieres',
+              title: 'Cours',
+            })}
+            {renderFeatureCard({
+              accent: palette.blue,
+              expanded: simulationsExpanded,
+              footerText: simulationsExpanded ? 'Refermer' : 'Ouvrir',
+              icon: 'bolt',
+              panel: 'simulations',
+              subtitle: simulationsExpanded ? 'Choisis une section' : 'Explorer les sections',
+              title: 'Simulations',
+            })}
           </View>
 
           <Animated.View
@@ -955,13 +998,7 @@ function VignetteAccueilAPropos({ animatedStyle, bubbles, driftProgress, isCompa
   );
 }
 
-type PropsVignetteProfilAccueil = PropsVignetteAccueil & {
-  activeCourses: number;
-  level: number;
-  xp: number;
-};
-
-function VignetteAccueilProfil({ activeCourses, animatedStyle, bubbles, driftProgress, isCompact, isDarkMode, level, onExplore, panelHeight, slideWidth, themeApplication, xp }: PropsVignetteProfilAccueil) {
+function VignetteAccueilProfil({ activeCourses, animatedStyle, avatarUri, bubbles, driftProgress, isCompact, isDarkMode, level, onExplore, panelHeight, slideWidth, themeApplication, userName, xp }: PropsVignetteProfilAccueil) {
   return (
     <Animated.View style={[styles.vignetteAccueil, { width: slideWidth }, animatedStyle]}>
       <View
@@ -1000,17 +1037,23 @@ function VignetteAccueilProfil({ activeCourses, animatedStyle, bubbles, driftPro
           </Animated.View>
         ))}
         <View style={[styles.enTeteApercuProfilAccueil, isCompact ? styles.enTeteApercuProfilAccueilCompact : null]}>
-          <Text style={[styles.eyebrow, isCompact ? styles.eyebrowCompact : null]}>Profil en bref</Text>
-          <Text style={[styles.titreApercuProfilAccueil, isCompact ? styles.titreApercuProfilAccueilCompact : null]}>Un apercu rapide de ta progression</Text>
+          <Text style={[styles.eyebrow, isCompact ? styles.eyebrowCompact : null,isDarkMode ? { color: themeApplication.muted } : null]}>Profil en bref</Text>
+          <Text style={[
+              styles.titreApercuProfilAccueil,
+            isCompact ? styles.titreApercuProfilAccueilCompact : null,
+            isDarkMode ? { color: themeApplication.text } : null]}>Un apercu rapide de ta progression</Text>
         </View>
         <View style={[styles.profilePreviewCard, isCompact ? styles.profilePreviewCardCompact : null]}>
           <View style={styles.profileBadgeRow}>
             <View style={styles.profileAvatar}>
-              <MaterialIcons name="person" size={24} color={palette.white} />
+              {avatarUri ? (
+                <Image source={{ uri: avatarUri }} style={styles.profileAvatarImage} />
+              ) : (
+                <MaterialIcons name="person" size={24} color={palette.white} />
+              )}
             </View>
             <View>
-              <Text style={[styles.profileName, isCompact ? styles.profileNameCompact : null]}>Tony</Text>
-              <Text style={styles.profileTag}>Compte Evidex</Text>
+              <Text style={[styles.profileName, isCompact ? styles.profileNameCompact : null]}>{userName}</Text>
             </View>
           </View>
           <View style={[styles.profileStatsGrid, isCompact ? styles.profileStatsGridCompact : null]}>
@@ -1037,6 +1080,14 @@ function VignetteAccueilProfil({ activeCourses, animatedStyle, bubbles, driftPro
   );
 }
 
+type PropsVignetteProfilAccueil = PropsVignetteAccueil & {
+  activeCourses: number;
+  avatarUri?: string;
+  level: number;
+  userName: string;
+  xp: number;
+};
+
 const styles = StyleSheet.create({
   safeArea: { backgroundColor: palette.cream, flex: 1 },
   content: { backgroundColor: palette.cream, paddingBottom: 56 },
@@ -1046,6 +1097,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 8,
+  },
+  homeProfileSpacer: {
+    height: 44,
+    width: 44,
   },
   fenetreVignettesAccueil: { overflow: 'hidden' },
   pisteVignettesAccueil: {
@@ -1332,12 +1387,12 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   profileBadgeRow: { alignItems: 'center', flexDirection: 'row', gap: 14 },
-  profileAvatar: { alignItems: 'center', backgroundColor: palette.blue, borderRadius: 24, height: 48, justifyContent: 'center', width: 48 },
+  profileAvatar: { alignItems: 'center', backgroundColor: palette.blue, borderRadius: 24, height: 48, justifyContent: 'center', overflow: 'hidden', width: 48 },
+  profileAvatarImage: { height: '100%', width: '100%' },
   profileName: { color: palette.ink, fontSize: 18, fontWeight: '900' },
   profileNameCompact: {
     fontSize: 16,
   },
-  profileTag: { color: palette.slate, fontSize: 13, fontWeight: '700', marginTop: 2 },
   profileStatsGrid: { flexDirection: 'row', gap: 12, marginTop: 20 },
   profileStatsGridCompact: {
     flexDirection: 'column',

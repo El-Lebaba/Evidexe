@@ -1,6 +1,6 @@
-import { EcranSimulationLigne } from '@/features/simulations/core/ecran-simulation-ligne';
+import { EcranSimulationTri } from '@/features/simulations/programmation-java/simulation-tri';
 
 export default function EcranJava3() {
-  return <EcranSimulationLigne titre="Tri par insertion" domaine="programmation-java" />;
+  return <EcranSimulationTri type="insertion" />;
 }
 

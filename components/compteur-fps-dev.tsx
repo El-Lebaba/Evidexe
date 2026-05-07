@@ -9,11 +9,12 @@ export function CompteurFpsDev() {
   const frameCountRef = useRef(0);
   const lastSampleRef = useRef(0);
   const rafRef = useRef<number | null>(null);
-
+  const statusStyle = fps >= 55 ? styles.good : fps >= 40 ? styles.warn : styles.bad;
   useEffect(() => {
     if (!__DEV__) {
       return;
     }
+
 
     let isMounted = true;
 
@@ -39,14 +40,12 @@ export function CompteurFpsDev() {
       isMounted = false;
     };
   }, []);
-
   useEffect(() => {
     if (!__DEV__ || !enabled) {
       if (rafRef.current !== null) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
       }
-
       frameCountRef.current = 0;
       lastSampleRef.current = 0;
       setFps(0);
@@ -57,16 +56,13 @@ export function CompteurFpsDev() {
       if (lastSampleRef.current === 0) {
         lastSampleRef.current = timestamp;
       }
-
       frameCountRef.current += 1;
       const elapsed = timestamp - lastSampleRef.current;
-
       if (elapsed >= 500) {
         setFps(Math.round((frameCountRef.current * 1000) / elapsed));
         frameCountRef.current = 0;
         lastSampleRef.current = timestamp;
       }
-
       rafRef.current = requestAnimationFrame(tick);
     }
 
@@ -78,13 +74,9 @@ export function CompteurFpsDev() {
       }
     };
   }, [enabled]);
-
   if (!__DEV__ || !enabled) {
     return null;
   }
-
-  const statusStyle = fps >= 55 ? styles.good : fps >= 40 ? styles.warn : styles.bad;
-
   return (
     <View pointerEvents="none" style={styles.container}>
       <Text style={[styles.text, statusStyle]}>{fps || '--'} FPS</Text>
@@ -94,16 +86,16 @@ export function CompteurFpsDev() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'rgba(36, 59, 83, 0.88)',
-    borderColor: 'rgba(243, 241, 231, 0.65)',
+    backgroundColor: '#121A17',
+    borderColor: '#50685C',
     borderRadius: 8,
     borderWidth: 1,
     left: 10,
     paddingHorizontal: 8,
     paddingVertical: 5,
     position: 'absolute',
-    top: 42,
-    zIndex: 9999,
+    top: 55,
+    zIndex: 4,
   },
   text: {
     fontSize: 11,
