@@ -12,6 +12,7 @@ import {
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
+import { themesSimulationEcrans } from '@/constantes/theme';
 
 type DefinitionPopoverProps = {
   body: string[];
@@ -22,14 +23,7 @@ type DefinitionPopoverProps = {
   delayMs?: number;
 };
 
-const themeActif = {
-  border: '#A8B59A',
-  grid: '#B7C7B0',
-  ink: '#243B53',
-  mutedInk: '#6E7F73',
-  panel: '#DDE4D5',
-  surface: '#F3F1E7',
-};
+const themeActif = themesSimulationEcrans.light.infobulleDefinition;
 
 export function InfobulleDefinition({
   body,

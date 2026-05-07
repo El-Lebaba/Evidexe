@@ -15,6 +15,7 @@ import Svg, { Line, Path, Rect } from 'react-native-svg';
 
 import { TexteTheme as TexteThematique } from '@/components/texte-theme';
 import { VueTheme as VueThematique } from '@/components/vue-theme';
+import { themesSimulationEcrans } from '@/constantes/theme';
 import { InfobulleDefinition as PopoverDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule as RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -53,22 +54,7 @@ const HAUTEUR_GRAPHIQUE_SOMMES = 300;
 const HAUTEUR_GRAPHIQUE_TERMES = 170;
 const NOMBRE_MAX_BARRES_TERMES = 40;
 
-const PALETTE_SERIES = {
-  accent: '#D8A94A',
-  accentDoux: 'rgba(216, 169, 74, 0.2)',
-  arrierePlan: '#E9ECE4',
-  bordure: '#243B53',
-  courbe: '#7CCFBF',
-  courbeDouce: 'rgba(124, 207, 191, 0.22)',
-  grille: '#B7C7B0',
-  grilleDouce: 'rgba(167, 184, 158, 0.35)',
-  encre: '#243B53',
-  limite: '#7EA6E0',
-  encreAttenue: '#6E7F73',
-  negatif: '#D97B6C',
-  panneau: '#DDE4D5',
-  surface: '#F3F1E7',
-};
+const PALETTE_SERIES = themesSimulationEcrans.light.series;
 
 // Sur le web, on bloque la selection de texte pendant le glisser du curseur.
 const STYLE_GLISSER_CURSEUR_WEB =

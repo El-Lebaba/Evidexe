@@ -15,6 +15,7 @@ import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
+import { themesSimulationEcrans } from '@/constantes/theme';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -42,23 +43,7 @@ const HARMONIC_MAX = 30;
 const GRAPH_SAMPLE_STEP = Platform.OS === 'web' ? 2 : 5;
 const HARMONIC_PATH_LIMIT = Platform.OS === 'web' ? 5 : 3;
 const PHASOR_LIMIT = Platform.OS === 'web' ? 8 : 6;
-const themeActif = {
-  approximation: '#7CCFBF',
-  background: '#E9ECE4',
-  border: '#243B53',
-  component1: '#7EA6E0',
-  component2: '#D8A94A',
-  component3: '#D97B6C',
-  component4: '#AAB18E',
-  component5: '#6E7F73',
-  grid: '#B7C7B0',
-  gridSoft: 'rgba(167, 184, 158, 0.35)',
-  ink: '#243B53',
-  mutedInk: '#6E7F73',
-  panel: '#DDE4D5',
-  phasorCircle: 'rgba(36, 59, 83, 0.34)',
-  surface: '#F3F1E7',
-};
+const themeActif = themesSimulationEcrans.light.fourier;
 
 const COMPONENT_COLORS = [
   themeActif.component1,

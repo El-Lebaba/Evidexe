@@ -15,6 +15,7 @@ import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
+import { themesSimulationEcrans } from '@/constantes/theme';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -57,26 +58,7 @@ const DOMAIN: Domain = { xMin: -5, xMax: 5, yMin: -4, yMax: 4 };
 const TRACK_MIN = -4;
 const TRACK_MAX = 4;
 const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
-const themeActif = {
-  background: "#E9ECE4",
-  panel: "#DDE4D5",
-  surface: "#F3F1E7",
-  border: "#243B53",
-
-  ink: "#243B53",
-  mutedInk: "#6E7F73",
-
-  // accent: "#AAB58A", temp
-  // accentSoft: "#D8CBB4", temp
-
-  grid: "#B7C7B0",
-  gridSoft: "rgba(167, 184, 158, 0.35)",
-
-  function: "#7CCFBF",
-  derivative: "#7EA6E0",
-  tangent: "#D8A94A",
-  point: "#D97B6C"
-};
+const themeActif = themesSimulationEcrans.light.derivees;
 
 const WEB_SLIDER_INTERACTION_STYLE =
   Platform.OS === 'web'

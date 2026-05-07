@@ -15,6 +15,7 @@ import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
+import { themesSimulationEcrans } from '@/constantes/theme';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -37,22 +38,7 @@ type ProprietesCurseurNumerique = {
 
 const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
 const CENTIMETERS_PER_METER = 100;
-const themeActif = {
-  accent: '#D8A94A',
-  background: '#E9ECE4',
-  border: '#243B53',
-  force: '#D97B6C',
-  grid: '#B7C7B0',
-  gridSoft: 'rgba(167, 184, 158, 0.35)',
-  ink: '#243B53',
-  mutedInk: '#6E7F73',
-  object: '#7CCFBF',
-  objectDeep: '#3F8D83',
-  orbit: '#7DC9BE',
-  panel: '#DDE4D5',
-  surface: '#F3F1E7',
-  velocity: '#7CCFBF',
-};
+const themeActif = themesSimulationEcrans.light.mouvementCirculaire;
 
 const WEB_SLIDER_INTERACTION_STYLE =
   Platform.OS === 'web'

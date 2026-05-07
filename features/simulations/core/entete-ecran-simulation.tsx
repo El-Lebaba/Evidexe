@@ -1,8 +1,8 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import { Href, router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { LogoEvidexe } from '@/components/logo-evidexe';
 import { TexteTheme } from '@/components/texte-theme';
 import { obtenirThemeApplication } from '@/constantes/theme';
 import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
@@ -62,9 +62,8 @@ export function EnteteEcranSimulation({ titre, domaine }: ProprietesEnteteEcranS
             </Pressable>
             <View style={styles.groupeTitre}>
               <Pressable onPress={() => router.replace('/(tabs)/accueil' as Href)} style={styles.boutonLogo}>
-                <Image
-                  contentFit="contain"
-                  source={require('@/assets/images/evidexe-logo.png')}
+                <LogoEvidexe
+                  resizeMode="contain"
                   style={styles.logo}
                 />
               </Pressable>

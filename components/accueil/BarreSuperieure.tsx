@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Href, Link } from 'expo-router';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { LogoEvidexe } from '@/components/logo-evidexe';
 import { obtenirThemeApplication } from '@/constantes/theme';
 
 const CouleursBase = obtenirThemeApplication(false);
@@ -45,9 +46,8 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
         <View style={styles.nav}>
           <Link href={'/(tabs)/accueil' as Href} asChild>
             <Pressable style={styles.logoButton}>
-              <Image
+              <LogoEvidexe
                 resizeMode="contain"
-                source={require('@/assets/images/evidexe-logo.png')}
                 style={styles.logoImage}
               />
             </Pressable>

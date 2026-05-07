@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { LogoEvidexe } from '@/components/logo-evidexe';
 import { obtenirThemeApplication, ThemeApplication } from '@/constantes/theme';
 import { donneesLocales } from '@/db/donnees-principales';
 import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
@@ -35,7 +36,6 @@ const palette = {
   white: '#FFFFFF',
 };
 
-const homeLogo = require('@/assets/images/evidexe-logo.png');
 const studyingBoy = require('@/assets/images/studying-boy-hq.png');
 const NOMBRE_VIGNETTES_ACCUEIL = 3;
 const SLOT_DEPART_VIGNETTES = 1;
@@ -829,7 +829,7 @@ function VignetteAccueilMarque({ animatedStyle, bubbles, driftProgress, isCompac
         </View>
         <View style={[styles.logoStage, isCompact ? styles.logoStageCompact : null]}>
           <View style={[styles.logoAura, isCompact ? styles.logoAuraCompact : null]}/>
-          <Image resizeMode="contain" source={homeLogo} style={[styles.logoImage, isCompact ? styles.logoImageCompact : null]}/>
+          <LogoEvidexe resizeMode="contain" style={[styles.logoImage, isCompact ? styles.logoImageCompact : null]}/>
         </View>
         <Pressable onPress={onExplore} style={[styles.boutonExplorerAccueil, styles.boutonExplorerAccueilFlottant, isCompact ? styles.boutonExplorerAccueilCompact : null]}>
           <Text style={[styles.texteBoutonExplorerAccueil, isCompact ? styles.texteBoutonExplorerAccueilCompact : null]}>Explorer</Text>

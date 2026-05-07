@@ -15,6 +15,7 @@ import Svg, { Line, Path, Polygon, Rect } from 'react-native-svg';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
+import { themesSimulationEcrans } from '@/constantes/theme';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -148,23 +149,7 @@ const METHODS: { key: MethodKey; label: string }[] = [
 
 const DOMAIN: Domain = { xMax: 4, xMin: -4, yMax: 5, yMin: -3 };
 const BOUND_GAP = 0.1;
-const themeActif = {
-  accent: '#D97B6C',
-  approximation: 'rgba(124, 207, 191, 0.26)',
-  approximationStroke: '#7EA6E0',
-  approximationNegative: 'rgba(217, 123, 108, 0.24)',
-  approximationNegativeStroke: '#D97B6C',
-  background: '#E9ECE4',
-  border: '#243B53',
-  bounds: '#D8A94A',
-  function: '#7CCFBF',
-  grid: '#B7C7B0',
-  gridSoft: 'rgba(167, 184, 158, 0.35)',
-  ink: '#243B53',
-  mutedInk: '#6E7F73',
-  panel: '#DDE4D5',
-  surface: '#F3F1E7',
-};
+const themeActif = themesSimulationEcrans.light.integrales;
 
 function borner(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);

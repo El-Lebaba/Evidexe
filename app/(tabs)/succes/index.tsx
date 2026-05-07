@@ -1,16 +1,15 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useFocusEffect } from '@react-navigation/native';
 import { Href, router } from 'expo-router';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCallback, useState } from 'react';
 
+import { LogoEvidexe } from '@/components/logo-evidexe';
 import ListeSucces from '@/components/profil/ListeSucces';
 import { obtenirThemeApplication } from '@/constantes/theme';
 import { donneesLocales } from '@/db/donnees-principales';
 import type { ParametresApplication, SuccesProgression } from '@/db/donnees-principales';
-
-const logo = require('@/assets/images/evidexe-logo.png');
 
 export default function PageSucces() {
   const [successes, setSuccesses] = useState<SuccesProgression[]>([]);
@@ -36,7 +35,7 @@ export default function PageSucces() {
     <SafeAreaView style={[styles.safeArea, { backgroundColor: themeActif.background }]}>
       <View style={styles.topRow}>
         <Pressable onPress={() => router.push('/(tabs)/accueil' as Href)} style={styles.logoButton}>
-          <Image resizeMode="contain" source={logo} style={styles.logo} />
+          <LogoEvidexe resizeMode="contain" style={styles.logo} />
         </Pressable>
 
         <Pressable

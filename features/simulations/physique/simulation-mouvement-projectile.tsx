@@ -15,6 +15,7 @@ import Svg, { Circle, Defs, Line, Path, RadialGradient, Rect, Stop, Text as SvgT
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
+import { themesSimulationEcrans } from '@/constantes/theme';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -36,22 +37,7 @@ type ProprietesCurseurNumerique = {
 };
 
 const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
-const themeActif = {
-  accent: '#D8A94A',
-  background: '#E9ECE4',
-  border: '#243B53',
-  grid: '#B7C7B0',
-  gridSoft: 'rgba(167, 184, 158, 0.35)',
-  ink: '#243B53',
-  mutedInk: '#6E7F73',
-  panel: '#DDE4D5',
-  projectile: '#D8A94A',
-  projectileDeep: '#9A7432',
-  surface: '#F3F1E7',
-  trajectory: '#7CCFBF',
-  velocityX: '#7CCFBF',
-  velocityY: '#D97B6C',
-};
+const themeActif = themesSimulationEcrans.light.mouvementProjectile;
 
 const WEB_SLIDER_INTERACTION_STYLE =
   Platform.OS === 'web'
