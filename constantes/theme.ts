@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Appearance, Platform } from 'react-native';
 
 const couleurTeinteClaire = '#BC8559';
 const couleurTeinteSombre = '#E8E0C9';
@@ -99,7 +99,7 @@ export const themesSimulation = {
   light: {
     common: themeSimulationCommunClair,
     math: {
-      selected: '#7CCFBF',
+      selected: '#D8A94A',
       function: '#7CCFBF',
       secondary: '#7EA6E0',
       warning: '#D8A94A',
@@ -135,10 +135,10 @@ export const themesSimulation = {
   dark: {
     common: themeSimulationCommunSombre,
     math: {
-      selected: '#83D9C8',
+      selected: '#D8A94A',
       function: '#83D9C8',
       secondary: '#8CB8F0',
-      warning: '#E7BD59',
+      warning: '#D8A94A',
       point: '#E18476',
       neutral: '#9FB19D',
       fieldStrong: '#8CB8F0',
@@ -152,7 +152,7 @@ export const themesSimulation = {
       phasorCircle: 'rgba(242, 239, 230, 0.22)',
     },
     physics: {
-      accent: '#E7BD59',
+      accent: '#D8A94A',
       primary: '#83D9C8',
       primaryAlt: '#83D9C8',
       primaryDeep: '#4EA194',
@@ -160,7 +160,7 @@ export const themesSimulation = {
       primaryMedium: '#5FB4A8',
       primaryWeak: '#88C9BE',
       red: '#E18476',
-      yellow: '#E7BD59',
+      yellow: '#D8A94A',
       yellowDeep: '#B48D3E',
       softPrimary: 'rgba(131, 217, 200, 0.18)',
       softYellow: 'rgba(231, 189, 89, 0.18)',
@@ -243,7 +243,7 @@ function creerThemesSimulationEcrans(theme: {
     },
     serieTaylor: {
       ...common,
-      activeApproximation: math.secondary,
+      activeApproximation: math.warning,
       approximation: math.softBlue,
       function: math.function,
       point: math.point,
@@ -370,6 +370,10 @@ export const themesSimulationEcrans = {
 
 export function obtenirThemesSimulationEcrans(darkMode = false) {
   return darkMode ? themesSimulationEcrans.dark : themesSimulationEcrans.light;
+}
+
+export function obtenirThemesSimulationEcransInitial() {
+  return obtenirThemesSimulationEcrans(Appearance.getColorScheme() === 'dark');
 }
 
 export const Polices = Platform.select({

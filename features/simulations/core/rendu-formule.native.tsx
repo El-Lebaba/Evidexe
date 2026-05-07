@@ -4,6 +4,7 @@ import { WebView } from 'react-native-webview';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { formaterFormulePourAffichage } from '@/features/simulations/core/formater-formule';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
 type ProprietesRenduFormule = {
   fallback: string;
@@ -94,17 +95,21 @@ function ComposantRenduFormule({
   mathViewMobile = false,
   size = 'md',
 }: ProprietesRenduFormule) {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  const couleurFormule = modeSombre ? '#FFFFFF' : '#243B53';
   const displayFormula = useMemo(() => formaterFormulePourAffichage(fallback), [fallback]);
   const documentMathJax = useMemo(
-    () => creerDocumentMathJax(mathematiques || fallback, '#243B53'),
-    [fallback, mathematiques]
+    () => creerDocumentMathJax(mathematiques || fallback, couleurFormule),
+    [couleurFormule, fallback, mathematiques]
   );
   const texteFallback = (
     <TexteTheme
+      darkColor="#FFFFFF"
       lightColor="#243B53"
       style={[
         styles.fallback,
         centered ? styles.centered : undefined,
+        { color: couleurFormule },
         { fontSize: FONT_SIZE[size], lineHeight: FONT_SIZE[size] + 6 },
       ]}>
       {displayFormula}
@@ -144,7 +149,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   fallback: {
-    color: '#243B53',
     fontFamily: 'monospace',
     fontSize: 18,
     fontWeight: '700',

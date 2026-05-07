@@ -29,6 +29,7 @@ function ComposantRenduFormule({
 
   return (
     <TexteTheme
+      darkColor="#FFFFFF"
       lightColor="#000000"
       style={[
         styles.fallback,
@@ -44,7 +45,6 @@ export const RenduFormule = memo(ComposantRenduFormule);
 
 const styles = StyleSheet.create({
   fallback: {
-    color: '#000000',
     fontFamily: 'monospace',
     fontWeight: '900',
   },

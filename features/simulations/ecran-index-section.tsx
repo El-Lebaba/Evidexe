@@ -207,6 +207,18 @@ function obtenirStyleStatut(statut: EntreeSimulation['statut']) {
   return styles.statutBientot;
 }
 
+function obtenirCouleurAccentSection(section: SectionSimulation, themeApplication: ReturnType<typeof obtenirThemeApplication>) {
+  if (section === 'physique') {
+    return themeApplication.green;
+  }
+
+  if (section === 'programmation-java') {
+    return themeApplication.orange;
+  }
+
+  return themeApplication.blue;
+}
+
 function EcranSectionTableauBord({
   configuration,
   entrees,
@@ -219,7 +231,23 @@ function EcranSectionTableauBord({
   const { width: largeur } = useWindowDimensions();
   const estFocalise = useIsFocused();
   const schemaCouleur = useSchemaCouleur();
-  const themeApplication = obtenirThemeApplication(schemaCouleur === 'dark');
+  const modeSombre = schemaCouleur === 'dark';
+  const themeApplication = obtenirThemeApplication(modeSombre);
+  const couleurAccent = obtenirCouleurAccentSection(section, themeApplication);
+  const paletteSimulation = {
+    accent: couleurAccent,
+    accentDouce: modeSombre ? 'rgba(131, 217, 200, 0.16)' : THEME_MATHS.chip,
+    accentActive: modeSombre ? themeApplication.yellow : THEME_MATHS.chipActive,
+    carte: modeSombre ? '#17231F' : THEME_MATHS.card,
+    carteBordure: modeSombre ? '#4E685C' : THEME_MATHS.sage,
+    champ: modeSombre ? '#111B17' : '#FFFFFF',
+    encre: themeApplication.ink,
+    encreActive: modeSombre ? '#121A17' : THEME_MATHS.ink,
+    iconeFond: modeSombre ? '#20342D' : THEME_MATHS.cardSoft,
+    ligne: modeSombre ? 'rgba(174, 188, 175, 0.28)' : 'rgba(36,59,83,0.08)',
+    panneau: modeSombre ? '#1A2A24' : THEME_MATHS.card,
+    texteAttenue: themeApplication.muted,
+  };
   const [requete, definirRequete] = useState('');
   const [filtresActifs, definirFiltresActifs] = useState<FiltreTableauBord[]>([]);
   const [menuFiltresOuvert, definirMenuFiltresOuvert] = useState(false);
@@ -293,6 +321,18 @@ function EcranSectionTableauBord({
 
   const rendreCarteSimulation = (entree: EntreeSimulation) => {
     const estFermee = entree.statut === 'ferme';
+    const couleurStatut =
+      entree.statut === 'pret'
+        ? modeSombre
+          ? '#83D9C8'
+          : '#C0D6C2'
+        : entree.statut === 'ferme'
+          ? modeSombre
+            ? '#E18476'
+            : '#F2B36D'
+          : modeSombre
+            ? '#E7BD59'
+            : '#E3E5D2';
 
     return (
       <View key={entree.href} style={styles.cardSlot}>
@@ -305,14 +345,23 @@ function EcranSectionTableauBord({
           }}
           style={({ pressed, hovered }) => [
             styles.mathCard,
+            {
+              backgroundColor: paletteSimulation.carte,
+              borderColor: paletteSimulation.carteBordure,
+              shadowColor: modeSombre ? '#000000' : THEME_MATHS.ink,
+            },
             afficherGroupesJava ? styles.carteJava : null,
             estFermee ? styles.mathCardClosed : null,
             !estFermee && (pressed || hovered) ? styles.mathCardPressed : null,
           ]}>
           <View style={styles.mathCardTop}>
-            <View style={styles.iconShell}>
+            <View
+              style={[
+                styles.iconShell,
+                { backgroundColor: paletteSimulation.iconeFond, borderColor: paletteSimulation.carteBordure },
+              ]}>
               <MaterialCommunityIcons
-                color={THEME_MATHS.coral}
+                color={paletteSimulation.accent}
                 name={(entree.icon ?? 'book-open-variant') as keyof typeof MaterialCommunityIcons.glyphMap}
                 size={22}
               />
@@ -323,24 +372,27 @@ function EcranSectionTableauBord({
                 style={[
                   styles.statusBadge,
                   obtenirStyleStatut(entree.statut),
+                  { backgroundColor: couleurStatut },
                 ]}>
                 <TexteTheme
-                  lightColor="#243B53"
-                  style={styles.statusText}>
+                  darkColor={paletteSimulation.encreActive}
+                  lightColor={paletteSimulation.encreActive}
+                  style={[styles.statusText, { color: paletteSimulation.encreActive }]}>
                   {obtenirEtiquetteStatut(entree.statut)}
                 </TexteTheme>
               </View>
             </View>
           </View>
 
-          <TexteTheme lightColor={THEME_MATHS.ink} style={styles.cardTitle}>
+          <TexteTheme darkColor={paletteSimulation.encre} lightColor={paletteSimulation.encre} style={[styles.cardTitle, { color: paletteSimulation.encre }]}>
             {entree.title}
           </TexteTheme>
 
           <TexteTheme
-            lightColor={THEME_MATHS.mutedInk}
+            darkColor={paletteSimulation.texteAttenue}
+            lightColor={paletteSimulation.texteAttenue}
             numberOfLines={3}
-            style={[styles.cardDescription, afficherGroupesJava ? styles.descriptionCarteJava : null]}>
+            style={[styles.cardDescription, { color: paletteSimulation.texteAttenue }, afficherGroupesJava ? styles.descriptionCarteJava : null]}>
             {entree.description ?? 'Simulation interactive a ouvrir depuis cette fiche.'}
           </TexteTheme>
 
@@ -348,15 +400,20 @@ function EcranSectionTableauBord({
             <View style={styles.cardFooter}>
               <View style={styles.categoryRow}>
                 {(entree.tags?.length ? entree.tags : ['a-venir']).slice(0, 3).map((tag) => (
-                  <View key={`${entree.href}-${tag}`} style={styles.categoryBadge}>
-                    <TexteTheme lightColor={THEME_MATHS.ink} style={styles.categoryText}>
+                  <View
+                    key={`${entree.href}-${tag}`}
+                    style={[
+                      styles.categoryBadge,
+                      { backgroundColor: paletteSimulation.accentDouce, borderColor: paletteSimulation.ligne },
+                    ]}>
+                    <TexteTheme darkColor={paletteSimulation.encre} lightColor={paletteSimulation.encre} style={[styles.categoryText, { color: paletteSimulation.encre }]}>
                       {configuration.categoryLabels[tag] ?? tag}
                     </TexteTheme>
                   </View>
                 ))}
               </View>
 
-              <MaterialCommunityIcons color={THEME_MATHS.coral} name="arrow-right" size={20} />
+              <MaterialCommunityIcons color={paletteSimulation.accent} name="arrow-right" size={20} />
             </View>
           ) : null}
         </Pressable>
@@ -394,38 +451,43 @@ function EcranSectionTableauBord({
                 onPress={() => router.push('/(tabs)/profil' as Href)}
                 style={[
                   styles.heroProfileButton,
-                  schemaCouleur === 'dark' ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
+                  {
+                    backgroundColor: paletteSimulation.panneau,
+                    borderColor: paletteSimulation.carteBordure,
+                  },
                 ]}>
-                <MaterialCommunityIcons color="#243B53" name="account-circle-outline" size={18} />
-                <TexteTheme darkColor="#243B53" lightColor="#243B53" style={styles.heroProfileText}>
+                <MaterialCommunityIcons color={paletteSimulation.encre} name="account-circle-outline" size={18} />
+                <TexteTheme darkColor={paletteSimulation.encre} lightColor={paletteSimulation.encre} style={[styles.heroProfileText, { color: paletteSimulation.encre }]}>
                   Profil
                 </TexteTheme>
               </Pressable>
 
               <TexteTheme
-                lightColor={schemaCouleur === 'dark' ? themeApplication.text : THEME_MATHS.ink}
-                style={styles.heroTitle}>
+                darkColor={paletteSimulation.encre}
+                lightColor={paletteSimulation.encre}
+                style={[styles.heroTitle, { color: paletteSimulation.encre }]}>
                 {configuration.title}
               </TexteTheme>
 
               <TexteTheme
-                lightColor={schemaCouleur === 'dark' ? themeApplication.muted : THEME_MATHS.mutedInk}
-                style={styles.heroSubtitle}>
+                darkColor={paletteSimulation.texteAttenue}
+                lightColor={paletteSimulation.texteAttenue}
+                style={[styles.heroSubtitle, { color: paletteSimulation.texteAttenue }]}>
                 {configuration.subtitle}
               </TexteTheme>
 
               <View
                 style={[
                   styles.searchShell,
-                  schemaCouleur === 'dark' ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
+                  { backgroundColor: paletteSimulation.champ, borderColor: paletteSimulation.carteBordure },
                 ]}>
-                <MaterialCommunityIcons color={THEME_MATHS.mutedInk} name="magnify" size={18} />
+                <MaterialCommunityIcons color={paletteSimulation.texteAttenue} name="magnify" size={18} />
                 <TextInput
                   onChangeText={definirRequete}
                   placeholder="Rechercher une simulation"
-                  placeholderTextColor={THEME_MATHS.mutedInk}
-                  selectionColor={THEME_MATHS.coral}
-                  style={[styles.searchInput, schemaCouleur === 'dark' ? { color: themeApplication.ink } : null]}
+                  placeholderTextColor={paletteSimulation.texteAttenue}
+                  selectionColor={paletteSimulation.accent}
+                  style={[styles.searchInput, { color: paletteSimulation.encre }]}
                   value={requete}
                 />
               </View>
@@ -436,25 +498,29 @@ function EcranSectionTableauBord({
                   onPress={() => definirMenuFiltresOuvert((currentValue) => !currentValue)}
                   style={({ pressed, hovered }) => [
                     styles.filterButton,
-                    schemaCouleur === 'dark' ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
+                    { backgroundColor: paletteSimulation.panneau, borderColor: paletteSimulation.carteBordure },
                     menuFiltresOuvert ? styles.filterButtonOpen : null,
                     pressed || hovered ? styles.filterChipPressed : null,
                   ]}>
                   <View style={styles.filterButtonContent}>
-                    <MaterialCommunityIcons color="#243B53" name="filter-variant" size={18} />
-                    <TexteTheme darkColor="#243B53" lightColor="#243B53" style={styles.filterButtonText}>
+                    <MaterialCommunityIcons color={paletteSimulation.encre} name="filter-variant" size={18} />
+                    <TexteTheme darkColor={paletteSimulation.encre} lightColor={paletteSimulation.encre} style={[styles.filterButtonText, { color: paletteSimulation.encre }]}>
                       Filtre
                     </TexteTheme>
                     {filtresActifs.length > 0 ? (
-                      <View style={styles.filterCountBadge}>
-                        <TexteTheme darkColor="#243B53" lightColor="#243B53" style={styles.filterCountText}>
+                      <View
+                        style={[
+                          styles.filterCountBadge,
+                          { backgroundColor: paletteSimulation.accentActive, borderColor: paletteSimulation.accentActive },
+                        ]}>
+                        <TexteTheme darkColor={paletteSimulation.encreActive} lightColor={paletteSimulation.encreActive} style={[styles.filterCountText, { color: paletteSimulation.encreActive }]}>
                           {filtresActifs.length}
                         </TexteTheme>
                       </View>
                     ) : null}
                   </View>
                   <MaterialCommunityIcons
-                    color="#243B53"
+                    color={paletteSimulation.encre}
                     name={menuFiltresOuvert ? 'chevron-up' : 'chevron-down'}
                     size={18}
                   />
@@ -464,7 +530,7 @@ function EcranSectionTableauBord({
                   <View
                     style={[
                       styles.filterDropdown,
-                      schemaCouleur === 'dark' ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
+                      { backgroundColor: paletteSimulation.panneau, borderColor: paletteSimulation.carteBordure },
                     ]}>
                     <View style={styles.filterOptionGrid}>
                       {configuration.filters.map((filtre) => {
@@ -476,17 +542,29 @@ function EcranSectionTableauBord({
                             onPress={() => basculerFiltre(filtre.value)}
                             style={({ pressed, hovered }) => [
                             styles.filterOption,
-                            schemaCouleur === 'dark' ? { backgroundColor: '#FFFFFF', borderColor: themeApplication.border } : null,
+                            { backgroundColor: paletteSimulation.champ, borderColor: paletteSimulation.ligne },
                               isActive ? styles.filterOptionActive : null,
+                              isActive
+                                ? { backgroundColor: paletteSimulation.accentActive, borderColor: paletteSimulation.accentActive }
+                                : null,
                               pressed || hovered ? styles.filterChipPressed : null,
                             ]}>
-                            <View style={[styles.filterCheck, isActive ? styles.filterCheckActive : null]}>
-                              {isActive ? <MaterialCommunityIcons color="#243B53" name="check" size={14} /> : null}
+                            <View
+                              style={[
+                                styles.filterCheck,
+                                { backgroundColor: paletteSimulation.panneau, borderColor: paletteSimulation.carteBordure },
+                                isActive ? styles.filterCheckActive : null,
+                              ]}>
+                              {isActive ? <MaterialCommunityIcons color={paletteSimulation.encreActive} name="check" size={14} /> : null}
                             </View>
                             <TexteTheme
-                              darkColor={isActive ? '#243B53' : '#5A6A58'}
-                              lightColor={isActive ? '#243B53' : '#5A6A58'}
-                              style={[styles.filterOptionText, isActive ? styles.filterOptionTextActive : null]}>
+                              darkColor={isActive ? paletteSimulation.encreActive : paletteSimulation.texteAttenue}
+                              lightColor={isActive ? paletteSimulation.encreActive : paletteSimulation.texteAttenue}
+                              style={[
+                                styles.filterOptionText,
+                                { color: isActive ? paletteSimulation.encreActive : paletteSimulation.texteAttenue },
+                                isActive ? styles.filterOptionTextActive : null,
+                              ]}>
                               {filtre.label}
                             </TexteTheme>
                           </Pressable>
@@ -502,10 +580,10 @@ function EcranSectionTableauBord({
             <View style={[styles.contentColumn, { width: largeurConteneur - 40 }]}>
               <View style={styles.sectionHeader}>
                 <View>
-                  <TexteTheme lightColor={THEME_MATHS.card} style={styles.sectionTitle}>
+                  <TexteTheme darkColor={paletteSimulation.encre} lightColor={paletteSimulation.encre} style={[styles.sectionTitle, { color: paletteSimulation.encre }]}>
                     Bibliotheque de simulations
                   </TexteTheme>
-                  <TexteTheme lightColor={THEME_MATHS.cardSoft} style={styles.sectionSubtitle}>
+                  <TexteTheme darkColor={paletteSimulation.texteAttenue} lightColor={paletteSimulation.texteAttenue} style={[styles.sectionSubtitle, { color: paletteSimulation.texteAttenue }]}>
                     {entreesFiltrees.length} simulation{entreesFiltrees.length > 1 ? 's' : ''} visible{entreesFiltrees.length > 1 ? 's' : ''}
                   </TexteTheme>
                 </View>
@@ -522,17 +600,31 @@ function EcranSectionTableauBord({
                           onPress={() => choisirDivisionJava(division.valeur)}
                           style={({ pressed, hovered }) => [
                             styles.pastilleDivisionJava,
+                            {
+                              backgroundColor: paletteSimulation.accentDouce,
+                              borderColor: paletteSimulation.ligne,
+                            },
                             estActive ? styles.pastilleDivisionJavaActive : null,
+                            estActive
+                              ? { backgroundColor: paletteSimulation.accentActive, borderColor: paletteSimulation.accentActive }
+                              : null,
                             pressed || hovered ? styles.filterChipPressed : null,
                           ]}>
                           <TexteTheme
-                            darkColor={estActive ? '#243B53' : '#5A6A58'}
-                            lightColor={estActive ? '#243B53' : '#5A6A58'}
-                            style={styles.textePastilleDivisionJava}>
+                            darkColor={estActive ? paletteSimulation.encreActive : paletteSimulation.encre}
+                            lightColor={estActive ? paletteSimulation.encreActive : paletteSimulation.encre}
+                            style={[
+                              styles.textePastilleDivisionJava,
+                              { color: estActive ? paletteSimulation.encreActive : paletteSimulation.encre },
+                            ]}>
                             {division.titre}
                           </TexteTheme>
-                          <View style={styles.compteurDivisionJava}>
-                            <TexteTheme darkColor="#243B53" lightColor="#243B53" style={styles.texteCompteurDivisionJava}>
+                          <View
+                            style={[
+                              styles.compteurDivisionJava,
+                              { backgroundColor: paletteSimulation.panneau, borderColor: paletteSimulation.carteBordure },
+                            ]}>
+                            <TexteTheme darkColor={paletteSimulation.encre} lightColor={paletteSimulation.encre} style={[styles.texteCompteurDivisionJava, { color: paletteSimulation.encre }]}>
                               {nombreSimulations}
                             </TexteTheme>
                           </View>
@@ -551,14 +643,17 @@ function EcranSectionTableauBord({
                           onPress={() => definirPageActive(index)}
                           style={({ pressed, hovered }) => [
                             styles.paginationChip,
-                            schemaCouleur === 'dark' ? { backgroundColor: themeApplication.surface, borderColor: themeApplication.border } : null,
+                            { backgroundColor: paletteSimulation.accentDouce, borderColor: paletteSimulation.ligne },
                             isActive ? styles.paginationChipActive : null,
+                            isActive
+                              ? { backgroundColor: paletteSimulation.accentActive, borderColor: paletteSimulation.accentActive }
+                              : null,
                             pressed || hovered ? styles.filterChipPressed : null,
                           ]}>
                           <TexteTheme
-                            darkColor={isActive ? '#243B53' : '#5A6A58'}
-                            lightColor={isActive ? '#243B53' : '#5A6A58'}
-                            style={styles.paginationChipText}>
+                            darkColor={isActive ? paletteSimulation.encreActive : paletteSimulation.encre}
+                            lightColor={isActive ? paletteSimulation.encreActive : paletteSimulation.encre}
+                            style={[styles.paginationChipText, { color: isActive ? paletteSimulation.encreActive : paletteSimulation.encre }]}>
                             Page {index + 1}
                           </TexteTheme>
                         </Pressable>
@@ -569,12 +664,16 @@ function EcranSectionTableauBord({
               </View>
 
               {entreesFiltrees.length === 0 ? (
-                <View style={styles.emptyState}>
-                  <MaterialCommunityIcons color={THEME_MATHS.blue} name="file-search-outline" size={28} />
-                  <TexteTheme lightColor={THEME_MATHS.card} style={styles.emptyTitle}>
+                <View
+                  style={[
+                    styles.emptyState,
+                    { backgroundColor: paletteSimulation.panneau, borderColor: paletteSimulation.carteBordure },
+                  ]}>
+                  <MaterialCommunityIcons color={paletteSimulation.accent} name="file-search-outline" size={28} />
+                  <TexteTheme darkColor={paletteSimulation.encre} lightColor={paletteSimulation.encre} style={[styles.emptyTitle, { color: paletteSimulation.encre }]}>
                     Aucun resultat
                   </TexteTheme>
-                  <TexteTheme lightColor={THEME_MATHS.cardSoft} style={styles.emptyDescription}>
+                  <TexteTheme darkColor={paletteSimulation.texteAttenue} lightColor={paletteSimulation.texteAttenue} style={[styles.emptyDescription, { color: paletteSimulation.texteAttenue }]}>
                     Essaie un autre mot-cle ou change le filtre.
                   </TexteTheme>
                 </View>
@@ -587,22 +686,28 @@ function EcranSectionTableauBord({
                       return (
                         <View key={groupe.valeur} style={styles.groupeJava}>
                           <View style={styles.enteteGroupeJava}>
-                            <View style={styles.iconShell}>
+                            <View
+                              style={[
+                                styles.iconShell,
+                                { backgroundColor: paletteSimulation.iconeFond, borderColor: paletteSimulation.carteBordure },
+                              ]}>
                               <MaterialCommunityIcons
-                                color={THEME_MATHS.coral}
+                                color={paletteSimulation.accent}
                                 name={groupe.icone as keyof typeof MaterialCommunityIcons.glyphMap}
                                 size={22}
                               />
                             </View>
                             <View style={styles.texteGroupeJava}>
                               <TexteTheme
-                                lightColor={schemaCouleur === 'dark' ? themeApplication.text : THEME_MATHS.card}
-                                style={styles.titreGroupeJava}>
+                                darkColor={paletteSimulation.encre}
+                                lightColor={paletteSimulation.encre}
+                                style={[styles.titreGroupeJava, { color: paletteSimulation.encre }]}>
                                 {groupe.titre}
                               </TexteTheme>
                               <TexteTheme
-                                lightColor={schemaCouleur === 'dark' ? themeApplication.muted : THEME_MATHS.cardSoft}
-                                style={styles.sectionSubtitle}>
+                                darkColor={paletteSimulation.texteAttenue}
+                                lightColor={paletteSimulation.texteAttenue}
+                                style={[styles.sectionSubtitle, { color: paletteSimulation.texteAttenue }]}>
                                 {groupe.entrees.length} simulation{groupe.entrees.length > 1 ? 's' : ''}
                               </TexteTheme>
                             </View>

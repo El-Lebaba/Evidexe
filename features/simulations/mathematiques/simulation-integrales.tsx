@@ -15,7 +15,8 @@ import Svg, { Line, Path, Polygon, Rect } from 'react-native-svg';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
-import { themesSimulationEcrans } from '@/constantes/theme';
+import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -78,7 +79,7 @@ type GraphShape =
       stroke: string;
     };
 
-const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
+let SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
 
 const WEB_SLIDER_INTERACTION_STYLE =
   Platform.OS === 'web'
@@ -149,7 +150,8 @@ const METHODS: { key: MethodKey; label: string }[] = [
 
 const DOMAIN: Domain = { xMax: 4, xMin: -4, yMax: 5, yMin: -3 };
 const BOUND_GAP = 0.1;
-const themeActif = themesSimulationEcrans.light.integrales;
+let themeActif = obtenirThemesSimulationEcransInitial().integrales;
+SIMULATION_PAGE_BACKGROUND = themeActif.background === '#121A17' ? themeActif.background : '#EAE3D2';
 
 function borner(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -687,6 +689,10 @@ function CurseurNumerique({
 }
 
 export function SimulationIntegrales() {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  themeActif = obtenirThemesSimulationEcrans(modeSombre).integrales;
+  SIMULATION_PAGE_BACKGROUND = modeSombre ? themeActif.background : '#EAE3D2';
+  styles = creerStyles();
   const [functionIndex, setFunctionIndex] = useState(0);
   const [a, setA] = useState(-2);
   const [b, setB] = useState(2);
@@ -978,7 +984,10 @@ export function SimulationIntegrales() {
   );
 }
 
-const styles = StyleSheet.create({
+let styles = creerStyles();
+
+function creerStyles() {
+  return StyleSheet.create({
   safeArea: {
     backgroundColor: SIMULATION_PAGE_BACKGROUND,
     flex: 1,
@@ -1122,8 +1131,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   functionButtonActive: {
-    backgroundColor: themeActif.function,
-    borderColor: themeActif.function,
+    backgroundColor: '#D8A94A',
+    borderColor: '#D8A94A',
   },
   functionButtonFormula: {
     alignItems: 'center',
@@ -1164,11 +1173,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   methodButtonActive: {
-    backgroundColor: themeActif.approximation,
-    borderColor: themeActif.approximationStroke,
+    backgroundColor: '#D8A94A',
+    borderColor: '#D8A94A',
   },
   methodText: {
-    color: '#000000',
+    color: themeActif.ink,
     fontSize: 13,
     fontWeight: '700',
   },
@@ -1298,4 +1307,5 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
 });
+}
 

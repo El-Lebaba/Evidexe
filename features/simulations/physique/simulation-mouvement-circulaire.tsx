@@ -15,7 +15,8 @@ import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
-import { themesSimulationEcrans } from '@/constantes/theme';
+import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -36,9 +37,10 @@ type ProprietesCurseurNumerique = {
   value: number;
 };
 
-const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
+let themeActif = obtenirThemesSimulationEcransInitial().mouvementCirculaire;
+let SIMULATION_PAGE_BACKGROUND = themeActif.background === '#121A17' ? themeActif.background : '#EAE3D2';
 const CENTIMETERS_PER_METER = 100;
-const themeActif = themesSimulationEcrans.light.mouvementCirculaire;
+
 
 const WEB_SLIDER_INTERACTION_STYLE =
   Platform.OS === 'web'
@@ -232,6 +234,10 @@ function GraphiqueMouvementCirculaire({
 }
 
 export function SimulationMouvementCirculaire() {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  themeActif = obtenirThemesSimulationEcrans(modeSombre).mouvementCirculaire;
+  SIMULATION_PAGE_BACKGROUND = modeSombre ? themeActif.background : '#EAE3D2';
+  styles = creerStyles();
   const isFocused = useIsFocused();
   const [omega, setOmega] = useState(2);
   const [radiusCm, setRadiusCm] = useState(80);
@@ -422,7 +428,10 @@ export function SimulationMouvementCirculaire() {
   );
 }
 
-const styles = StyleSheet.create({
+let styles = creerStyles();
+
+function creerStyles() {
+  return StyleSheet.create({
   safeArea: {
     backgroundColor: SIMULATION_PAGE_BACKGROUND,
     flex: 1,
@@ -606,4 +615,5 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 });
+}
 

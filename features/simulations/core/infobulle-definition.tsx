@@ -12,7 +12,8 @@ import {
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
-import { themesSimulationEcrans } from '@/constantes/theme';
+import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
 type DefinitionPopoverProps = {
   body: string[];
@@ -23,7 +24,7 @@ type DefinitionPopoverProps = {
   delayMs?: number;
 };
 
-const themeActif = themesSimulationEcrans.light.infobulleDefinition;
+let themeActif = obtenirThemesSimulationEcransInitial().infobulleDefinition;
 
 export function InfobulleDefinition({
   body,
@@ -33,6 +34,9 @@ export function InfobulleDefinition({
   title,
   delayMs = 5000,
 }: DefinitionPopoverProps) {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  themeActif = obtenirThemesSimulationEcrans(modeSombre).infobulleDefinition;
+  styles = creerStyles();
   const isFocused = useIsFocused();
   const [visible, setVisible] = useState(false);
   const [fabVisible, setFabVisible] = useState(false);
@@ -256,7 +260,10 @@ export function InfobulleDefinition({
   );
 }
 
-const styles = StyleSheet.create({
+let styles = creerStyles();
+
+function creerStyles() {
+  return StyleSheet.create({
   fabWrap: {
     bottom: 20,
     position: 'absolute',
@@ -366,4 +373,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
-});
+  });
+}

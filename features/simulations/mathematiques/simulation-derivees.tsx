@@ -15,7 +15,8 @@ import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
-import { themesSimulationEcrans } from '@/constantes/theme';
+import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -57,8 +58,8 @@ const FUNCTIONS: MathFunction[] = [
 const DOMAIN: Domain = { xMin: -5, xMax: 5, yMin: -4, yMax: 4 };
 const TRACK_MIN = -4;
 const TRACK_MAX = 4;
-const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
-const themeActif = themesSimulationEcrans.light.derivees;
+let themeActif = obtenirThemesSimulationEcransInitial().derivees;
+let SIMULATION_PAGE_BACKGROUND = themeActif.background === '#121A17' ? themeActif.background : '#EAE3D2';
 
 const WEB_SLIDER_INTERACTION_STYLE =
   Platform.OS === 'web'
@@ -335,6 +336,10 @@ function CurseurX({
 }
 
 export function SimulationDerivees() {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  themeActif = obtenirThemesSimulationEcrans(modeSombre).derivees;
+  SIMULATION_PAGE_BACKGROUND = modeSombre ? themeActif.background : '#EAE3D2';
+  styles = creerStyles();
   const [functionIndex, setFunctionIndex] = useState(0);
   const [x0, setX0] = useState(1);
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -487,7 +492,10 @@ export function SimulationDerivees() {
   );
 }
 
-const styles = StyleSheet.create({
+let styles = creerStyles();
+
+function creerStyles() {
+  return StyleSheet.create({
   safeArea: {
     backgroundColor: SIMULATION_PAGE_BACKGROUND,
     flex: 1,
@@ -638,11 +646,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   functionButtonActive: {
-    backgroundColor: themeActif.function,
-    borderColor: themeActif.function,
+    backgroundColor: '#D8A94A',
+    borderColor: '#D8A94A',
   },
   functionButtonText: {
-    color: '#000000',
+    color: themeActif.ink,
     fontSize: 14,
     fontWeight: '800',
     lineHeight: 18,
@@ -751,4 +759,5 @@ const styles = StyleSheet.create({
     lineHeight: 32,
   },
 });
+}
 

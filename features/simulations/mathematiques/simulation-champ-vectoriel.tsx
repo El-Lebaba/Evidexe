@@ -6,7 +6,8 @@ import Svg, { Circle, Line, Rect } from 'react-native-svg';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
-import { themesSimulationEcrans } from '@/constantes/theme';
+import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -38,11 +39,12 @@ type Particle = {
   y: number;
 };
 
-const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
+let themeActif = obtenirThemesSimulationEcransInitial().champVectoriel;
+let SIMULATION_PAGE_BACKGROUND = themeActif.background === '#121A17' ? themeActif.background : '#EAE3D2';
 const DOMAIN: Domain = { xMax: 4, xMin: -4, yMax: 4, yMin: -4 };
 const PARTICLE_COUNT = Platform.OS === 'web' ? 25 : 12;
 const FIELD_STEPS = Platform.OS === 'web' ? 18 : 11;
-const themeActif = themesSimulationEcrans.light.champVectoriel;
+
 
 const VECTOR_FIELDS: VectorFieldDefinition[] = [
   {
@@ -357,6 +359,10 @@ function GraphiqueChampVectoriel({
 }
 
 export function SimulationChampVectoriel() {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  themeActif = obtenirThemesSimulationEcrans(modeSombre).champVectoriel;
+  SIMULATION_PAGE_BACKGROUND = modeSombre ? themeActif.background : '#EAE3D2';
+  styles = creerStyles();
   const [fieldIndex, setFieldIndex] = useState(0);
   const [showParticles, setShowParticles] = useState(true);
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -535,7 +541,10 @@ export function SimulationChampVectoriel() {
   );
 }
 
-const styles = StyleSheet.create({
+let styles = creerStyles();
+
+function creerStyles() {
+  return StyleSheet.create({
   safeArea: {
     backgroundColor: SIMULATION_PAGE_BACKGROUND,
     flex: 1,
@@ -751,4 +760,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+}
 
