@@ -529,7 +529,7 @@ export function SimulationSeries() {
             ]}>
             <View style={[stylesSeries.colonneGraphique, { width: largeurColonneGraphique }]}>
               <View style={stylesSeries.carteFormule}>
-                <RenduFormule centered fallback={'S_n = Somme des a_k'} mathematiques={'S_n=\\sum_{k=1}^{n} a_k'} size="md" />
+                <RenduFormule centered fallback={'S_n = Somme des a_k'} mathematiques={'S_n=\\sum_{k=1}^{n} a_k'} mathViewMobile size="md" />
               </View>
 
               <View style={stylesSeries.panneauGraphique}>
@@ -622,14 +622,9 @@ export function SimulationSeries() {
                   <TexteThematique lightColor={PALETTE_SERIES.encreAttenue} style={stylesSeries.etiquetteStatistique}>
                     Limite
                   </TexteThematique>
-                  <View style={stylesSeries.zoneFormuleStatistique}>
-                    <RenduFormule
-                      centered
-                      fallback={serieActive.converge ? serieActive.etiquetteLimite : 'infini'}
-                      mathematiques={serieActive.converge ? serieActive.etiquetteLimite : '\\infty'}
-                      size="sm"
-                    />
-                  </View>
+                  <TexteThematique lightColor={PALETTE_SERIES.encre} style={stylesSeries.valeurStatistique}>
+                    {serieActive.converge ? serieActive.etiquetteLimite : 'infini'}
+                  </TexteThematique>
                 </View>
 
                 <View style={stylesSeries.carteStatistique}>
@@ -648,13 +643,13 @@ export function SimulationSeries() {
 
       <PopoverDefinition
         body={[
-          'Une suite fournit des termes a_1, a_2, a_3 et ainsi de suite. Une serie additionne ces termes pour former les sommes partielles S_n.',
-          'Si les sommes partielles se stabilisent vers une valeur finie, la serie converge. Sinon, elle diverge ou oscille sans se fixer.',
+          'Une suite fournit des termes a_1, a_2, a_3 et ainsi de suite. Une série additionne ces termes pour former les sommes partielles S_n.',
+          'Si les sommes partielles se stabilisent vers une valeur finie, la série converge. Sinon, elle diverge ou oscille sans se fixer.',
         ]}
         exampleLabel="Lecture rapide"
-        exampleText="La courbe verte montre S_n et la ligne bleue represente la limite quand elle existe."
-        eyebrow="Definition"
-        title="Qu est ce qu une serie ?"
+        exampleText="La courbe verte montre S_n et la ligne bleue représente la limite quand elle existe."
+        eyebrow="Définition"
+        title="Qu’est-ce qu’une série ?"
       />
     </SafeAreaView>
   );
@@ -889,10 +884,6 @@ const stylesSeries = StyleSheet.create({
     fontWeight: '800',
     lineHeight: 28,
     textAlign: 'center',
-  },
-  zoneFormuleStatistique: {
-    minHeight: 26,
-    width: '100%',
   },
 });
 

@@ -547,6 +547,7 @@ export function SimulationFourier() {
                   centered
                   fallback={'f(x) = somme a_n sin(nx) + b_n cos(nx)'}
                   mathematiques={'f(x)=\\sum a_n\\sin(nx)+b_n\\cos(nx)'}
+                  mathViewMobile
                   size="md"
                 />
               </View>
@@ -640,13 +641,13 @@ export function SimulationFourier() {
 
       <InfobulleDefinition
         body={[
-          'Une serie de Fourier reconstruit un signal periodique a partir d une somme d ondes sinusoidales simples.',
-          'Chaque harmonique ajoute une frequence supplementaire. Plus on ajoute d harmoniques, plus la forme du signal se rapproche du motif vise.',
+          'Une série de Fourier reconstruit un signal périodique à partir d’une somme d’ondes sinusoïdales simples.',
+          'Chaque harmonique ajoute une fréquence supplémentaire. Plus on ajoute d’harmoniques, plus la forme du signal se rapproche du motif visé.',
         ]}
         exampleLabel="Lecture rapide"
         exampleText="La courbe principale montre la somme totale, et le diagramme de phase montre comment les composantes se combinent."
-        eyebrow="Definition"
-        title="Qu est ce qu une serie de Fourier ?"
+        eyebrow="Définition"
+        title="Qu’est-ce qu’une série de Fourier ?"
       />
     </SafeAreaView>
   );

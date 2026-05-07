@@ -366,13 +366,13 @@ export function SimulationFrottement() {
       return;
     }
 
-    const prochaineVitesse = mouvementRef.current.vitesse + etat.acceleration * 0.033;
+    const prochaineVitesse = mouvementRef.current.vitesse + etat.acceleration * 0.05;
     mouvementRef.current.vitesse = Math.max(prochaineVitesse, 0);
-    mouvementRef.current.position += mouvementRef.current.vitesse * 0.033 * 42;
+    mouvementRef.current.position += mouvementRef.current.vitesse * 0.05 * 42;
     definirImage((valeur) => valeur + 1);
   }, [etat.acceleration, etat.mouvement]);
 
-  utiliserIntervalleSimulation(estActif && !enPause, avancerSimulation, 33);
+  utiliserIntervalleSimulation(estActif && !enPause, avancerSimulation, 50);
 
   const reinitialiserBloc = useCallback(() => {
     mouvementRef.current = { position: 0, vitesse: 0 };
@@ -448,6 +448,7 @@ export function SimulationFrottement() {
                   centered
                   fallback="fs <= mu_s N ; fk = mu_k N"
                   mathematiques={'f_s\\le\\mu_s N\\\\f_k=\\mu_k N'}
+                  mathViewMobile
                   size="md"
                 />
               </View>
@@ -531,12 +532,12 @@ export function SimulationFrottement() {
 
       <InfobulleDefinition
         body={[
-          'Le frottement s oppose au mouvement relatif entre deux surfaces.',
-          'Le frottement statique peut s ajuster jusqu a une limite. Quand la force appliquee depasse cette limite, le frottement cinetique prend le relais.',
+          'Le frottement s’oppose au mouvement relatif entre deux surfaces.',
+          'Le frottement statique peut s’ajuster jusqu’à une limite. Quand la force appliquée dépasse cette limite, le frottement cinétique prend le relais.',
         ]}
         exampleLabel="Lecture rapide"
-        exampleText="Augmente la force appliquee jusqu a depasser le frottement statique maximal pour mettre le bloc en mouvement."
-        eyebrow="Definition"
+        exampleText="Augmente la force appliquée jusqu’à dépasser le frottement statique maximal pour mettre le bloc en mouvement."
+        eyebrow="Définition"
         title="Qu est-ce que le frottement ?"
       />
     </SafeAreaView>

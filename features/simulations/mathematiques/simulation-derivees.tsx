@@ -348,18 +348,6 @@ function CurseurX({
         <View style={[styles.sliderFill, { width: `${percent}%` }]} />
         <View style={[styles.sliderThumb, WEB_SLIDER_INTERACTION_STYLE, { left: `${percent}%` }]} />
       </View>
-      <View style={styles.stepperRow}>
-        <Pressable onPress={() => onChange(borner(Number((value - 0.1).toFixed(2)), TRACK_MIN, TRACK_MAX))} style={styles.stepButton}>
-          <TexteTheme lightColor={themeActif.ink} style={styles.stepText}>
-            -0.1
-          </TexteTheme>
-        </Pressable>
-        <Pressable onPress={() => onChange(borner(Number((value + 0.1).toFixed(2)), TRACK_MIN, TRACK_MAX))} style={styles.stepButton}>
-          <TexteTheme lightColor={themeActif.ink} style={styles.stepText}>
-            +0.1
-          </TexteTheme>
-        </Pressable>
-      </View>
     </View>
   );
 }
@@ -433,6 +421,7 @@ export function SimulationDerivees() {
                   centered
                   fallback={"f'(x) = lim h->0 (f(x+h) - f(x)) / h"}
                   mathematiques={"f'(x)=\\lim_{h\\to0}\\frac{f(x+h)-f(x)}{h}"}
+                  mathViewMobile
                   size="md"
                 />
               </View>
@@ -504,7 +493,7 @@ export function SimulationDerivees() {
       </VueTheme>
       <InfobulleDefinition
         body={[
-          "La dÃ©rivÃ©e d'une fonction mesure la rapidit\u00e9 avec laquelle une fonction varie en un point pr\u00e9cis.",
+          "La dérivée d'une fonction mesure la rapidité avec laquelle une fonction varie en un point précis.",
           "Sur le graphique, elle correspond \u00e0 la pente de la tangente au point x0. Si la pente est positive, la courbe monte. Si elle est n\u00e9gative, la courbe descend. Si elle vaut 0, la courbe est localement plate.",
         ]}
         exampleLabel="Lecture rapide"
@@ -746,26 +735,6 @@ const styles = StyleSheet.create({
     marginLeft: -9,
     position: 'absolute',
     width: 18,
-  },
-  stepperRow: {
-    alignSelf: 'center',
-    flexDirection: 'row',
-    gap: 8,
-  },
-  stepButton: {
-    alignItems: 'center',
-    backgroundColor: themeActif.surface,
-    borderColor: themeActif.border,
-    borderRadius: 8,
-    borderWidth: 1.5,
-    height: 34,
-    justifyContent: 'center',
-    paddingHorizontal: 18,
-  },
-  stepText: {
-    color: themeActif.ink,
-    fontSize: 14,
-    fontWeight: '800',
   },
   statsGrid: {
     gap: 12,

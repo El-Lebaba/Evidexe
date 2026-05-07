@@ -522,8 +522,8 @@ export function SimulationRessortLoiHooke() {
   }, [amplitudePixels, damping, mass, springConstant]);
 
   utiliserIntervalleSimulation(isFocused && !isPaused, () => {
-    setElapsed((current) => current + 0.032);
-  }, 32);
+    setElapsed((current) => current + 0.048);
+  }, 48);
 
   const horizontalPadding = width >= 1200 ? 12 : 16;
   const contentWidth = width - horizontalPadding * 2;
@@ -615,6 +615,7 @@ export function SimulationRessortLoiHooke() {
                   centered
                   fallback="F = -k x, omega0 = sqrt(k / m)"
                   mathematiques={'F=-kx,\\quad \\omega_0=\\sqrt{k/m}'}
+                  mathViewMobile
                   size="md"
                 />
               </View>
@@ -678,6 +679,16 @@ export function SimulationRessortLoiHooke() {
                 </View>
                 <View style={styles.statCard}>
                   <TexteTheme lightColor={themeActif.mutedInk} style={styles.statLabel}>
+                    Force de rappel
+                  </TexteTheme>
+                  <View style={styles.statFormulaWrap}>
+                    <TexteTheme lightColor={themeActif.ink} style={styles.statValue}>
+                      F = {formaterNombre(forceNewtons, 2)} N
+                    </TexteTheme>
+                  </View>
+                </View>
+                <View style={styles.statCard}>
+                  <TexteTheme lightColor={themeActif.mutedInk} style={styles.statLabel}>
                     Periode
                   </TexteTheme>
                   <View style={styles.statFormulaWrap}>
@@ -694,16 +705,6 @@ export function SimulationRessortLoiHooke() {
                     </TexteTheme>
                   ) : null}
                 </View>
-                <View style={styles.statCard}>
-                  <TexteTheme lightColor={themeActif.mutedInk} style={styles.statLabel}>
-                    Force de rappel
-                  </TexteTheme>
-                  <View style={styles.statFormulaWrap}>
-                    <TexteTheme lightColor={themeActif.ink} style={styles.statValue}>
-                      F = {formaterNombre(forceNewtons, 2)} N
-                    </TexteTheme>
-                  </View>
-                </View>
               </View>
             </View>
           </View>
@@ -711,12 +712,12 @@ export function SimulationRessortLoiHooke() {
 
         <InfobulleDefinition
           body={[
-            'La loi de Hooke dit que la force de rappel est proportionnelle au deplacement par rapport a l equilibre.',
-            'Quand la masse traverse l equilibre, l energie est surtout cinetique. Aux extremites, elle est surtout potentielle.',
+            'La loi de Hooke dit que la force de rappel est proportionnelle au déplacement par rapport à l’équilibre.',
+            'Quand la masse traverse l’équilibre, l’énergie est surtout cinétique. Aux extrémités, elle est surtout potentielle.',
           ]}
-          exampleLabel="Lecture"
-          exampleText="Augmente k pour rendre le ressort plus raide, ou augmente m pour ralentir l oscillation."
-          eyebrow="Mecanique"
+          exampleLabel="Lecture rapide"
+          exampleText="Augmente k pour rendre le ressort plus raide, ou augmente m pour ralentir l’oscillation."
+          eyebrow="Mécanique"
           title="Ressort et oscillation"
         />
       </VueTheme>

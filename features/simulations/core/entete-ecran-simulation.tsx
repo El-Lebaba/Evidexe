@@ -68,6 +68,7 @@ export function EnteteEcranSimulation({ titre, domaine }: ProprietesEnteteEcranS
               <TexteTheme
                 darkColor={themeActif.text}
                 lightColor={themeActif.text}
+                numberOfLines={1}
                 style={[styles.titre, { color: themeActif.text }]}>
                 {titre}
               </TexteTheme>
@@ -108,18 +109,23 @@ const styles = StyleSheet.create({
   rangeeEntete: {
     alignItems: 'center',
     flexDirection: 'row',
+    gap: 12,
     justifyContent: 'space-between',
     width: '100%',
   },
   groupeGauche: {
     alignItems: 'center',
+    flex: 1,
     flexDirection: 'row',
     gap: 14,
     justifyContent: 'flex-start',
+    minWidth: 0,
   },
   groupeTitre: {
     alignItems: 'flex-start',
+    flex: 1,
     gap: 8,
+    minWidth: 0,
   },
   boutonRetour: {
     alignItems: 'center',
@@ -133,6 +139,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
     borderWidth: 1.5,
+    flexShrink: 0,
     height: 38,
     justifyContent: 'center',
     width: 38,
@@ -141,6 +148,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: '800',
     lineHeight: 36,
+    maxWidth: '100%',
   },
   logo: {
     height: 44,

@@ -454,6 +454,7 @@ export function SimulationOptiqueRefraction() {
                   centered
                   fallback="n1 sin(theta1) = n2 sin(theta2)"
                   mathematiques={'n_1\\sin(\\theta_1)=n_2\\sin(\\theta_2)'}
+                  mathViewMobile
                   size="md"
                 />
               </View>
@@ -543,13 +544,13 @@ export function SimulationOptiqueRefraction() {
 
       <InfobulleDefinition
         body={[
-          'La lumiere change de direction quand elle traverse deux milieux d indices differents.',
-          'Si elle passe d un milieu plus refringent vers un milieu moins refringent avec un angle trop grand, elle peut etre totalement reflechie.',
+          'La lumière change de direction quand elle traverse deux milieux d’indices différents.',
+          'Si elle passe d’un milieu plus réfringent vers un milieu moins réfringent avec un angle trop grand, elle peut être totalement réfléchie.',
         ]}
         exampleLabel="Lecture rapide"
-        exampleText="Quand n1 est plus grand que n2, augmente l angle incident pour observer la reflexion totale interne."
-        eyebrow="Definition"
-        title="Qu est ce que la refraction ?"
+        exampleText="Quand n1 est plus grand que n2, augmente l’angle incident pour observer la réflexion totale interne."
+        eyebrow="Définition"
+        title="Qu’est-ce que la réfraction ?"
       />
     </SafeAreaView>
   );

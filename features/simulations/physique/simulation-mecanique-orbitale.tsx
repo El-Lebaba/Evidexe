@@ -426,10 +426,10 @@ export function SimulationMecaniqueOrbitale() {
   );
 
   const avancerSimulation = useCallback(() => {
-    definirPhase((phaseActuelle) => (phaseActuelle + vitesseOrbitale * 0.045) % (Math.PI * 2));
+    definirPhase((phaseActuelle) => (phaseActuelle + vitesseOrbitale * 0.065) % (Math.PI * 2));
   }, [vitesseOrbitale]);
 
-  utiliserIntervalleSimulation(estActif && !enPause, avancerSimulation, 33);
+  utiliserIntervalleSimulation(estActif && !enPause, avancerSimulation, 48);
 
   const deplacementEnteteY = defilementY.interpolate({
     extrapolate: 'clamp',
@@ -483,6 +483,7 @@ export function SimulationMecaniqueOrbitale() {
                   centered
                   fallback="T^2 = 4 pi^2 a^3 / GM"
                   mathematiques={'T^2=\\frac{4\\pi^2}{GM}a^3'}
+                  mathViewMobile
                   size="md"
                 />
               </View>

@@ -111,7 +111,7 @@ const LIMIT_FUNCTIONS: LimitFunction[] = [
   {
     domain: { xMax: 1, xMin: -1, yMax: 1, yMin: -1 },
     fn: (x) => (Math.abs(x) < 1e-10 ? NaN : x * Math.sin(1 / x)),
-    label: 'xÂ·sin(1/x)',
+    label: 'x·sin(1/x)',
     latex: 'x\\sin\\left(\\frac{1}{x}\\right)',
     limitAt: 0,
     limitLabel: '0',
@@ -512,22 +512,6 @@ function CurseurApproche({
         <View style={[styles.sliderFill, { width: `${percent}%` }]} />
         <View style={[styles.sliderThumb, WEB_SLIDER_INTERACTION_STYLE, { left: `${percent}%` }]} />
       </View>
-      <View style={styles.stepperRow}>
-        <Pressable
-          onPress={() => onChange(borner(Number((value - 0.1).toFixed(2)), APPROACH_MIN, APPROACH_MAX))}
-          style={styles.stepButton}>
-          <TexteTheme lightColor={themeActif.ink} style={styles.stepText}>
-            -0.1
-          </TexteTheme>
-        </Pressable>
-        <Pressable
-          onPress={() => onChange(borner(Number((value + 0.1).toFixed(2)), APPROACH_MIN, APPROACH_MAX))}
-          style={styles.stepButton}>
-          <TexteTheme lightColor={themeActif.ink} style={styles.stepText}>
-            +0.1
-          </TexteTheme>
-        </Pressable>
-      </View>
     </View>
   );
 }
@@ -607,7 +591,7 @@ export function SimulationLimites() {
 
             <View style={[styles.sidebar, { paddingRight: isWide ? 44 : 0, width: sideWidth }]}>
               <View style={styles.formulaCard}>
-                <RenduFormule centered fallback={'lim x->c f(x) = L'} mathematiques={'\\lim_{x\\to c}f(x)=L'} size="md" />
+                <RenduFormule centered fallback={'lim x->c f(x) = L'} mathematiques={'\\lim_{x\\to c}f(x)=L'} mathViewMobile size="md" />
               </View>
 
               <View style={styles.panel}>
@@ -693,13 +677,13 @@ export function SimulationLimites() {
       </VueTheme>
       <InfobulleDefinition
         body={[
-          "Une limite decrit la valeur vers laquelle une fonction se rapproche quand x approche un point donne.",
-          "La fonction n a pas besoin d etre definie exactement a ce point. Ce qui compte, c est le comportement des valeurs tout autour.",
+          'Une limite décrit la valeur vers laquelle une fonction se rapproche quand x approche un point donné.',
+          'La fonction n’a pas besoin d’être définie exactement à ce point. Ce qui compte, c’est le comportement des valeurs tout autour.',
         ]}
         exampleLabel="Lecture rapide"
-        exampleText="Les points rouges montrent l approche, et le cercle de limite montre la valeur visee."
-        eyebrow="Definition"
-        title="Qu est ce qu une limite ?"
+        exampleText="Les points rouges montrent l’approche, et le cercle de limite montre la valeur visée."
+        eyebrow="Définition"
+        title="Qu’est-ce qu’une limite ?"
       />
     </SafeAreaView>
   );
@@ -928,26 +912,6 @@ const styles = StyleSheet.create({
     marginLeft: -9,
     position: 'absolute',
     width: 18,
-  },
-  stepperRow: {
-    alignSelf: 'center',
-    flexDirection: 'row',
-    gap: 8,
-  },
-  stepButton: {
-    alignItems: 'center',
-    backgroundColor: themeActif.surface,
-    borderColor: themeActif.border,
-    borderRadius: 8,
-    borderWidth: 1.5,
-    height: 34,
-    justifyContent: 'center',
-    paddingHorizontal: 18,
-  },
-  stepText: {
-    color: themeActif.ink,
-    fontSize: 14,
-    fontWeight: '800',
   },
   statsGrid: {
     gap: 12,

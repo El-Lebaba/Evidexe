@@ -8,6 +8,7 @@ type ProprietesRenduFormule = {
   fallback: string;
   mathematiques: string;
   centered?: boolean;
+  mathViewMobile?: boolean;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 };
 

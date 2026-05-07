@@ -813,8 +813,9 @@ export function SimulationIntegrales() {
               <View style={styles.formulaCard}>
                 <RenduFormule
                   centered
-                  fallback={'âˆ«[a,b] f(x) dx = lim n->inf Î£ f(x_i)Î”x'}
+                  fallback={'∫[a,b] f(x) dx = lim n->inf Σ f(x_i)Δx'}
                   mathematiques={'\\int_a^b f(x)\\,dx=\\lim_{n\\to\\infty}\\sum f(x_i)\\Delta x'}
+                  mathViewMobile
                   size="md"
                 />
               </View>
@@ -980,13 +981,13 @@ export function SimulationIntegrales() {
       </VueTheme>
       <InfobulleDefinition
         body={[
-          'Une integrale definie mesure l aire nette sous une courbe entre deux bornes a et b.',
-          'La somme de Riemann approche cette aire avec des rectangles ou des trapezes. Quand n augmente, l approximation se rapproche de la valeur exacte.',
+          'Une intégrale définie mesure l’aire nette sous une courbe entre deux bornes a et b.',
+          'La somme de Riemann approche cette aire avec des rectangles ou des trapèzes. Quand n augmente, l’approximation se rapproche de la valeur exacte.',
         ]}
         exampleLabel="Lecture rapide"
         exampleText={'La somme de Riemann donne une approximation, tandis que la valeur exacte vient de la primitive.'}
-        eyebrow="Definition"
-        title="Qu est-ce qu une integrale ?"
+        eyebrow="Définition"
+        title="Qu’est-ce qu’une intégrale ?"
       />
     </SafeAreaView>
   );
@@ -1047,7 +1048,6 @@ const styles = StyleSheet.create({
     borderColor: themeActif.border,
     borderRadius: 8,
     borderWidth: 1.5,
-    bottom: 12,
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
@@ -1056,6 +1056,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     position: 'absolute',
+    top: 12,
   },
   legendItem: {
     alignItems: 'center',
