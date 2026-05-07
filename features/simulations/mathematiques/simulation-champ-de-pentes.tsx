@@ -15,7 +15,8 @@ import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
-import { themesSimulationEcrans } from '@/constantes/theme';
+import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -43,13 +44,14 @@ type SlopeEquation = {
   latex: string;
 };
 
-const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
+let themeActif = obtenirThemesSimulationEcransInitial().champDePentes;
+let SIMULATION_PAGE_BACKGROUND = themeActif.background === '#121A17' ? themeActif.background : '#EAE3D2';
 const DOMAIN: Domain = { xMax: 4, xMin: -4, yMax: 4, yMin: -4 };
 const DENSITY_MIN = 8;
 const DENSITY_MAX = 24;
 const Y0_MIN = -4;
 const Y0_MAX = 4;
-const themeActif = themesSimulationEcrans.light.champDePentes;
+
 
 const WEB_SLIDER_INTERACTION_STYLE =
   Platform.OS === 'web'
@@ -379,6 +381,10 @@ function CurseurNumerique({
 }
 
 export function SimulationChampDePentes() {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  themeActif = obtenirThemesSimulationEcrans(modeSombre).champDePentes;
+  SIMULATION_PAGE_BACKGROUND = modeSombre ? themeActif.background : '#EAE3D2';
+  styles = creerStyles();
   const [equationIndex, setEquationIndex] = useState(0);
   const [y0, setY0] = useState(1);
   const [density, setDensity] = useState(16);
@@ -544,7 +550,10 @@ export function SimulationChampDePentes() {
   );
 }
 
-const styles = StyleSheet.create({
+let styles = creerStyles();
+
+function creerStyles() {
+  return StyleSheet.create({
   safeArea: {
     backgroundColor: SIMULATION_PAGE_BACKGROUND,
     flex: 1,
@@ -770,4 +779,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+}
 

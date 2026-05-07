@@ -15,7 +15,8 @@ import Svg, { Circle, Defs, Line, Path, RadialGradient, Rect, Stop, Text as SvgT
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
-import { themesSimulationEcrans } from '@/constantes/theme';
+import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -36,8 +37,8 @@ type ProprietesCurseurNumerique = {
   value: number;
 };
 
-const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
-const themeActif = themesSimulationEcrans.light.mouvementProjectile;
+let themeActif = obtenirThemesSimulationEcransInitial().mouvementProjectile;
+let SIMULATION_PAGE_BACKGROUND = themeActif.background === '#121A17' ? themeActif.background : '#EAE3D2';
 
 const WEB_SLIDER_INTERACTION_STYLE =
   Platform.OS === 'web'
@@ -290,6 +291,10 @@ function GraphiqueProjectile({
 }
 
 export function SimulationMouvementProjectile() {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  themeActif = obtenirThemesSimulationEcrans(modeSombre).mouvementProjectile;
+  SIMULATION_PAGE_BACKGROUND = modeSombre ? themeActif.background : '#EAE3D2';
+  styles = creerStyles();
   const isFocused = useIsFocused();
   const [speed, setSpeed] = useState(20);
   const [angle, setAngle] = useState(45);
@@ -491,7 +496,10 @@ export function SimulationMouvementProjectile() {
   );
 }
 
-const styles = StyleSheet.create({
+let styles = creerStyles();
+
+function creerStyles() {
+  return StyleSheet.create({
   safeArea: {
     backgroundColor: SIMULATION_PAGE_BACKGROUND,
     flex: 1,
@@ -684,4 +692,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+}
 

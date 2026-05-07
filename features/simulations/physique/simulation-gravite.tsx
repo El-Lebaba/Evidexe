@@ -23,7 +23,8 @@ import Svg, {
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
-import { themesSimulationEcrans } from '@/constantes/theme';
+import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -47,11 +48,12 @@ type ProprietesCurseurNumerique = {
 
 type RangePreset = 'distance' | 'mass';
 
-const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
+let SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
 const CONSTANTE_GRAVITATIONNELLE = 6.67430e-11;
 const GRAVITE_TERRESTRE = 9.81;
 
-const themeActif = themesSimulationEcrans.light.gravite;
+let themeActif = obtenirThemesSimulationEcransInitial().gravite;
+SIMULATION_PAGE_BACKGROUND = themeActif.background === '#121A17' ? themeActif.background : '#EAE3D2';
 
 const WEB_SLIDER_INTERACTION_STYLE =
   Platform.OS === 'web'
@@ -466,6 +468,10 @@ function GraphiqueGravite({
 }
 
 export function SimulationGravite() {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  themeActif = obtenirThemesSimulationEcrans(modeSombre).gravite;
+  SIMULATION_PAGE_BACKGROUND = modeSombre ? themeActif.background : '#EAE3D2';
+  styles = creerStyles();
   const isFocused = useIsFocused();
   const [mass1, setMass1] = useState(50);
   const [mass2, setMass2] = useState(30);
@@ -680,7 +686,10 @@ export function SimulationGravite() {
   );
 }
 
-const styles = StyleSheet.create({
+let styles = creerStyles();
+
+function creerStyles() {
+  return StyleSheet.create({
   safeArea: {
     backgroundColor: SIMULATION_PAGE_BACKGROUND,
     flex: 1,
@@ -917,5 +926,6 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
 });
+}
 
 

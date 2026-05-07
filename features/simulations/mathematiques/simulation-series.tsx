@@ -15,7 +15,8 @@ import Svg, { Line, Path, Rect } from 'react-native-svg';
 
 import { TexteTheme as TexteThematique } from '@/components/texte-theme';
 import { VueTheme as VueThematique } from '@/components/vue-theme';
-import { themesSimulationEcrans } from '@/constantes/theme';
+import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import { InfobulleDefinition as PopoverDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule as RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -46,7 +47,6 @@ type DonneeSommePartielle = {
   terme: number;
 };
 
-const ARRIERE_PLAN_PAGE_SERIES = '#EAE3D2';
 const NOMBRE_MIN_TERMES = 5;
 const NOMBRE_MAX_TERMES = 100;
 const PAS_NOMBRE_TERMES = 5;
@@ -54,7 +54,8 @@ const HAUTEUR_GRAPHIQUE_SOMMES = 300;
 const HAUTEUR_GRAPHIQUE_TERMES = 170;
 const NOMBRE_MAX_BARRES_TERMES = 40;
 
-const PALETTE_SERIES = themesSimulationEcrans.light.series;
+let PALETTE_SERIES = obtenirThemesSimulationEcransInitial().series;
+let ARRIERE_PLAN_PAGE_SERIES = PALETTE_SERIES.arrierePlan === '#121A17' ? PALETTE_SERIES.arrierePlan : '#EAE3D2';
 
 // Sur le web, on bloque la selection de texte pendant le glisser du curseur.
 const STYLE_GLISSER_CURSEUR_WEB =
@@ -450,6 +451,10 @@ function CurseurNombreEntier({
 }
 
 export function SimulationSeries() {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  PALETTE_SERIES = obtenirThemesSimulationEcrans(modeSombre).series;
+  ARRIERE_PLAN_PAGE_SERIES = modeSombre ? PALETTE_SERIES.arrierePlan : '#EAE3D2';
+  stylesSeries = creerStylesSeries();
   const [indexSerieActive, definirIndexSerieActive] = useState(0);
   const [nombreTermes, definirNombreTermes] = useState(20);
   const animationPositionScroll = useRef(new Animated.Value(0)).current;
@@ -484,7 +489,10 @@ export function SimulationSeries() {
 
   return (
     <SafeAreaView style={stylesSeries.safeArea} edges={[]}>
-      <VueThematique lightColor={PALETTE_SERIES.arrierePlan} style={stylesSeries.conteneur}>
+      <VueThematique
+        darkColor={PALETTE_SERIES.arrierePlan}
+        lightColor={PALETTE_SERIES.arrierePlan}
+        style={stylesSeries.conteneur}>
         <Animated.View
           style={[
             stylesSeries.superpositionEntete,
@@ -641,7 +649,10 @@ export function SimulationSeries() {
   );
 }
 
-const stylesSeries = StyleSheet.create({
+let stylesSeries = creerStylesSeries();
+
+function creerStylesSeries() {
+  return StyleSheet.create({
   safeArea: {
     backgroundColor: ARRIERE_PLAN_PAGE_SERIES,
     flex: 1,
@@ -872,4 +883,5 @@ const stylesSeries = StyleSheet.create({
     textAlign: 'center',
   },
 });
+}
 

@@ -16,7 +16,8 @@ import Svg, { Line, Path, Rect } from 'react-native-svg';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
-import { themesSimulationEcrans } from '@/constantes/theme';
+import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -54,8 +55,8 @@ const DOMAIN: Domain = { xMax: 6, xMin: -6, yMax: 4, yMin: -4 };
 const ORDER_MIN = 1;
 const ORDER_MAX = 20;
 const APPROXIMATION_SAMPLE_X = 10;
-const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
-const themeActif = themesSimulationEcrans.light.serieTaylor;
+let themeActif = obtenirThemesSimulationEcransInitial().serieTaylor;
+let SIMULATION_PAGE_BACKGROUND = themeActif.background === '#121A17' ? themeActif.background : '#EAE3D2';
 
 const WEB_SLIDER_INTERACTION_STYLE =
   Platform.OS === 'web'
@@ -697,6 +698,10 @@ function CurseurTermes({
 }
 
 export function SimulationSerieTaylor() {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  themeActif = obtenirThemesSimulationEcrans(modeSombre).serieTaylor;
+  SIMULATION_PAGE_BACKGROUND = modeSombre ? themeActif.background : '#EAE3D2';
+  styles = creerStyles();
   const [functionIndex, setFunctionIndex] = useState(0);
   const [order, setOrder] = useState(4);
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -886,7 +891,10 @@ export function SimulationSerieTaylor() {
   );
 }
 
-const styles = StyleSheet.create({
+let styles = creerStyles();
+
+function creerStyles() {
+  return StyleSheet.create({
   safeArea: {
     backgroundColor: SIMULATION_PAGE_BACKGROUND,
     flex: 1,
@@ -1031,8 +1039,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   functionButtonActive: {
-    backgroundColor: themeActif.function,
-    borderColor: themeActif.function,
+    backgroundColor: '#D8A94A',
+    borderColor: '#D8A94A',
   },
   functionButtonFormula: {
     alignItems: 'center',
@@ -1083,7 +1091,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   approximationTermText: {
-    color: '#000000',
+    color: themeActif.ink,
     fontSize: 18,
     fontWeight: '900',
     lineHeight: 22,
@@ -1185,4 +1193,5 @@ const styles = StyleSheet.create({
     lineHeight: 32,
   },
 });
+}
 

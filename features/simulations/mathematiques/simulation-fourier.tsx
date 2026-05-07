@@ -15,7 +15,8 @@ import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
-import { themesSimulationEcrans } from '@/constantes/theme';
+import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -37,13 +38,14 @@ type GraphPoint = {
   y: number;
 };
 
-const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
+let themeActif = obtenirThemesSimulationEcransInitial().fourier;
+let SIMULATION_PAGE_BACKGROUND = themeActif.background === '#121A17' ? themeActif.background : '#EAE3D2';
 const HARMONIC_MIN = 1;
 const HARMONIC_MAX = 30;
 const GRAPH_SAMPLE_STEP = Platform.OS === 'web' ? 2 : 5;
 const HARMONIC_PATH_LIMIT = Platform.OS === 'web' ? 5 : 3;
 const PHASOR_LIMIT = Platform.OS === 'web' ? 8 : 6;
-const themeActif = themesSimulationEcrans.light.fourier;
+
 
 const COMPONENT_COLORS = [
   themeActif.component1,
@@ -425,6 +427,10 @@ function CurseurHarmoniques({
 }
 
 export function SimulationFourier() {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  themeActif = obtenirThemesSimulationEcrans(modeSombre).fourier;
+  SIMULATION_PAGE_BACKGROUND = modeSombre ? themeActif.background : '#EAE3D2';
+  styles = creerStyles();
   const isFocused = useIsFocused();
   const [signalIndex, setSignalIndex] = useState(0);
   const [nTerms, setNTerms] = useState(5);
@@ -638,7 +644,10 @@ export function SimulationFourier() {
   );
 }
 
-const styles = StyleSheet.create({
+let styles = creerStyles();
+
+function creerStyles() {
+  return StyleSheet.create({
   safeArea: {
     backgroundColor: SIMULATION_PAGE_BACKGROUND,
     flex: 1,
@@ -784,7 +793,7 @@ const styles = StyleSheet.create({
     borderColor: themeActif.approximation,
   },
   signalButtonText: {
-    color: '#000000',
+    color: themeActif.ink,
     fontSize: 13,
     fontWeight: '800',
     lineHeight: 16,
@@ -862,7 +871,7 @@ const styles = StyleSheet.create({
     borderColor: themeActif.component2,
   },
   toggleText: {
-    color: '#000000',
+    color: themeActif.ink,
     fontSize: 14,
     fontWeight: '800',
     lineHeight: 18,
@@ -902,4 +911,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+}
 

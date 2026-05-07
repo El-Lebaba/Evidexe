@@ -15,7 +15,8 @@ import Svg, { Circle, Defs, Line, Path, RadialGradient, Rect, Stop } from 'react
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
-import { themesSimulationEcrans } from '@/constantes/theme';
+import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -56,12 +57,13 @@ type ResultatOrbital = {
   vitesseRelative: number;
 };
 
-const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
+let SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
 const CONSTANTE_GRAVITATIONNELLE_SIMULATION = 1;
 const NOMBRE_POINTS_ORBITE = 180;
 const NOMBRE_POINTS_TRACE = 46;
 
-const themeActif = themesSimulationEcrans.light.mecaniqueOrbitale;
+let themeActif = obtenirThemesSimulationEcransInitial().mecaniqueOrbitale;
+SIMULATION_PAGE_BACKGROUND = themeActif.background === '#121A17' ? themeActif.background : '#EAE3D2';
 
 const STYLE_INTERACTION_WEB =
   Platform.OS === 'web'
@@ -386,6 +388,10 @@ function GraphiqueMecaniqueOrbitale({
 }
 
 export function SimulationMecaniqueOrbitale() {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  themeActif = obtenirThemesSimulationEcrans(modeSombre).mecaniqueOrbitale;
+  SIMULATION_PAGE_BACKGROUND = modeSombre ? themeActif.background : '#EAE3D2';
+  styles = creerStyles();
   const [masseAstre, definirMasseAstre] = useState(50);
   const [excentricite, definirExcentricite] = useState(0.3);
   const [orientationOrbite, definirOrientationOrbite] = useState(0);
@@ -557,7 +563,10 @@ export function SimulationMecaniqueOrbitale() {
   );
 }
 
-const styles = StyleSheet.create({
+let styles = creerStyles();
+
+function creerStyles() {
+  return StyleSheet.create({
   safeArea: {
     backgroundColor: SIMULATION_PAGE_BACKGROUND,
     flex: 1,
@@ -712,3 +721,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+}

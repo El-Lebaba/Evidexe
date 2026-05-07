@@ -1,6 +1,8 @@
 import katex from 'katex';
 import { memo, useEffect, useMemo } from 'react';
 
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
+
 type ProprietesRenduFormule = {
   fallback: string;
   mathematiques: string;
@@ -10,6 +12,9 @@ type ProprietesRenduFormule = {
 };
 
 function ComposantRenduFormule({ fallback, mathematiques, centered = false, size = 'md' }: ProprietesRenduFormule) {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  const couleurFormule = modeSombre ? '#FFFFFF' : '#243B53';
+
   useEffect(() => {
     if (typeof document === 'undefined') {
       return;
@@ -41,7 +46,7 @@ function ComposantRenduFormule({ fallback, mathematiques, centered = false, size
     <div
       style={{
         alignItems: centered ? 'center' : 'flex-start',
-        color: '#243B53',
+        color: couleurFormule,
         display: 'flex',
         minHeight: 28,
         justifyContent: centered ? 'center' : 'flex-start',

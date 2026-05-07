@@ -13,7 +13,8 @@ import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
-import { themesSimulationEcrans } from '@/constantes/theme';
+import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -52,9 +53,10 @@ type ResultatSnell = {
   vitesse2: number;
 };
 
-const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
+let SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
 
-const themeActif = themesSimulationEcrans.light.optiqueRefraction;
+let themeActif = obtenirThemesSimulationEcransInitial().optiqueRefraction;
+SIMULATION_PAGE_BACKGROUND = themeActif.background === '#121A17' ? themeActif.background : '#EAE3D2';
 
 const STYLE_INTERACTION_WEB =
   Platform.OS === 'web'
@@ -365,6 +367,10 @@ function GraphiqueOptiqueRefraction({
 }
 
 export function SimulationOptiqueRefraction() {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  themeActif = obtenirThemesSimulationEcrans(modeSombre).optiqueRefraction;
+  SIMULATION_PAGE_BACKGROUND = modeSombre ? themeActif.background : '#EAE3D2';
+  styles = creerStyles();
   const [n1, definirN1] = useState(1);
   const [n2, definirN2] = useState(1.5);
   const [angleIncident, definirAngleIncident] = useState(30);
@@ -542,7 +548,10 @@ export function SimulationOptiqueRefraction() {
   );
 }
 
-const styles = StyleSheet.create({
+let styles = creerStyles();
+
+function creerStyles() {
+  return StyleSheet.create({
   safeArea: {
     backgroundColor: SIMULATION_PAGE_BACKGROUND,
     flex: 1,
@@ -735,3 +744,4 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
 });
+}

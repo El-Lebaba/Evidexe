@@ -14,7 +14,8 @@ import Svg, { Circle, G, Line, Path, Rect } from 'react-native-svg';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
-import { themesSimulationEcrans } from '@/constantes/theme';
+import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
+import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
@@ -54,13 +55,14 @@ type PointGraphique = {
   y: number;
 };
 
-const SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
+let SIMULATION_PAGE_BACKGROUND = '#EAE3D2';
 const MU_ZERO = 4 * Math.PI * 1e-7;
 const DISTANCE_REFERENCE_METRES = 0.08;
 const DISTANCE_REFERENCE_PIXELS = 80;
 const DISTANCE_MINIMALE_METRES = 0.005;
 
-const themeActif = themesSimulationEcrans.light.champsMagnetiques;
+let themeActif = obtenirThemesSimulationEcransInitial().champsMagnetiques;
+SIMULATION_PAGE_BACKGROUND = themeActif.background === '#121A17' ? themeActif.background : '#EAE3D2';
 
 const STYLE_INTERACTION_WEB =
   Platform.OS === 'web'
@@ -408,6 +410,10 @@ function GraphiqueChampsMagnetiques({
 }
 
 export function SimulationChampsMagnetiques() {
+  const modeSombre = useSchemaCouleur() === 'dark';
+  themeActif = obtenirThemesSimulationEcrans(modeSombre).champsMagnetiques;
+  SIMULATION_PAGE_BACKGROUND = modeSombre ? themeActif.background : '#EAE3D2';
+  styles = creerStyles();
   const [nombreFils, definirNombreFils] = useState(2);
   const [courant, definirCourant] = useState(1);
   const [afficherChamp, definirAfficherChamp] = useState(true);
@@ -575,7 +581,10 @@ export function SimulationChampsMagnetiques() {
   );
 }
 
-const styles = StyleSheet.create({
+let styles = creerStyles();
+
+function creerStyles() {
+  return StyleSheet.create({
   safeArea: {
     backgroundColor: SIMULATION_PAGE_BACKGROUND,
     flex: 1,
@@ -775,3 +784,4 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
 });
+}
