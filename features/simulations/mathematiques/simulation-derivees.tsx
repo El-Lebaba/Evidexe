@@ -371,17 +371,17 @@ export function SimulationDerivees() {
   const slope = activeFunction.dfn(x0);
   const headerTranslateY = scrollY.interpolate({
     inputRange: [0, 120],
-    outputRange: [0, -HAUTEUR_TOTALE_ENTETE_SIMULATION],
+    outputRange: [0, 0],
     extrapolate: 'clamp',
   });
   const headerOpacity = scrollY.interpolate({
     inputRange: [0, 60, 120],
-    outputRange: [1, 0.9, 0],
+    outputRange: [1, 1, 1],
     extrapolate: 'clamp',
   });
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea} edges={[]}>
       <VueTheme lightColor={themeActif.background} style={styles.container}>
         <Animated.View
           style={[
@@ -458,7 +458,7 @@ export function SimulationDerivees() {
                 </View>
                 <View style={styles.derivativeFormulaCard}>
                   <TexteTheme lightColor={themeActif.mutedInk} style={styles.derivativeFormulaLabel}>
-                    {'Fonction d\u00e9riv\u00e9e'}
+                    {'Fonction dérivée'}
                   </TexteTheme>
                   <RenduFormule fallback={`f(x) = ${activeFunction.label}`} mathematiques={`f(x)=${activeFunction.latex}`} />
                   <RenduFormule fallback={`f'(x) = ${activeFunction.derivativeLabel}`} mathematiques={`f'(x)=${activeFunction.derivativeLatex}`} />
@@ -494,12 +494,12 @@ export function SimulationDerivees() {
       <InfobulleDefinition
         body={[
           "La dérivée d'une fonction mesure la rapidité avec laquelle une fonction varie en un point précis.",
-          "Sur le graphique, elle correspond \u00e0 la pente de la tangente au point x0. Si la pente est positive, la courbe monte. Si elle est n\u00e9gative, la courbe descend. Si elle vaut 0, la courbe est localement plate.",
+          "Sur le graphique, elle correspond à la pente de la tangente au point x0. Si la pente est positive, la courbe monte. Si elle est négative, la courbe descend. Si elle vaut 0, la courbe est localement plate.",
         ]}
         exampleLabel="Lecture rapide"
-        exampleText={'f(x0) donne la hauteur du point sur la courbe, et f\u2019(x0) donne sa pente \u00e0 cet endroit.'}
-        eyebrow="D\u00e9finition"
-        title={'Qu\u2019est-ce qu\u2019une d\u00e9riv\u00e9e ?'}
+        exampleText={"f(x0) donne la hauteur du point sur la courbe, et f'(x0) donne sa pente à cet endroit."}
+        eyebrow="Définition"
+        title={"Qu'est-ce qu'une dérivée ?"}
       />
     </SafeAreaView>
   );

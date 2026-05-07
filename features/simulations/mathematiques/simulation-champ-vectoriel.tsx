@@ -394,7 +394,7 @@ export function SimulationChampVectoriel() {
   });
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea} edges={[]}>
       <VueTheme lightColor={themeActif.background} style={styles.container}>
         <Animated.View
           style={[

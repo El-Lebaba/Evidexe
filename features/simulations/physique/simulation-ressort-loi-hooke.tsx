@@ -539,16 +539,16 @@ export function SimulationRessortLoiHooke() {
   const headerTranslateY = scrollY.interpolate({
     extrapolate: 'clamp',
     inputRange: [0, 120],
-    outputRange: [0, -HAUTEUR_TOTALE_ENTETE_SIMULATION],
+    outputRange: [0, 0],
   });
   const headerOpacity = scrollY.interpolate({
     extrapolate: 'clamp',
     inputRange: [0, 60, 120],
-    outputRange: [1, 0.9, 0],
+    outputRange: [1, 1, 1],
   });
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea} edges={[]}>
       <VueTheme lightColor={themeActif.background} style={styles.container}>
         <Animated.View
           style={[
@@ -717,7 +717,7 @@ export function SimulationRessortLoiHooke() {
           ]}
           exampleLabel="Lecture rapide"
           exampleText="Augmente k pour rendre le ressort plus raide, ou augmente m pour ralentir l’oscillation."
-          eyebrow="Mécanique"
+        eyebrow="Définition"
           title="Ressort et oscillation"
         />
       </VueTheme>

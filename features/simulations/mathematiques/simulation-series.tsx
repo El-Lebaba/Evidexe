@@ -484,20 +484,20 @@ export function SimulationSeries() {
   const sommeActuelle = sommesPartielles[sommesPartielles.length - 1]?.somme ?? 0;
   const ecartActuel = serieActive.converge ? Math.abs(serieActive.limiteExacte - sommeActuelle) : Number.NaN;
 
-  // L'entete sort completement de l'ecran quand on descend dans la page.
+  // L'entete reste fixe pendant que le contenu defile derriere lui.
   const translationEntete = animationPositionScroll.interpolate({
     extrapolate: 'clamp',
     inputRange: [0, 120],
-    outputRange: [0, -HAUTEUR_TOTALE_ENTETE_SIMULATION],
+    outputRange: [0, 0],
   });
   const opaciteEntete = animationPositionScroll.interpolate({
     extrapolate: 'clamp',
     inputRange: [0, 60, 120],
-    outputRange: [1, 0.9, 0],
+    outputRange: [1, 1, 1],
   });
 
   return (
-    <SafeAreaView style={stylesSeries.safeArea} edges={['top']}>
+    <SafeAreaView style={stylesSeries.safeArea} edges={[]}>
       <VueThematique lightColor={PALETTE_SERIES.arrierePlan} style={stylesSeries.conteneur}>
         <Animated.View
           style={[

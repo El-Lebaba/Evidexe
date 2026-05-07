@@ -12,11 +12,12 @@ type ProprietesEnteteEcranSimulation = {
   titre: string;
 };
 
-export const HAUTEUR_OMBRE_HAUT_ENTETE_SIMULATION = 58;
+export const HAUTEUR_OMBRE_HAUT_ENTETE_SIMULATION = 0;
 export const HAUTEUR_BARRE_ENTETE_SIMULATION = 74;
 export const HAUTEUR_TOTALE_ENTETE_SIMULATION =
   HAUTEUR_OMBRE_HAUT_ENTETE_SIMULATION + HAUTEUR_BARRE_ENTETE_SIMULATION;
 export const ESPACE_CONTENU_ENTETE_SIMULATION = 44;
+const COULEUR_ARRIERE_PLAN_PAGE_SIMULATION = '#EAE3D2';
 
 function obtenirHrefSection(domaine: string): Href {
   return (domaine === 'mathematiques'
@@ -36,12 +37,14 @@ export function EnteteEcranSimulation({ titre, domaine }: ProprietesEnteteEcranS
 
   return (
     <View style={styles.enveloppeEntete}>
-      <View
-        style={[
-          styles.ombreHaute,
-          { backgroundColor: themeActif.surface, borderBottomColor: themeActif.border },
-        ]}
-      />
+      {HAUTEUR_OMBRE_HAUT_ENTETE_SIMULATION > 0 ? (
+        <View
+          style={[
+            styles.ombreHaute,
+            { backgroundColor: COULEUR_ARRIERE_PLAN_PAGE_SIMULATION, borderBottomColor: themeActif.border },
+          ]}
+        />
+      ) : null}
       <View
         style={[
           styles.entete,
@@ -93,7 +96,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   ombreHaute: {
-    borderBottomWidth: 1.5,
+    borderBottomWidth: HAUTEUR_OMBRE_HAUT_ENTETE_SIMULATION > 0 ? 1.5 : 0,
     minHeight: HAUTEUR_OMBRE_HAUT_ENTETE_SIMULATION,
     width: '100%',
   },
