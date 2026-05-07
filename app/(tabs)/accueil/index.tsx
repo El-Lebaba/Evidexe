@@ -16,6 +16,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import PanneauParametres from '@/components/accueil/PanneauParametres';
+import type { ParametresApplication } from '@/components/accueil/PanneauParametres';
 import { LogoEvidexe } from '@/components/logo-evidexe';
 import { obtenirThemeApplication, ThemeApplication } from '@/constantes/theme';
 import { donneesLocales } from '@/db/donnees-principales';
@@ -156,6 +158,13 @@ export default function EcranAccueil() {
   const [userLevel, setUserLevel] = useState(1);
   const [userXp, setUserXp] = useState(0);
   const [activeCourses, setActiveCourses] = useState(0);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settings, setSettings] = useState<ParametresApplication>({
+    darkMode: false,
+    fpsCounterEnabled: true,
+    language: 'fr',
+    notifications: true,
+  });
 
   const expandProgress = useRef(new Animated.Value(0)).current;
   const translationWebVignettesAccueil = useRef(new Animated.Value(0)).current;
@@ -227,6 +236,7 @@ export default function EcranAccueil() {
       setUserLevel(user.level);
       setUserXp(user.xp);
       setActiveCourses(courses.filter((CoursLocal) => !CoursLocal.completed).length);
+      setSettings(donneesLocales.obtenirParametres());
     }
 
     void chargerDonneesAccueil();
@@ -391,6 +401,10 @@ export default function EcranAccueil() {
 
   function togglePanel(panel: 'cours' | 'simulations') {
     setExpandedPanel((current) => (current === panel ? null : panel));
+  }
+
+  function enregistrerParametres(nextSettings: ParametresApplication) {
+    setSettings(nextSettings);
   }
 
   const scrollToExplore = useCallback(() => {
@@ -609,12 +623,28 @@ export default function EcranAccueil() {
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: themeApplication.background }]}>
+      <PanneauParametres
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        settings={settings}
+        onSave={enregistrerParametres}
+      />
       <ScrollView
         contentContainerStyle={[styles.content, { backgroundColor: themeApplication.background }]}
         ref={scrollRef}
         showsVerticalScrollIndicator={false}>
         <View style={[styles.zoneVignettesAccueil, { backgroundColor: themeApplication.background }]}>
           <View style={styles.homeProfileRow}>
+            <Pressable
+              onPress={() => setSettingsOpen(true)}
+              style={[
+                styles.menuButton,
+                isCompact ? styles.menuButtonCompact : null,
+                isDarkMode ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
+              ]}>
+              <MaterialIcons name="menu" size={24} color={isDarkMode ? themeApplication.ink : palette.ink} />
+            </Pressable>
+
             <Pressable
               onPress={() => router.push('/(tabs)/profil' as Href)}
               style={[
@@ -1012,7 +1042,9 @@ const styles = StyleSheet.create({
   content: { backgroundColor: palette.cream, paddingBottom: 56 },
   zoneVignettesAccueil: { backgroundColor: palette.cream, paddingHorizontal: 22, paddingTop: 8, position: 'relative' },
   homeProfileRow: {
-    alignItems: 'flex-end',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 8,
   },
   fenetreVignettesAccueil: { overflow: 'hidden' },
@@ -1063,6 +1095,20 @@ const styles = StyleSheet.create({
   },
   pointAccueil: { backgroundColor: 'rgba(32,36,43,0.18)', borderRadius: 999, height: 8, width: 8 },
   pointAccueilActif: { backgroundColor: palette.charcoal, width: 24 },
+  menuButton: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.72)',
+    borderColor: 'rgba(32,36,43,0.1)',
+    borderRadius: 999,
+    borderWidth: 1,
+    height: 44,
+    justifyContent: 'center',
+    width: 44,
+  },
+  menuButtonCompact: {
+    height: 40,
+    width: 40,
+  },
   eyebrow: {
     color: 'rgba(25,25,31,0.55)',
     fontSize: 15,
