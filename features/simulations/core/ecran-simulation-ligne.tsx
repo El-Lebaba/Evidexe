@@ -101,12 +101,12 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
 
   const deplacementEnteteY = defilementY.interpolate({
     inputRange: [0, 120],
-    outputRange: [0, -HAUTEUR_TOTALE_ENTETE_SIMULATION],
+    outputRange: [0, 0],
     extrapolate: 'clamp',
   });
   const opaciteEntete = defilementY.interpolate({
     inputRange: [0, 60, 120],
-    outputRange: [1, 0.9, 0],
+    outputRange: [1, 1, 1],
     extrapolate: 'clamp',
   });
   const echelleHalo = pulsation.interpolate({
@@ -119,7 +119,7 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
   });
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: themeActif.background }]}>
+    <SafeAreaView edges={[]} style={[styles.safeArea, { backgroundColor: themeActif.background }]}>
       <VueTheme
         darkColor={themeActif.background}
         lightColor={themeActif.background}

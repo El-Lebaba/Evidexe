@@ -49,7 +49,7 @@ const DENSITY_MAX = 24;
 const Y0_MIN = -4;
 const Y0_MAX = 4;
 const themeActif = {
-  activeButton: '#7EA6E0',
+  activeButton: '#7CCFBF',
   background: '#E9ECE4',
   border: '#243B53',
   fieldStrong: '#4E7FC4',
@@ -412,17 +412,17 @@ export function SimulationChampDePentes() {
   const initialSlope = activeEquation.fn(DOMAIN.xMin, y0);
   const headerTranslateY = scrollY.interpolate({
     inputRange: [0, 120],
-    outputRange: [0, -HAUTEUR_TOTALE_ENTETE_SIMULATION],
+    outputRange: [0, 0],
     extrapolate: 'clamp',
   });
   const headerOpacity = scrollY.interpolate({
     inputRange: [0, 60, 120],
-    outputRange: [1, 0.9, 0],
+    outputRange: [1, 1, 1],
     extrapolate: 'clamp',
   });
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea} edges={[]}>
       <VueTheme lightColor={themeActif.background} style={styles.container}>
         <Animated.View
           style={[
