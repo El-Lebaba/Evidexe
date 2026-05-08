@@ -2,12 +2,10 @@
 
 Evidex is an interactive learning application built with **Expo**, **React Native** and **TypeScript**. It helps students explore mathematics, physics and Java programming through short lessons, visual simulations, quizzes and local progress tracking.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Expo-54-000020?style=for-the-badge&logo=expo" alt="Expo 54">
-  <img src="https://img.shields.io/badge/React%20Native-0.81-61DAFB?style=for-the-badge&logo=react" alt="React Native 0.81">
-  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react" alt="React 19">
-  <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript 5.9">
-</p>
+![Expo 54](https://img.shields.io/badge/Expo-54-000020?style=for-the-badge&logo=expo)
+![React Native 0.81](https://img.shields.io/badge/React%20Native-0.81-61DAFB?style=for-the-badge&logo=react)
+![React 19](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)
+![TypeScript 5.9](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript)
 
 ## Overview
 
