@@ -277,6 +277,9 @@ export function SimulationPendule() {
   const state = stateRef.current;
   const lengthM = lengthCm / 100;
   const period = 2 * Math.PI * Math.sqrt(lengthM / gravity);
+  const initialAngleRadians = (initialAngle * Math.PI) / 180;
+  const correctedPeriod = period * (1 + (initialAngleRadians * initialAngleRadians) / 16);
+  const isLargeAngle = initialAngle > 20;
   const kineticEnergy = 0.5 * Math.pow(lengthM * state.angularVelocity, 2);
   const potentialEnergy = gravity * lengthM * (1 - Math.cos(state.angle));
   const totalEnergy = kineticEnergy + potentialEnergy || 1;
@@ -339,8 +342,8 @@ export function SimulationPendule() {
               <View style={styles.formulaCard}>
                 <RenduFormule
                   centered
-                  fallback="T = 2pi sqrt(L / g)"
-                  mathematiques={'T=2\\pi\\sqrt{\\frac{L}{g}}'}
+                  fallback="T approx = 2pi sqrt(L / g)"
+                  mathematiques={'T\\approx2\\pi\\sqrt{\\frac{L}{g}}'}
                   mathViewMobile
                   size="md"
                 />
@@ -361,7 +364,7 @@ export function SimulationPendule() {
               <View style={[styles.statsGrid, { flexDirection: isCompact ? 'column' : 'row' }]}>
                 <View style={styles.statCard}>
                   <TexteTheme lightColor={themeActif.mutedInk} style={styles.statLabel}>
-                    Cycle complet
+                    Période approx.
                   </TexteTheme>
                   <View style={styles.statFormulaWrap}>
                     <RenduFormule fallback={`${formaterNombre(period)} s`} mathematiques={`${formaterNombre(period)}\\ \\text{s}`} centered size="sm" />
@@ -385,6 +388,17 @@ export function SimulationPendule() {
                     {formaterNombre((state.angle * 180) / Math.PI, 1)}°
                   </TexteTheme>
                 </View>
+              </View>
+
+              <View style={styles.warningCard}>
+                <TexteTheme lightColor={themeActif.ink} style={styles.warningTitle}>
+                  Approximation petit angle
+                </TexteTheme>
+                <TexteTheme lightColor={themeActif.mutedInk} style={styles.warningText}>
+                  {isLargeAngle
+                    ? `L'angle est grand : la vraie période serait légèrement plus longue. Correction simple : T ≈ ${formaterNombre(correctedPeriod)} s.`
+                    : 'Période approximative, valable surtout pour petits angles.'}
+                </TexteTheme>
               </View>
 
               <View style={styles.energyCard}>
@@ -592,6 +606,26 @@ function creerStyles() {
     fontWeight: '800',
     lineHeight: 20,
     textAlign: 'center',
+  },
+  warningCard: {
+    backgroundColor: themeActif.panel,
+    borderColor: themeActif.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 6,
+    padding: 14,
+  },
+  warningTitle: {
+    color: themeActif.ink,
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  warningText: {
+    color: themeActif.mutedInk,
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 18,
   },
   energyCard: {
     backgroundColor: themeActif.surface,

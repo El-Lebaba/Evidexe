@@ -3,7 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "npx expo start -c --host lan",
+    "start": "npx expo start -c -host wlan",
     "start:tunnel": "npx expo start -c --tunnel",
     "startlocal": "npx expo start -c",
     "reinitialiser-projet": "node ./scripts/reinitialiser-projet.js",

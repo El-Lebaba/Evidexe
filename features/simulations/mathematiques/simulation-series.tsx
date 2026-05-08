@@ -30,6 +30,7 @@ type DefinitionSerie = {
   description: string;
   etiquetteFormule: string;
   etiquetteLimite: string;
+  indiceDepart?: number;
   limiteExacte: number;
   nom: string;
   terme: (indice: number) => number;
@@ -71,10 +72,10 @@ const STYLE_GLISSER_CURSEUR_WEB =
 const SERIES_DISPONIBLES: DefinitionSerie[] = [
   {
     converge: true,
-    description: 'Suite geometrique positive qui se stabilise rapidement.',
+    description: 'Serie geometrique positive qui additionne les termes depuis n = 1.',
     etiquetteFormule: '1/2^n',
-    etiquetteLimite: '2',
-    limiteExacte: 2,
+    etiquetteLimite: '1',
+    limiteExacte: 1,
     nom: 'Geometrique',
     terme: (indice) => Math.pow(0.5, indice),
     texteLatex: '\\left(\\frac{1}{2}\\right)^n',
@@ -114,6 +115,7 @@ const SERIES_DISPONIBLES: DefinitionSerie[] = [
     description: 'Serie de Leibniz qui approche pi sur 4.',
     etiquetteFormule: '(-1)^n/(2n+1)',
     etiquetteLimite: '\\frac{\\pi}{4}',
+    indiceDepart: 0,
     limiteExacte: Math.PI / 4,
     nom: 'Leibniz',
     terme: (indice) => Math.pow(-1, indice) / (2 * indice + 1),
@@ -140,15 +142,17 @@ function creerCheminSvg(points: PointGraphique[]) {
     .join(' ');
 }
 
-// Calcule les sommes partielles S_n = a_1 + ... + a_n a partir du terme general.
+// Calcule les sommes partielles en respectant l'indice de depart mathematique de chaque serie.
 function construireSommesPartielles(serie: DefinitionSerie, nombreTermes: number) {
   const donneesSommes: DonneeSommePartielle[] = [];
   let sommeAccumulee = 0;
+  const indiceDepart = serie.indiceDepart ?? 1;
 
-  for (let indice = 1; indice <= Math.min(nombreTermes, NOMBRE_MAX_TERMES); indice += 1) {
+  for (let rang = 1; rang <= Math.min(nombreTermes, NOMBRE_MAX_TERMES); rang += 1) {
+    const indice = indiceDepart + rang - 1;
     const valeurTerme = serie.terme(indice);
     sommeAccumulee += valeurTerme;
-    donneesSommes.push({ indice, somme: sommeAccumulee, terme: valeurTerme });
+    donneesSommes.push({ indice: rang, somme: sommeAccumulee, terme: valeurTerme });
   }
 
   return donneesSommes;
@@ -623,7 +627,7 @@ export function SimulationSeries() {
 
                 <View style={stylesSeries.carteStatistique}>
                   <TexteThematique lightColor={PALETTE_SERIES.encreAttenue} style={stylesSeries.etiquetteStatistique}>
-                    Ecart
+                    Écart avec limite
                   </TexteThematique>
                   <TexteThematique lightColor={PALETTE_SERIES.encre} style={stylesSeries.valeurStatistique}>
                     {serieActive.converge ? formaterValeur(ecartActuel) : 'infini'}

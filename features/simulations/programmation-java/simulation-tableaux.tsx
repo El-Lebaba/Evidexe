@@ -2,6 +2,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Animated,
+  GestureResponderEvent,
+  PanResponder,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -22,30 +25,125 @@ import {
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
-type OperationActive = 'ajout' | 'insertion' | 'lecture' | 'retrait' | null;
+type OperationActive = 'lecture' | 'ecriture' | 'tri' | 'remplissage' | 'copie' | null;
+
 type TraceOperation = {
   id: number;
   texte: string;
 };
 
-type ThemeSimulationArrayList = ReturnType<typeof obtenirThemesSimulationEcrans>['programmationJava'];
+type ProprietesCurseur = {
+  etiquette: string;
+  maximum: number;
+  minimum: number;
+  modifierValeur: (valeur: number) => void;
+  pas: number;
+  suffixe?: string;
+  valeur: number;
+};
 
-let themeActif: ThemeSimulationArrayList = obtenirThemesSimulationEcransInitial().programmationJava;
+type ThemeSimulationTableaux = ReturnType<typeof obtenirThemesSimulationEcrans>['programmationJava'];
+
+let themeActif: ThemeSimulationTableaux = obtenirThemesSimulationEcransInitial().programmationJava;
 let couleurArrierePlan = themeActif.background;
 
-const ELEMENTS_INITIAUX = ['Pomme', 'Banane', 'Cerise', 'Datte'];
-const LIMITE_ELEMENTS = 16;
+const VALEURS_INITIALES = [10, 42, 7, 88, 23, 55, 0, 0];
+const CAPACITE_MINIMALE = 4;
+const CAPACITE_MAXIMALE = 12;
+const DUREE_SURBRILLANCE = 760;
+
+const WEB_SLIDER_INTERACTION_STYLE =
+  Platform.OS === 'web'
+    ? ({
+        cursor: 'ew-resize',
+        touchAction: 'none',
+        userSelect: 'none',
+      } as any)
+    : undefined;
 
 function borner(valeur: number, minimum: number, maximum: number) {
   return Math.min(Math.max(valeur, minimum), maximum);
 }
 
-function calculerCapacite(taille: number) {
-  return Math.max(8, 2 ** Math.ceil(Math.log2(taille + 1)));
+function arrondirAuPas(valeur: number, pas: number) {
+  return Math.round(valeur / pas) * pas;
 }
 
-function normaliserValeur(texte: string) {
-  return texte.trim().slice(0, 12);
+function convertirNombre(texte: string) {
+  const nombre = Number.parseInt(texte, 10);
+
+  if (Number.isNaN(nombre)) {
+    return 0;
+  }
+
+  return borner(nombre, -99, 999);
+}
+
+function ajusterCapacite(valeurs: number[], capacite: number) {
+  if (valeurs.length === capacite) {
+    return valeurs;
+  }
+
+  if (valeurs.length > capacite) {
+    return valeurs.slice(0, capacite);
+  }
+
+  return [...valeurs, ...Array.from({ length: capacite - valeurs.length }, () => 0)];
+}
+
+function CurseurTableau({
+  etiquette,
+  maximum,
+  minimum,
+  modifierValeur,
+  pas,
+  suffixe = '',
+  valeur,
+}: ProprietesCurseur) {
+  const definirDepuisEvenement = useCallback((event: GestureResponderEvent) => {
+    event.currentTarget.measure((_x, _y, largeurMesuree, _hauteur, positionPageX) => {
+      const position = borner(event.nativeEvent.pageX - positionPageX, 0, largeurMesuree);
+      const valeurBrute = minimum + (position / largeurMesuree) * (maximum - minimum);
+      const prochaineValeur = borner(arrondirAuPas(valeurBrute, pas), minimum, maximum);
+
+      modifierValeur(Number(prochaineValeur.toFixed(0)));
+    });
+  }, [maximum, minimum, modifierValeur, pas]);
+
+  const repondeurPanoramique = useMemo(
+    () =>
+      PanResponder.create({
+        onMoveShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponderCapture: () => true,
+        onPanResponderGrant: definirDepuisEvenement,
+        onPanResponderMove: definirDepuisEvenement,
+        onPanResponderTerminationRequest: () => false,
+        onShouldBlockNativeResponder: () => true,
+        onStartShouldSetPanResponder: () => true,
+        onStartShouldSetPanResponderCapture: () => true,
+      }),
+    [definirDepuisEvenement]
+  );
+
+  const pourcentage = ((valeur - minimum) / (maximum - minimum)) * 100;
+
+  return (
+    <View style={styles.blocCurseur}>
+      <View style={styles.enteteCurseur}>
+        <TexteTheme lightColor={themeActif.mutedInk} style={styles.etiquettePanneau}>
+          {etiquette}
+        </TexteTheme>
+        <TexteTheme lightColor={themeActif.ink} style={styles.valeurCurseur}>
+          {valeur}
+          {suffixe}
+        </TexteTheme>
+      </View>
+      <View {...repondeurPanoramique.panHandlers} style={[styles.pisteCurseur, WEB_SLIDER_INTERACTION_STYLE]}>
+        <View style={[styles.remplissageCurseur, { width: `${pourcentage}%` }]} />
+        <View style={[styles.poigneeCurseur, WEB_SLIDER_INTERACTION_STYLE, { left: `${pourcentage}%` }]} />
+      </View>
+    </View>
+  );
 }
 
 function CarteStatistique({ etiquette, valeur }: { etiquette: string; valeur: string | number }) {
@@ -91,72 +189,68 @@ function BoutonOperation({
   );
 }
 
-function CelluleArrayList({
+function CelluleTableau({
   estActive,
-  estVide,
+  estTriee,
   index,
-  onLire,
-  onRetirer,
+  operationActive,
   valeur,
 }: {
   estActive: boolean;
-  estVide?: boolean;
+  estTriee: boolean;
   index: number;
-  onLire?: () => void;
-  onRetirer?: () => void;
-  valeur?: string;
+  operationActive: OperationActive;
+  valeur: number;
 }) {
-  const couleurBordure = estActive ? themeActif.bounds : estVide ? themeActif.gridSoft : themeActif.approximationStroke;
-  const couleurFond = estActive ? themeActif.boundsSoft : estVide ? 'transparent' : themeActif.surface;
+  const couleurBordure = estActive
+    ? themeActif.bounds
+    : estTriee
+      ? themeActif.accent
+      : themeActif.approximationStroke;
+  const couleurFond = estActive
+    ? themeActif.boundsSoft
+    : estTriee
+      ? themeActif.approximation
+      : themeActif.surface;
+  const adresse = `0x${(0x1000 + index * 4).toString(16).toUpperCase()}`;
 
   return (
-    <View
-      style={[
-        styles.cellule,
-        {
-          backgroundColor: couleurFond,
-          borderColor: couleurBordure,
-          opacity: estVide ? 0.58 : 1,
-        },
-      ]}>
-      <View style={[styles.enteteCellule, { backgroundColor: estVide ? 'transparent' : themeActif.panel }]}>
+    <View style={[styles.cellule, { backgroundColor: couleurFond, borderColor: couleurBordure }]}>
+      <View style={styles.enteteCellule}>
         <TexteTheme lightColor={themeActif.mutedInk} style={styles.indexCellule}>
           [{index}]
         </TexteTheme>
       </View>
       <View style={styles.corpsCellule}>
-        <TexteTheme
-          lightColor={estVide ? themeActif.mutedInk : themeActif.ink}
-          numberOfLines={1}
-          style={[styles.valeurCellule, estVide ? styles.valeurVide : null]}>
-          {estVide ? 'null' : valeur}
+        <TexteTheme lightColor={themeActif.ink} numberOfLines={1} style={styles.valeurCellule}>
+          {valeur}
         </TexteTheme>
-        {!estVide ? (
-          <View style={styles.actionsCellule}>
-            <Pressable onPress={onLire} style={styles.boutonIconeCellule}>
-              <MaterialCommunityIcons color={themeActif.bounds} name="flash-outline" size={15} />
-            </Pressable>
-            <Pressable onPress={onRetirer} style={styles.boutonIconeCellule}>
-              <MaterialCommunityIcons color={themeActif.approximationNegativeStroke} name="trash-can-outline" size={15} />
-            </Pressable>
-          </View>
-        ) : null}
+        <TexteTheme lightColor={themeActif.mutedInk} style={styles.adresseCellule}>
+          {adresse}
+        </TexteTheme>
       </View>
+      {estActive ? (
+        <TexteTheme lightColor={themeActif.bounds} style={styles.etiquetteOperationCellule}>
+          {operationActive ?? 'accès'}
+        </TexteTheme>
+      ) : null}
     </View>
   );
 }
 
-export function SimulationArrayList() {
+export function SimulationTableaux() {
   const modeSombre = useSchemaCouleur() === 'dark';
   const { width } = useWindowDimensions();
   const defilementY = useRef(new Animated.Value(0)).current;
   const prochainIdTrace = useRef(1);
   const minuteurRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [elements, definirElements] = useState(ELEMENTS_INITIAUX);
-  const [valeurSaisie, definirValeurSaisie] = useState('');
-  const [indexSaisi, definirIndexSaisi] = useState('0');
-  const [operationActive, definirOperationActive] = useState<OperationActive>(null);
+  const [capacite, definirCapacite] = useState(VALEURS_INITIALES.length);
+  const [valeurs, definirValeurs] = useState(VALEURS_INITIALES);
+  const [valeurSaisie, definirValeurSaisie] = useState('99');
+  const [indexCible, definirIndexCible] = useState(2);
   const [indicesActifs, definirIndicesActifs] = useState<number[]>([]);
+  const [operationActive, definirOperationActive] = useState<OperationActive>(null);
+  const [indicesTries, definirIndicesTries] = useState<number[]>([]);
   const [traces, definirTraces] = useState<TraceOperation[]>([]);
 
   themeActif = obtenirThemesSimulationEcrans(modeSombre).programmationJava;
@@ -167,14 +261,8 @@ export function SimulationArrayList() {
   const largeurZoneTravail = Math.min(width - 24, 1180);
   const largeurSimulation = estLarge ? Math.max(520, largeurZoneTravail - 360) : largeurZoneTravail;
   const largeurPanneau = estLarge ? 320 : largeurZoneTravail;
-  const capacite = useMemo(() => calculerCapacite(elements.length), [elements.length]);
-  const tauxOccupation = elements.length / capacite;
-  const emplacementsVides = useMemo(
-    () => Array.from({ length: Math.max(0, capacite - elements.length) }, (_, index) => elements.length + index),
-    [capacite, elements.length]
-  );
-  const indexNumerique = borner(Number.parseInt(indexSaisi, 10) || 0, 0, Math.max(elements.length, 0));
-  const prochaineInsertionAgrandit = elements.length >= capacite;
+  const indexBorne = borner(indexCible, 0, capacite - 1);
+  const valeurNumerique = convertirNombre(valeurSaisie);
   const defilementEnteteY = defilementY.interpolate({
     inputRange: [0, 120],
     outputRange: [0, 0],
@@ -191,7 +279,7 @@ export function SimulationArrayList() {
     minuteurRef.current = setTimeout(() => {
       definirOperationActive(null);
       definirIndicesActifs([]);
-    }, 760);
+    }, DUREE_SURBRILLANCE);
   }, []);
 
   const ajouterTrace = useCallback((texte: string) => {
@@ -201,87 +289,62 @@ export function SimulationArrayList() {
     ]);
   }, []);
 
-  const ajouterFin = useCallback(() => {
-    const valeur = normaliserValeur(valeurSaisie);
+  const changerCapacite = useCallback((prochaineCapacite: number) => {
+    definirCapacite(prochaineCapacite);
+    definirIndexCible((indexCourant) => borner(indexCourant, 0, prochaineCapacite - 1));
+    definirValeurs((valeursCourantes) => ajusterCapacite(valeursCourantes, prochaineCapacite));
+    definirIndicesTries([]);
+    ajouterTrace(`new int[${prochaineCapacite}] : taille fixe, cases contiguës`);
+  }, [ajouterTrace]);
 
-    if (!valeur || elements.length >= LIMITE_ELEMENTS) {
-      return;
-    }
-
-    const nouvelleTaille = elements.length + 1;
-    const capaciteAvant = capacite;
-    definirElements((elementsCourants) => [...elementsCourants, valeur]);
-    definirValeurSaisie('');
-    definirSurbrillance('ajout', [elements.length]);
-    ajouterTrace(
-      `add("${valeur}") : O(1) amorti${nouvelleTaille > capaciteAvant ? `, capacité doublée à ${calculerCapacite(nouvelleTaille)}` : ''}`
-    );
-  }, [ajouterTrace, capacite, definirSurbrillance, elements.length, valeurSaisie]);
-
-  const insererAIndice = useCallback(() => {
-    const valeur = normaliserValeur(valeurSaisie);
-    const indexInsertion = borner(Number.parseInt(indexSaisi, 10) || 0, 0, elements.length);
-
-    if (!valeur || elements.length >= LIMITE_ELEMENTS) {
-      return;
-    }
-
-    definirElements((elementsCourants) => {
-      const prochaineListe = [...elementsCourants];
-      prochaineListe.splice(indexInsertion, 0, valeur);
-      return prochaineListe;
+  const ecrireValeur = useCallback(() => {
+    definirValeurs((valeursCourantes) => {
+      const prochainTableau = [...valeursCourantes];
+      prochainTableau[indexBorne] = valeurNumerique;
+      return prochainTableau;
     });
-    definirValeurSaisie('');
-    definirSurbrillance(
-      'insertion',
-      Array.from({ length: elements.length - indexInsertion + 1 }, (_, index) => indexInsertion + index)
-    );
-    ajouterTrace(`add(${indexInsertion}, "${valeur}") : O(n), ${elements.length - indexInsertion} décalage(s) vers la droite`);
-  }, [ajouterTrace, definirSurbrillance, elements.length, indexSaisi, valeurSaisie]);
+    definirIndicesTries([]);
+    definirSurbrillance('ecriture', [indexBorne]);
+    ajouterTrace(`tableau[${indexBorne}] = ${valeurNumerique} : écriture directe (O(1))`);
+  }, [ajouterTrace, definirSurbrillance, indexBorne, valeurNumerique]);
 
-  const retirerAIndice = useCallback(
-    (indexRetrait: number) => {
-      const valeur = elements[indexRetrait];
+  const lireValeur = useCallback(() => {
+    definirSurbrillance('lecture', [indexBorne]);
+    ajouterTrace(`tableau[${indexBorne}] -> ${valeurs[indexBorne]} : lecture directe (O(1))`);
+  }, [ajouterTrace, definirSurbrillance, indexBorne, valeurs]);
 
-      if (valeur === undefined) {
-        return;
-      }
+  const trierTableau = useCallback(() => {
+    definirValeurs((valeursCourantes) => [...valeursCourantes].sort((a, b) => a - b));
+    const tousLesIndices = Array.from({ length: capacite }, (_, index) => index);
+    definirIndicesTries(tousLesIndices);
+    definirSurbrillance('tri', tousLesIndices);
+    ajouterTrace(`Arrays.sort(tableau) : tri en O(n log n) sur ${capacite} case(s)`);
+  }, [ajouterTrace, capacite, definirSurbrillance]);
 
-      definirElements((elementsCourants) => elementsCourants.filter((_, index) => index !== indexRetrait));
-      definirSurbrillance(
-        'retrait',
-        Array.from({ length: Math.max(1, elements.length - indexRetrait) }, (_, index) => indexRetrait + index)
-      );
-      ajouterTrace(`remove(${indexRetrait}) -> "${valeur}" : O(n), ${Math.max(0, elements.length - indexRetrait - 1)} décalage(s)`);
-    },
-    [ajouterTrace, definirSurbrillance, elements]
-  );
+  const remplirTableau = useCallback(() => {
+    definirValeurs(Array.from({ length: capacite }, () => valeurNumerique));
+    const tousLesIndices = Array.from({ length: capacite }, (_, index) => index);
+    definirIndicesTries([]);
+    definirSurbrillance('remplissage', tousLesIndices);
+    ajouterTrace(`Arrays.fill(tableau, ${valeurNumerique}) : parcourt toutes les cases (O(n))`);
+  }, [ajouterTrace, capacite, definirSurbrillance, valeurNumerique]);
 
-  const lireAIndice = useCallback(
-    (indexLecture: number) => {
-      const valeur = elements[indexLecture];
-
-      if (valeur === undefined) {
-        return;
-      }
-
-      definirSurbrillance('lecture', [indexLecture]);
-      ajouterTrace(`Chemin de lecture\nindex ${indexLecture} -> "${valeur}"\n(O(1))`);
-    },
-    [ajouterTrace, definirSurbrillance, elements]
-  );
-
-  const lireIndexSaisi = useCallback(() => {
-    lireAIndice(borner(Number.parseInt(indexSaisi, 10) || 0, 0, Math.max(elements.length - 1, 0)));
-  }, [elements.length, indexSaisi, lireAIndice]);
+  const copierTableau = useCallback(() => {
+    const tousLesIndices = Array.from({ length: capacite }, (_, index) => index);
+    definirSurbrillance('copie', tousLesIndices);
+    ajouterTrace(`Arrays.copyOf(tableau, ${capacite}) : crée une copie indépendante (O(n))`);
+  }, [ajouterTrace, capacite, definirSurbrillance]);
 
   const reinitialiser = useCallback(() => {
-    definirElements(ELEMENTS_INITIAUX);
-    definirValeurSaisie('');
-    definirIndexSaisi('0');
+    definirCapacite(VALEURS_INITIALES.length);
+    definirValeurs(VALEURS_INITIALES);
+    definirValeurSaisie('99');
+    definirIndexCible(2);
+    definirIndicesActifs([]);
+    definirIndicesTries([]);
+    definirOperationActive(null);
     definirTraces([]);
-    definirSurbrillance(null, []);
-  }, [definirSurbrillance]);
+  }, []);
 
   return (
     <SafeAreaView edges={[]} style={[styles.zoneSecurisee, { backgroundColor: couleurArrierePlan }]}>
@@ -290,13 +353,13 @@ export function SimulationArrayList() {
         lightColor={couleurArrierePlan}
         style={[styles.conteneur, { backgroundColor: couleurArrierePlan }]}>
         <Animated.View style={[styles.superpositionEntete, { transform: [{ translateY: defilementEnteteY }] }]}>
-          <EnteteEcranSimulation titre="ArrayList" domaine="programmation-java" />
+          <EnteteEcranSimulation titre="Tableaux" domaine="programmation-java" />
         </Animated.View>
 
         <Animated.ScrollView
           contentContainerStyle={styles.contenu}
           onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: defilementY } } }], {
-            useNativeDriver: true,
+            useNativeDriver: Platform.OS !== 'web',
           })}
           scrollEventThrottle={16}
           showsVerticalScrollIndicator={false}>
@@ -307,10 +370,10 @@ export function SimulationArrayList() {
                   Structure de données
                 </TexteTheme>
                 <TexteTheme lightColor={themeActif.ink} style={styles.titre}>
-                  ArrayList
+                  Tableaux
                 </TexteTheme>
                 <TexteTheme lightColor={themeActif.mutedInk} style={styles.description}>
-                  Tableau dynamique : accès direct rapide, insertion et retrait plus coûteux au milieu.
+                  Taille fixe, cases contiguës et accès direct par index. C&#39;est rapide pour lire ou écrire, moins flexible pour redimensionner.
                 </TexteTheme>
               </View>
 
@@ -318,61 +381,46 @@ export function SimulationArrayList() {
                 <View style={styles.enteteMemoire}>
                   <View>
                     <TexteTheme lightColor={themeActif.mutedInk} style={styles.etiquetteStatistique}>
-                      Occupation
+                      Mémoire contiguë
                     </TexteTheme>
-                    <TexteTheme lightColor={themeActif.ink} style={styles.valeurOccupation}>
-                      {elements.length} / {capacite}
+                    <TexteTheme lightColor={themeActif.ink} style={styles.valeurMemoire}>
+                      int[{capacite}] · 4 octets par case
                     </TexteTheme>
                   </View>
-                  <TexteTheme
-                    lightColor={tauxOccupation >= 0.75 ? themeActif.bounds : themeActif.mutedInk}
-                    style={styles.indicationCapacite}>
-                    {prochaineInsertionAgrandit ? 'Prochain ajout : redimensionnement' : 'Capacité disponible'}
+                  <TexteTheme lightColor={themeActif.bounds} style={styles.indicationIndex}>
+                    index ciblé : {indexBorne}
                   </TexteTheme>
-                </View>
-                <View style={styles.pisteCapacite}>
-                  <View
-                    style={[
-                      styles.remplissageCapacite,
-                      {
-                        backgroundColor: tauxOccupation >= 0.75 ? themeActif.bounds : themeActif.approximationStroke,
-                        width: `${tauxOccupation * 100}%`,
-                      },
-                    ]}
-                  />
                 </View>
 
                 <View style={styles.grilleCellules}>
-                  {elements.map((element, index) => (
-                    <CelluleArrayList
+                  {valeurs.map((valeur, index) => (
+                    <CelluleTableau
                       estActive={indicesActifs.includes(index)}
+                      estTriee={indicesTries.includes(index)}
                       index={index}
-                      key={`${index}-${element}`}
-                      onLire={() => lireAIndice(index)}
-                      onRetirer={() => retirerAIndice(index)}
-                      valeur={element}
+                      key={`case-${index}`}
+                      operationActive={operationActive}
+                      valeur={valeur}
                     />
-                  ))}
-                  {emplacementsVides.map((index) => (
-                    <CelluleArrayList estActive={false} estVide index={index} key={`vide-${index}`} />
                   ))}
                 </View>
               </View>
 
               <View style={[styles.grilleStatistiques, { flexDirection: width < 560 ? 'column' : 'row' }]}>
-                <CarteStatistique etiquette="Lecture milieu" valeur="O(1)" />
-                <CarteStatistique etiquette="Ajout fin" valeur="O(1) amorti" />
-                <CarteStatistique etiquette="Insertion milieu" valeur="O(n)" />
+                <CarteStatistique etiquette="Lecture index" valeur="O(1)" />
+                <CarteStatistique etiquette="Écriture index" valeur="O(1)" />
+                <CarteStatistique etiquette="Tri" valeur="O(n log n)" />
               </View>
 
               <View style={styles.carteCode}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   <View style={styles.contenuCode}>
-                    <TexteTheme lightColor={themeActif.mutedInk} style={styles.texteCode}>{'ArrayList<String> liste = new ArrayList<>();'}</TexteTheme>
-                    <TexteTheme lightColor={themeActif.ink} style={styles.texteCode}>{'liste.add("item");        // O(1) amorti'}</TexteTheme>
-                    <TexteTheme lightColor={themeActif.ink} style={styles.texteCode}>{'liste.add(0, "item");     // O(n), décale à droite'}</TexteTheme>
-                    <TexteTheme lightColor={themeActif.ink} style={styles.texteCode}>{'liste.get(2);             // O(1), index direct'}</TexteTheme>
-                    <TexteTheme lightColor={themeActif.ink} style={styles.texteCode}>{'liste.remove(1);          // O(n), décale à gauche'}</TexteTheme>
+                    <TexteTheme lightColor={themeActif.mutedInk} style={styles.texteCode}>{'int[] tableau = new int[8];'}</TexteTheme>
+                    <TexteTheme lightColor={themeActif.ink} style={styles.texteCode}>{'tableau[2] = 99;             // O(1), écriture directe'}</TexteTheme>
+                    <TexteTheme lightColor={themeActif.ink} style={styles.texteCode}>{'int x = tableau[2];          // O(1), lecture directe'}</TexteTheme>
+                    <TexteTheme lightColor={themeActif.ink} style={styles.texteCode}>{'Arrays.fill(tableau, 0);     // O(n)'}</TexteTheme>
+                    <TexteTheme lightColor={themeActif.ink} style={styles.texteCode}>{'Arrays.sort(tableau);        // O(n log n)'}</TexteTheme>
+                    <TexteTheme lightColor={themeActif.ink} style={styles.texteCode}>{'int[] copie = Arrays.copyOf(tableau, tableau.length);'}</TexteTheme>
                   </View>
                 </ScrollView>
               </View>
@@ -395,67 +443,54 @@ export function SimulationArrayList() {
             <View style={[styles.barreLaterale, { width: largeurPanneau }]}>
               <View style={styles.panneau}>
                 <TexteTheme lightColor={themeActif.mutedInk} style={styles.titrePanneau}>
-                  Valeur
+                  Réglages
                 </TexteTheme>
+                <CurseurTableau
+                  etiquette="Cases"
+                  maximum={CAPACITE_MAXIMALE}
+                  minimum={CAPACITE_MINIMALE}
+                  modifierValeur={changerCapacite}
+                  pas={1}
+                  valeur={capacite}
+                />
+                <CurseurTableau
+                  etiquette="Index"
+                  maximum={Math.max(capacite - 1, 0)}
+                  minimum={0}
+                  modifierValeur={definirIndexCible}
+                  pas={1}
+                  valeur={indexBorne}
+                />
                 <TextInput
-                  maxLength={12}
+                  keyboardType="number-pad"
+                  maxLength={4}
                   onChangeText={definirValeurSaisie}
-                  placeholder="Nouvel élément"
+                  placeholder="Valeur"
                   placeholderTextColor={themeActif.mutedInk}
                   selectionColor={themeActif.bounds}
                   style={styles.champTexte}
                   value={valeurSaisie}
                 />
-                <TextInput
-                  keyboardType="number-pad"
-                  onChangeText={definirIndexSaisi}
-                  placeholder="Index"
-                  placeholderTextColor={themeActif.mutedInk}
-                  selectionColor={themeActif.bounds}
-                  style={styles.champTexte}
-                  value={indexSaisi}
-                />
-                <View style={styles.indicateurIndex}>
-                  <TexteTheme lightColor={themeActif.mutedInk} style={styles.texteIndicateurIndex}>
-                    Index ciblé
-                  </TexteTheme>
-                  <TexteTheme lightColor={themeActif.ink} style={styles.valeurIndex}>
-                    {indexNumerique}
-                  </TexteTheme>
-                </View>
               </View>
 
               <View style={styles.panneau}>
                 <TexteTheme lightColor={themeActif.mutedInk} style={styles.titrePanneau}>
                   Opérations
                 </TexteTheme>
-                <BoutonOperation
-                  accent={themeActif.approximationStroke}
-                  desactive={!normaliserValeur(valeurSaisie) || elements.length >= LIMITE_ELEMENTS}
-                  icone="plus"
-                  onPress={ajouterFin}>
-                  add(valeur)
+                <BoutonOperation accent={themeActif.bounds} icone="flash-outline" onPress={lireValeur}>
+                  lire tableau[index]
                 </BoutonOperation>
-                <BoutonOperation
-                  accent={themeActif.bounds}
-                  desactive={!normaliserValeur(valeurSaisie) || elements.length >= LIMITE_ELEMENTS}
-                  icone="table-row-plus-after"
-                  onPress={insererAIndice}>
-                  add(index, valeur)
+                <BoutonOperation accent={themeActif.approximationStroke} icone="table-edit" onPress={ecrireValeur}>
+                  écrire valeur
                 </BoutonOperation>
-                <BoutonOperation
-                  accent={themeActif.accent}
-                  desactive={elements.length === 0}
-                  icone="flash-outline"
-                  onPress={lireIndexSaisi}>
-                  get(index)
+                <BoutonOperation accent={themeActif.accent} icone="sort" onPress={trierTableau}>
+                  Arrays.sort()
                 </BoutonOperation>
-                <BoutonOperation
-                  accent={themeActif.approximationNegativeStroke}
-                  desactive={elements.length === 0}
-                  icone="trash-can-outline"
-                  onPress={() => retirerAIndice(borner(Number.parseInt(indexSaisi, 10) || 0, 0, Math.max(elements.length - 1, 0)))}>
-                  remove(index)
+                <BoutonOperation accent={themeActif.approximationStroke} icone="format-list-numbered" onPress={remplirTableau}>
+                  Arrays.fill()
+                </BoutonOperation>
+                <BoutonOperation accent={themeActif.bounds} icone="content-copy" onPress={copierTableau}>
+                  Arrays.copyOf()
                 </BoutonOperation>
               </View>
 
@@ -464,11 +499,7 @@ export function SimulationArrayList() {
                   État
                 </TexteTheme>
                 <View style={styles.rangeeEtat}>
-                  <MaterialCommunityIcons
-                    color={operationActive ? themeActif.bounds : themeActif.mutedInk}
-                    name={operationActive ? 'pulse' : 'database-outline'}
-                    size={20}
-                  />
+                  <MaterialCommunityIcons color={operationActive ? themeActif.bounds : themeActif.mutedInk} name={operationActive ? 'pulse' : 'table'} size={18} />
                   <TexteTheme lightColor={themeActif.ink} style={styles.texteEtat}>
                     {operationActive ? `Opération : ${operationActive}` : 'Aucune opération active'}
                   </TexteTheme>
@@ -483,14 +514,14 @@ export function SimulationArrayList() {
       </VueTheme>
       <InfobulleDefinition
         body={[
-          "Une ArrayList garde ses éléments dans un tableau interne. Quand ce tableau est plein, elle crée un tableau plus grand puis copie les valeurs.",
-          "Lire avec get(index) est rapide, car l'index pointe directement vers une case. Insérer ou retirer au milieu demande de décaler les éléments voisins.",
+          "Un tableau Java a une taille fixe. Une fois créé, tableau.length ne change pas.",
+          "Chaque index mène directement à une case, donc lire et écrire tableau[i] se font en O(1). Les opérations qui parcourent toutes les cases coûtent O(n).",
         ]}
         delayMs={5000}
-        exampleLabel="Lecture rapide"
-        exampleText="add à la fin est généralement O(1), mais add au milieu et remove au milieu sont O(n)."
+        exampleLabel="À retenir"
+        exampleText="Pour changer la taille, Java doit créer un nouveau tableau et copier les valeurs."
         eyebrow="Définition"
-        title="Qu'est-ce qu'une ArrayList ?"
+        title="Qu'est-ce qu'un tableau ?"
       />
     </SafeAreaView>
   );
@@ -500,13 +531,18 @@ let styles = creerStyles();
 
 function creerStyles() {
   return StyleSheet.create({
-    actionsCellule: {
-      flexDirection: 'row',
-      gap: 6,
-      marginTop: 6,
+    adresseCellule: {
+      color: themeActif.mutedInk,
+      fontFamily: 'monospace',
+      fontSize: 10,
+      lineHeight: 13,
+      marginTop: 4,
     },
     barreLaterale: {
       gap: 16,
+    },
+    blocCurseur: {
+      gap: 12,
     },
     blocTitre: {
       gap: 6,
@@ -516,16 +552,6 @@ function creerStyles() {
     },
     boutonDesactive: {
       opacity: 0.45,
-    },
-    boutonIconeCellule: {
-      alignItems: 'center',
-      backgroundColor: themeActif.panel,
-      borderColor: themeActif.border,
-      borderRadius: 8,
-      borderWidth: 1,
-      height: 28,
-      justifyContent: 'center',
-      width: 28,
     },
     boutonOperation: {
       alignItems: 'center',
@@ -556,10 +582,6 @@ function creerStyles() {
       paddingHorizontal: 14,
       paddingVertical: 12,
     },
-    contenuCode: {
-      gap: 5,
-      minWidth: '100%',
-    },
     carteStatistique: {
       backgroundColor: themeActif.surface,
       borderColor: themeActif.border,
@@ -574,7 +596,7 @@ function creerStyles() {
     cellule: {
       borderRadius: 8,
       borderWidth: 1.5,
-      minHeight: 92,
+      minHeight: 104,
       minWidth: 92,
       overflow: 'hidden',
       width: '23%',
@@ -605,12 +627,16 @@ function creerStyles() {
       paddingHorizontal: 12,
       paddingTop: HAUTEUR_TOTALE_ENTETE_SIMULATION + ESPACE_CONTENU_ENTETE_SIMULATION,
     },
+    contenuCode: {
+      gap: 5,
+      minWidth: '100%',
+    },
     corpsCellule: {
       alignItems: 'center',
       flex: 1,
       justifyContent: 'center',
       paddingHorizontal: 8,
-      paddingVertical: 9,
+      paddingVertical: 10,
     },
     description: {
       color: themeActif.mutedInk,
@@ -621,16 +647,40 @@ function creerStyles() {
     },
     enteteCellule: {
       alignItems: 'center',
+      backgroundColor: themeActif.panel,
       borderBottomColor: themeActif.border,
       borderBottomWidth: 1,
-      minHeight: 28,
       justifyContent: 'center',
+      minHeight: 28,
+    },
+    enteteCurseur: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: 12,
+      justifyContent: 'space-between',
     },
     enteteMemoire: {
       alignItems: 'center',
       flexDirection: 'row',
       gap: 12,
       justifyContent: 'space-between',
+    },
+    etiquetteOperationCellule: {
+      color: themeActif.bounds,
+      fontSize: 10,
+      fontWeight: '900',
+      lineHeight: 13,
+      paddingBottom: 7,
+      textAlign: 'center',
+      textTransform: 'uppercase',
+    },
+    etiquettePanneau: {
+      color: themeActif.mutedInk,
+      fontSize: 12,
+      fontWeight: '900',
+      letterSpacing: 0,
+      lineHeight: 16,
+      textTransform: 'uppercase',
     },
     etiquetteStatistique: {
       color: themeActif.mutedInk,
@@ -649,30 +699,20 @@ function creerStyles() {
     grilleStatistiques: {
       gap: 10,
     },
-    indicationCapacite: {
-      color: themeActif.mutedInk,
-      flexShrink: 1,
-      fontSize: 12,
-      fontWeight: '800',
-      lineHeight: 16,
-      textAlign: 'right',
-    },
     indexCellule: {
       color: themeActif.mutedInk,
       fontSize: 11,
       fontWeight: '900',
       lineHeight: 14,
     },
-    indicateurIndex: {
-      alignItems: 'center',
-      backgroundColor: themeActif.surface,
-      borderColor: themeActif.border,
-      borderRadius: 8,
-      borderWidth: 1,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      minHeight: 44,
-      paddingHorizontal: 12,
+    indicationIndex: {
+      color: themeActif.bounds,
+      flexShrink: 1,
+      fontSize: 12,
+      fontWeight: '900',
+      lineHeight: 16,
+      textAlign: 'right',
+      textTransform: 'uppercase',
     },
     journal: {
       backgroundColor: themeActif.surface,
@@ -693,13 +733,23 @@ function creerStyles() {
       padding: 16,
       width: '100%',
     },
-    pisteCapacite: {
+    pisteCurseur: {
       backgroundColor: themeActif.surface,
       borderColor: themeActif.border,
       borderRadius: 999,
-      borderWidth: 1,
-      height: 14,
+      borderWidth: 1.5,
+      height: 16,
+      justifyContent: 'center',
       overflow: 'hidden',
+    },
+    poigneeCurseur: {
+      backgroundColor: themeActif.ink,
+      borderColor: themeActif.panel,
+      borderRadius: 10,
+      height: 20,
+      marginLeft: -10,
+      position: 'absolute',
+      width: 20,
     },
     rangeeEtat: {
       alignItems: 'center',
@@ -712,7 +762,8 @@ function creerStyles() {
       minHeight: 44,
       paddingHorizontal: 12,
     },
-    remplissageCapacite: {
+    remplissageCurseur: {
+      backgroundColor: themeActif.grid,
       borderRadius: 999,
       height: '100%',
     },
@@ -751,13 +802,6 @@ function creerStyles() {
       fontWeight: '800',
       lineHeight: 18,
     },
-    texteIndicateurIndex: {
-      color: themeActif.mutedInk,
-      fontSize: 12,
-      fontWeight: '800',
-      lineHeight: 16,
-      textTransform: 'uppercase',
-    },
     texteJournal: {
       color: themeActif.ink,
       fontFamily: 'monospace',
@@ -786,19 +830,20 @@ function creerStyles() {
     },
     valeurCellule: {
       color: themeActif.ink,
-      fontSize: 14,
+      fontSize: 20,
       fontWeight: '900',
-      lineHeight: 18,
+      lineHeight: 25,
       maxWidth: '100%',
       textAlign: 'center',
     },
-    valeurIndex: {
+    valeurCurseur: {
       color: themeActif.ink,
-      fontSize: 18,
+      fontSize: 14,
       fontWeight: '900',
-      lineHeight: 23,
+      lineHeight: 18,
+      textAlign: 'right',
     },
-    valeurOccupation: {
+    valeurMemoire: {
       color: themeActif.ink,
       fontSize: 18,
       fontWeight: '900',
@@ -811,10 +856,6 @@ function creerStyles() {
       fontWeight: '900',
       lineHeight: 22,
       marginTop: 5,
-    },
-    valeurVide: {
-      fontFamily: 'monospace',
-      fontSize: 12,
     },
     zoneSecurisee: {
       backgroundColor: couleurArrierePlan,

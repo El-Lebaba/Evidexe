@@ -605,8 +605,8 @@ export function SimulationRessortLoiHooke() {
               <View style={styles.formulaCard}>
                 <RenduFormule
                   centered
-                  fallback="F = -k x, omega0 = sqrt(k / m)"
-                  mathematiques={'F=-kx,\\quad \\omega_0=\\sqrt{k/m}'}
+                  fallback="F = -k x, omegaD = sqrt(omega0^2 - gamma^2)"
+                  mathematiques={'F=-kx,\\quad \\omega_d=\\sqrt{\\omega_0^2-\\gamma^2}'}
                   mathViewMobile
                   size="md"
                 />
@@ -684,7 +684,7 @@ export function SimulationRessortLoiHooke() {
                 </View>
                 <View style={styles.statCard}>
                   <TexteTheme lightColor={themeActif.mutedInk} style={styles.statLabel}>
-                    Periode
+                    Période amortie
                   </TexteTheme>
                   <View style={styles.statFormulaWrap}>
                     <RenduFormule
@@ -697,6 +697,10 @@ export function SimulationRessortLoiHooke() {
                   {!physique.isOscillating ? (
                     <TexteTheme lightColor={themeActif.mutedInk} style={styles.statSubtext}>
                       Systeme non oscillatoire
+                    </TexteTheme>
+                  ) : damping > 0 ? (
+                    <TexteTheme lightColor={themeActif.mutedInk} style={styles.statSubtext}>
+                      Inclut l&#39;amortissement
                     </TexteTheme>
                   ) : null}
                 </View>

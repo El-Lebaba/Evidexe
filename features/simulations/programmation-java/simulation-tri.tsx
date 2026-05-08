@@ -98,10 +98,24 @@ function melanger(valeurs: number[]) {
   return valeursMelangees;
 }
 
+function genererCasEquilibreTriRapide(debut: number, fin: number): number[] {
+  if (debut > fin) {
+    return [];
+  }
+
+  const milieu = Math.floor((debut + fin) / 2);
+
+  return [
+    ...genererCasEquilibreTriRapide(debut, milieu - 1),
+    ...genererCasEquilibreTriRapide(milieu + 1, fin),
+    milieu,
+  ];
+}
+
 function genererTableau(taille: number, casTableau: CasTableau, typeTri: TypeTri) {
   if (casTableau === 'meilleur') {
     if (typeTri === 'rapide') {
-      return melanger(Array.from({ length: taille }, (_, index) => index + 1));
+      return genererCasEquilibreTriRapide(1, taille);
     }
 
     return Array.from({ length: taille }, (_, index) => index + 1);
@@ -235,21 +249,34 @@ function* triFusion(valeursDepart: number[]) {
     let indiceDroite = milieu + 1;
 
     for (let indiceFusion = debut; indiceFusion <= fin; indiceFusion += 1) {
+      let indicesComparaison: number[] = [];
+
       if (indiceGauche > milieu) {
         valeurs[indiceFusion] = valeursAuxiliaires[indiceDroite];
         indiceDroite += 1;
       } else if (indiceDroite > fin) {
         valeurs[indiceFusion] = valeursAuxiliaires[indiceGauche];
         indiceGauche += 1;
-      } else if (valeursAuxiliaires[indiceDroite] < valeursAuxiliaires[indiceGauche]) {
-        valeurs[indiceFusion] = valeursAuxiliaires[indiceDroite];
-        indiceDroite += 1;
       } else {
-        valeurs[indiceFusion] = valeursAuxiliaires[indiceGauche];
-        indiceGauche += 1;
+        indicesComparaison = [indiceGauche, indiceDroite];
+
+        if (valeursAuxiliaires[indiceDroite] < valeursAuxiliaires[indiceGauche]) {
+          valeurs[indiceFusion] = valeursAuxiliaires[indiceDroite];
+          indiceDroite += 1;
+        } else {
+          valeurs[indiceFusion] = valeursAuxiliaires[indiceGauche];
+          indiceGauche += 1;
+        }
       }
 
-      yield { indicesActifs: [indiceFusion], valeurs: [...valeurs], operation: true, plageActive: [debut, fin] };
+      yield {
+        indicesActifs: [indiceFusion],
+        indicesComparaison,
+        valeurs: [...valeurs],
+        operation: true,
+        plageActive: [debut, fin],
+        echange: true,
+      };
     }
   }
 
@@ -766,7 +793,7 @@ export function EcranSimulationTri({ type }: ProprietesEcranSimulationTri) {
 
               <View style={[styles.grilleStatistiques, { flexDirection: dimensionsEcran.width < 560 ? 'column' : 'row' }]}>
                 <EtiquetteStat etiquette="Comparaisons" valeur={comparaisons} />
-                <EtiquetteStat etiquette="Échanges" valeur={echanges} />
+                <EtiquetteStat etiquette={definitionTri.id === 'fusion' ? 'Copies' : 'Échanges'} valeur={echanges} />
                 <EtiquetteStat etiquette="Opérations" valeur={`${operations} / ~${attendu}`} />
               </View>
             </View>
