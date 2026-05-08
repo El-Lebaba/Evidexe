@@ -458,6 +458,7 @@ export function SimulationChampVectoriel() {
                           style={[
                             styles.fieldButtonText,
                             isActive ? styles.fieldButtonTextActive : undefined,
+                            isActive ? { color: themeActif.activeInk } : undefined,
                           ]}>
                           {field.label}
                         </TexteTheme>

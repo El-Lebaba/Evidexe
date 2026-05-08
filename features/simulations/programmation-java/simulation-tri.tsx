@@ -65,9 +65,9 @@ type ProprietesEcranSimulationTri = {
   type: TypeTri;
 };
 
-type ThemeSimulationTri = ReturnType<typeof obtenirThemesSimulationEcrans>['integrales'];
+type ThemeSimulationTri = ReturnType<typeof obtenirThemesSimulationEcrans>['programmationJava'];
 
-let themeActif: ThemeSimulationTri = obtenirThemesSimulationEcransInitial().integrales;
+let themeActif: ThemeSimulationTri = obtenirThemesSimulationEcransInitial().programmationJava;
 let COULEUR_ARRIERE_PLAN = themeActif.background;
 
 const WEB_SLIDER_INTERACTION_STYLE =
@@ -500,11 +500,15 @@ function BoutonAction({
   accent,
   children,
   desactive = false,
+  sansBordure = false,
+  selectionne = false,
   onPress,
 }: {
   accent?: string;
   children: React.ReactNode;
   desactive?: boolean;
+  sansBordure?: boolean;
+  selectionne?: boolean;
   onPress: () => void;
 }) {
   return (
@@ -513,7 +517,8 @@ function BoutonAction({
       onPress={onPress}
       style={({ hovered, pressed }) => [
         styles.boutonAction,
-        { borderColor: accent ?? themeActif.border },
+        selectionne ? styles.boutonActionSelectionne : { borderColor: accent ?? themeActif.border },
+        sansBordure ? styles.boutonActionSansBordure : null,
         desactive ? styles.boutonActionDesactive : null,
         pressed || hovered ? styles.boutonActionAppuye : null,
       ]}>
@@ -548,8 +553,9 @@ export function EcranSimulationTri({ type }: ProprietesEcranSimulationTri) {
   const [comparaisons, setComparaisons] = useState(0);
   const [echanges, setEchanges] = useState(0);
   const [operations, setOperations] = useState(0);
+  const [casTableauActif, setCasTableauActif] = useState<CasTableau>('aleatoire');
 
-  themeActif = obtenirThemesSimulationEcrans(modeSombre).integrales;
+  themeActif = obtenirThemesSimulationEcrans(modeSombre).programmationJava;
   COULEUR_ARRIERE_PLAN = themeActif.background;
   styles = creerStyles();
 
@@ -560,6 +566,7 @@ export function EcranSimulationTri({ type }: ProprietesEcranSimulationTri) {
     }
 
     const prochainTableau = genererTableau(taille, casTableau, type);
+    setCasTableauActif(casTableau);
     lectureActiveRef.current = false;
     generateurRef.current = null;
     setTableauDepart(prochainTableau);
@@ -795,21 +802,50 @@ export function EcranSimulationTri({ type }: ProprietesEcranSimulationTri) {
                   Cas de départ
                 </TexteTheme>
                 <View style={styles.grilleCas}>
-                  <BoutonAction accent={themeActif.accent} desactive={lectureActive} onPress={() => reinitialiser('meilleur')}>
-                    <TexteTheme lightColor={themeActif.accent} style={styles.texteBoutonAction}>
+                  <BoutonAction
+                    accent={themeActif.accent}
+                    desactive={lectureActive}
+                    onPress={() => reinitialiser('meilleur')}
+                    sansBordure
+                    selectionne={casTableauActif === 'meilleur'}>
+                    <TexteTheme
+                      lightColor="#FFFFFF"
+                      darkColor="#FFFFFF"
+                      style={[
+                        styles.texteBoutonAction,
+                        casTableauActif === 'meilleur' ? styles.texteBoutonActionSelectionne : null,
+                      ]}>
                       Meilleur cas
                     </TexteTheme>
                   </BoutonAction>
                   <BoutonAction
                     accent={themeActif.approximationNegativeStroke}
                     desactive={lectureActive}
-                    onPress={() => reinitialiser('pire')}>
-                    <TexteTheme lightColor={themeActif.approximationNegativeStroke} style={styles.texteBoutonAction}>
+                    onPress={() => reinitialiser('pire')}
+                    sansBordure
+                    selectionne={casTableauActif === 'pire'}>
+                    <TexteTheme
+                      lightColor="#FFFFFF"
+                      darkColor="#FFFFFF"
+                      style={[
+                        styles.texteBoutonAction,
+                        casTableauActif === 'pire' ? styles.texteBoutonActionSelectionne : null,
+                      ]}>
                       Pire cas
                     </TexteTheme>
                   </BoutonAction>
-                  <BoutonAction desactive={lectureActive} onPress={() => reinitialiser('aleatoire')}>
-                    <TexteTheme lightColor={themeActif.ink} style={styles.texteBoutonAction}>
+                  <BoutonAction
+                    desactive={lectureActive}
+                    onPress={() => reinitialiser('aleatoire')}
+                    sansBordure
+                    selectionne={casTableauActif === 'aleatoire'}>
+                    <TexteTheme
+                      lightColor="#FFFFFF"
+                      darkColor="#FFFFFF"
+                      style={[
+                        styles.texteBoutonAction,
+                        casTableauActif === 'aleatoire' ? styles.texteBoutonActionSelectionne : null,
+                      ]}>
                       Aléatoire
                     </TexteTheme>
                   </BoutonAction>
@@ -818,7 +854,7 @@ export function EcranSimulationTri({ type }: ProprietesEcranSimulationTri) {
 
               <View style={styles.panneau}>
                 <View style={styles.rangeeLecture}>
-                  <BoutonAction accent={themeActif.accent} onPress={basculerLecture}>
+                  <BoutonAction accent={themeActif.accent} onPress={basculerLecture} sansBordure>
                     <View style={styles.contenuBouton}>
                       <MaterialCommunityIcons
                         color={themeActif.ink}
@@ -859,7 +895,7 @@ function creerStyles() {
       backgroundColor: themeActif.surface,
       borderColor: themeActif.border,
       borderRadius: 8,
-      borderWidth: 1,
+      borderWidth: 1.5,
       flex: 1,
       justifyContent: 'center',
       minHeight: 44,
@@ -872,12 +908,22 @@ function creerStyles() {
     boutonActionAppuye: {
       transform: [{ translateY: -1 }],
     },
+    boutonActionSelectionne: {
+      backgroundColor: themeActif.activeButton,
+      borderColor: themeActif.activeButton,
+    },
+    boutonActionSansBordure: {
+      borderColor: 'transparent',
+    },
     texteBoutonAction: {
       color: themeActif.ink,
       fontSize: 14,
       fontWeight: '900',
       lineHeight: 18,
       textAlign: 'center',
+    },
+    texteBoutonActionSelectionne: {
+      color: themeActif.activeInk,
     },
     barre: {
       borderTopLeftRadius: 4,
@@ -1059,7 +1105,7 @@ function creerStyles() {
       gap: 12,
     },
     remplissageCurseur: {
-      backgroundColor: themeActif.accent,
+      backgroundColor: themeActif.grid,
       borderRadius: 999,
       height: '100%',
     },
@@ -1071,7 +1117,7 @@ function creerStyles() {
     },
     poigneeCurseur: {
       backgroundColor: themeActif.ink,
-      borderColor: themeActif.ink,
+      borderColor: themeActif.panel,
       borderRadius: 10,
       height: 20,
       marginLeft: -10,

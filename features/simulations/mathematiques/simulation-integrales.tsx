@@ -773,14 +773,14 @@ export function SimulationIntegrales() {
                   <Pressable
                     onPress={() => setViewMode('integral')}
                     style={[styles.modeButton, viewMode === 'integral' ? styles.functionButtonActive : undefined]}>
-                    <TexteTheme lightColor="#000000" style={styles.methodText}>
+                    <TexteTheme darkColor={viewMode === 'integral' ? themeActif.activeInk : undefined} lightColor="#000000" style={styles.methodText}>
                       Integrale
                     </TexteTheme>
                   </Pressable>
                   <Pressable
                     onPress={() => setViewMode('riemann')}
                     style={[styles.modeButton, viewMode === 'riemann' ? styles.functionButtonActive : undefined]}>
-                    <TexteTheme lightColor="#000000" style={styles.methodText}>
+                    <TexteTheme darkColor={viewMode === 'riemann' ? themeActif.activeInk : undefined} lightColor="#000000" style={styles.methodText}>
                       Somme de Riemann
                     </TexteTheme>
                   </Pressable>
@@ -820,14 +820,14 @@ export function SimulationIntegrales() {
                     <Pressable
                       onPress={() => setIntegralKind('definite')}
                       style={[styles.modeButton, integralKind === 'definite' ? styles.functionButtonActive : undefined]}>
-                      <TexteTheme lightColor="#000000" style={styles.methodText}>
+                      <TexteTheme darkColor={integralKind === 'definite' ? themeActif.activeInk : undefined} lightColor="#000000" style={styles.methodText}>
                         Definie
                       </TexteTheme>
                     </Pressable>
                     <Pressable
                       onPress={() => setIntegralKind('indefinite')}
                       style={[styles.modeButton, integralKind === 'indefinite' ? styles.functionButtonActive : undefined]}>
-                      <TexteTheme lightColor="#000000" style={styles.methodText}>
+                      <TexteTheme darkColor={integralKind === 'indefinite' ? themeActif.activeInk : undefined} lightColor="#000000" style={styles.methodText}>
                         Indefinie
                       </TexteTheme>
                     </Pressable>
@@ -855,7 +855,7 @@ export function SimulationIntegrales() {
                         onPress={() => setFunctionIndex(index)}
                         style={[styles.functionButtonWide, isActive ? styles.functionButtonActive : undefined]}>
                         <View style={styles.functionButtonFormula}>
-                          <RenduFormule centered fallback={entry.label} mathematiques={entry.latex} size="sm" />
+                          <RenduFormule centered darkColor={isActive ? themeActif.activeInk : undefined} fallback={entry.label} mathematiques={entry.latex} size="sm" />
                         </View>
                       </Pressable>
                     );
@@ -887,7 +887,7 @@ export function SimulationIntegrales() {
                           key={entry.key}
                           onPress={() => setMethod(entry.key)}
                           style={[styles.methodButton, isActive ? styles.methodButtonActive : undefined]}>
-                          <TexteTheme lightColor="#000000" style={styles.methodText}>
+                          <TexteTheme darkColor={isActive ? themeActif.activeInk : undefined} lightColor="#000000" style={styles.methodText}>
                             {entry.label}
                           </TexteTheme>
                         </Pressable>

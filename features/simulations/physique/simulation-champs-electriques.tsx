@@ -468,7 +468,10 @@ export function SimulationChampsElectriques() {
                           actif ? styles.presetButtonActive : null,
                           pressed || hovered ? styles.presetButtonPressed : null,
                         ]}>
-                        <TexteTheme lightColor={themeActif.ink} style={styles.presetButtonText}>
+                        <TexteTheme
+                          darkColor={actif ? themeActif.activeInk : undefined}
+                          lightColor={themeActif.ink}
+                          style={[styles.presetButtonText, actif ? { color: themeActif.activeInk } : null]}>
                           {configuration.label}
                         </TexteTheme>
                       </Pressable>

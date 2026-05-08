@@ -7,13 +7,21 @@ type ProprietesRenduFormule = {
   fallback: string;
   mathematiques: string;
   centered?: boolean;
+  darkColor?: string;
+  lightColor?: string;
   mathViewMobile?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 };
 
-function ComposantRenduFormule({ fallback, mathematiques, centered = false, size = 'md' }: ProprietesRenduFormule) {
+function ComposantRenduFormule({
+  fallback,
+  mathematiques,
+  centered = false,
+  darkColor = '#FFFFFF',
+  lightColor = '#243B53',
+}: ProprietesRenduFormule) {
   const modeSombre = useSchemaCouleur() === 'dark';
-  const couleurFormule = modeSombre ? '#FFFFFF' : '#243B53';
+  const couleurFormule = modeSombre ? darkColor : lightColor;
 
   useEffect(() => {
     if (typeof document === 'undefined') {

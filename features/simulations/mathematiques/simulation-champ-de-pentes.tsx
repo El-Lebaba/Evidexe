@@ -479,7 +479,13 @@ export function SimulationChampDePentes() {
                         onPress={() => setEquationIndex(index)}
                         style={[styles.equationButton, isActive ? styles.equationButtonActive : undefined]}>
                         <View style={styles.equationButtonFormula}>
-                          <RenduFormule centered fallback={equation.label} mathematiques={equation.latex} size="sm" />
+                          <RenduFormule
+                            centered
+                            darkColor={isActive ? themeActif.activeInk : undefined}
+                            fallback={equation.label}
+                            mathematiques={equation.latex}
+                            size="sm"
+                          />
                         </View>
                       </Pressable>
                     );

@@ -74,23 +74,27 @@ export function obtenirThemeApplication(darkMode = false): ThemeApplication {
 }
 
 const themeSimulationCommunClair = {
+  activeInk: '#000000',
   background: '#E9ECE4',
   border: '#243B53',
   grid: '#B7C7B0',
   gridSoft: 'rgba(167, 184, 158, 0.35)',
   ink: '#243B53',
   mutedInk: '#6E7F73',
+  pageBackground: '#EAE3D2',
   panel: '#DDE4D5',
   surface: '#F3F1E7',
 };
 
 const themeSimulationCommunSombre = {
+  activeInk: '#000000',
   background: '#121A17',
   border: '#50685C',
   grid: '#607568',
   gridSoft: 'rgba(174, 188, 175, 0.18)',
   ink: '#F2EFE6',
   mutedInk: '#AEBCAF',
+  pageBackground: '#121A17',
   panel: '#22312A',
   surface: '#1B2621',
 };
@@ -131,6 +135,16 @@ export const themesSimulation = {
       mediumA: 'rgba(124, 207, 191, 0.16)',
       mediumB: 'rgba(216, 169, 74, 0.15)',
     },
+    programming: {
+      accent: '#D8A94A',
+      active: '#D8A94A',
+      primary: '#7CCFBF',
+      secondary: '#7EA6E0',
+      danger: '#D97B6C',
+      softActive: 'rgba(216, 169, 74, 0.2)',
+      softPrimary: 'rgba(124, 207, 191, 0.26)',
+      softDanger: 'rgba(217, 123, 108, 0.24)',
+    },
   },
   dark: {
     common: themeSimulationCommunSombre,
@@ -167,6 +181,16 @@ export const themesSimulation = {
       mediumA: 'rgba(131, 217, 200, 0.14)',
       mediumB: 'rgba(231, 189, 89, 0.13)',
     },
+    programming: {
+      accent: '#E7BD59',
+      active: '#E7BD59',
+      primary: '#83D9C8',
+      secondary: '#8CB8F0',
+      danger: '#E18476',
+      softActive: 'rgba(231, 189, 89, 0.18)',
+      softPrimary: 'rgba(131, 217, 200, 0.22)',
+      softDanger: 'rgba(225, 132, 118, 0.22)',
+    },
   },
 } as const;
 
@@ -177,9 +201,10 @@ export function obtenirThemeSimulation(darkMode = false) {
 function creerThemesSimulationEcrans(theme: {
   common: Record<keyof typeof themesSimulation.light.common, string>;
   math: Record<keyof typeof themesSimulation.light.math, string>;
+  programming: Record<keyof typeof themesSimulation.light.programming, string>;
   physics: Record<keyof typeof themesSimulation.light.physics, string>;
 }) {
-  const { common, math, physics } = theme;
+  const { common, math, physics, programming } = theme;
 
   return {
     infobulleDefinition: {
@@ -359,6 +384,19 @@ function creerThemesSimulationEcrans(theme: {
       massDeep: physics.primaryDeep,
       potential: physics.yellow,
       spring: physics.primaryAlt,
+    },
+    programmationJava: {
+      ...common,
+      accent: programming.accent,
+      approximation: programming.softPrimary,
+      approximationNegative: programming.softDanger,
+      approximationNegativeStroke: programming.danger,
+      background: common.pageBackground,
+      approximationStroke: programming.secondary,
+      activeButton: programming.active,
+      boundsSoft: programming.softActive,
+      bounds: programming.active,
+      function: programming.primary,
     },
   };
 }

@@ -481,7 +481,7 @@ export default function EcranAccueil() {
               style={[
                 styles.cardSubtitle,
                 isCompact ? styles.cardSubtitleCompact : null,
-                isDarkMode ? { color: '#526071' } : null,
+                isDarkMode ? { color: palette.white } : null,
               ]}>
               {subtitle}
             </Text>
@@ -492,7 +492,7 @@ export default function EcranAccueil() {
               style={[
                 styles.cardFooterText,
                 isCompact ? styles.cardFooterTextCompact : null,
-                isDarkMode ? { color: '#526071' } : null,
+                isDarkMode ? { color: palette.white } : null,
               ]}>
               {footerText}
             </Text>
@@ -851,9 +851,9 @@ export default function EcranAccueil() {
                       </View>
                     </View>
                     <Text style={[styles.sectionCardTitle, isCompact ? styles.sectionCardTitleCompact : null, isDarkMode ? { color: themeApplication.ink } : null]}>{card.title}</Text>
-                    <Text style={[styles.sectionCardSubtitle, isCompact ? styles.sectionCardSubtitleCompact : null, isDarkMode ? { color: '#526071' } : null]}>{card.subtitle}</Text>
+                    <Text style={[styles.sectionCardSubtitle, isCompact ? styles.sectionCardSubtitleCompact : null, isDarkMode ? { color: palette.white } : null]}>{card.subtitle}</Text>
                     <View style={[styles.sectionCardFooter, isCompact ? styles.sectionCardFooterCompact : null]}>
-                      <Text style={[styles.sectionCardFooterText, isCompact ? styles.sectionCardFooterTextCompact : null]}>Entrer</Text>
+                      <Text style={[styles.sectionCardFooterText, isCompact ? styles.sectionCardFooterTextCompact : null, isDarkMode ? { color: palette.white } : null]}>Entrer</Text>
                       <MaterialIcons name="chevron-right" size={24} color={palette.slate} />
                     </View>
                   </Pressable>

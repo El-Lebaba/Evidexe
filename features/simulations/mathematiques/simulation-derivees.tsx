@@ -433,6 +433,7 @@ export function SimulationDerivees() {
                         style={[styles.functionButton, isActive ? styles.functionButtonActive : undefined]}>
                         <View style={styles.functionButtonFormula}>
                           <RenduFormule
+                            darkColor={isActive ? themeActif.activeInk : undefined}
                             fallback={mathFunction.label}
                             mathematiques={mathFunction.latex}
                             centered

@@ -353,7 +353,10 @@ export function SimulationMouvementCirculaire() {
                   isPaused ? styles.actionButtonActive : null,
                   pressed || hovered ? styles.actionButtonPressed : null,
                 ]}>
-                  <TexteTheme lightColor={themeActif.ink} style={styles.actionButtonText}>
+                  <TexteTheme
+                    darkColor={isPaused ? themeActif.activeInk : undefined}
+                    lightColor={themeActif.ink}
+                    style={[styles.actionButtonText, isPaused ? { color: themeActif.activeInk } : null]}>
                     {isPaused ? 'Reprendre' : 'Pause'}
                   </TexteTheme>
                 </Pressable>
@@ -550,13 +553,13 @@ function creerStyles() {
     overflow: 'hidden',
   },
   sliderFill: {
-    backgroundColor: themeActif.accent,
+    backgroundColor: themeActif.grid,
     borderRadius: 999,
     height: '100%',
   },
   sliderThumb: {
     backgroundColor: themeActif.ink,
-    borderColor: themeActif.ink,
+    borderColor: themeActif.panel,
     borderRadius: 10,
     height: 20,
     marginLeft: -10,

@@ -628,7 +628,7 @@ function creerStyles() {
     overflow: 'hidden',
   },
   remplissageCurseur: {
-    backgroundColor: themeActif.accent,
+    backgroundColor: themeActif.grid,
     borderRadius: 999,
     bottom: 0,
     left: 0,
@@ -637,7 +637,7 @@ function creerStyles() {
   },
   poigneeCurseur: {
     backgroundColor: themeActif.ink,
-    borderColor: themeActif.surface,
+    borderColor: themeActif.panel,
     borderRadius: 10,
     borderWidth: 2,
     height: 20,

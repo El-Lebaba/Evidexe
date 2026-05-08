@@ -27,9 +27,9 @@ type TraceOperation = {
   texte: string;
 };
 
-type ThemeSimulationArrayList = ReturnType<typeof obtenirThemesSimulationEcrans>['integrales'];
+type ThemeSimulationArrayList = ReturnType<typeof obtenirThemesSimulationEcrans>['programmationJava'];
 
-let themeActif: ThemeSimulationArrayList = obtenirThemesSimulationEcransInitial().integrales;
+let themeActif: ThemeSimulationArrayList = obtenirThemesSimulationEcransInitial().programmationJava;
 let couleurArrierePlan = themeActif.background;
 
 const ELEMENTS_INITIAUX = ['Pomme', 'Banane', 'Cerise', 'Datte'];
@@ -107,7 +107,7 @@ function CelluleArrayList({
   valeur?: string;
 }) {
   const couleurBordure = estActive ? themeActif.bounds : estVide ? themeActif.gridSoft : themeActif.approximationStroke;
-  const couleurFond = estActive ? 'rgba(216, 169, 74, 0.18)' : estVide ? 'transparent' : themeActif.surface;
+  const couleurFond = estActive ? themeActif.boundsSoft : estVide ? 'transparent' : themeActif.surface;
 
   return (
     <View
@@ -159,7 +159,7 @@ export function SimulationArrayList() {
   const [indicesActifs, definirIndicesActifs] = useState<number[]>([]);
   const [traces, definirTraces] = useState<TraceOperation[]>([]);
 
-  themeActif = obtenirThemesSimulationEcrans(modeSombre).integrales;
+  themeActif = obtenirThemesSimulationEcrans(modeSombre).programmationJava;
   couleurArrierePlan = themeActif.background;
   styles = creerStyles();
 

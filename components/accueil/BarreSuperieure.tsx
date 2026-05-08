@@ -62,7 +62,7 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
     >
       <View style={styles.content}>
         <Pressable onPress={openSettings} style={styles.utilityButton}>
-          <MaterialIcons name="menu" size={24} color={Couleurs.text} />
+          <MaterialIcons onPress={openSettings} name="menu" size={24} color={Couleurs.text} />
         </Pressable>
 
         <View style={styles.nav}>

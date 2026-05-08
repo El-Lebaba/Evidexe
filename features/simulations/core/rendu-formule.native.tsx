@@ -10,6 +10,8 @@ type ProprietesRenduFormule = {
   fallback: string;
   mathematiques: string;
   centered?: boolean;
+  darkColor?: string;
+  lightColor?: string;
   mathViewMobile?: boolean;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 };
@@ -92,11 +94,13 @@ function ComposantRenduFormule({
   fallback,
   mathematiques,
   centered = false,
+  darkColor = '#FFFFFF',
+  lightColor = '#243B53',
   mathViewMobile = false,
   size = 'md',
 }: ProprietesRenduFormule) {
   const modeSombre = useSchemaCouleur() === 'dark';
-  const couleurFormule = modeSombre ? '#FFFFFF' : '#243B53';
+  const couleurFormule = modeSombre ? darkColor : lightColor;
   const displayFormula = useMemo(() => formaterFormulePourAffichage(fallback), [fallback]);
   const documentMathJax = useMemo(
     () => creerDocumentMathJax(mathematiques || fallback, couleurFormule),
@@ -104,8 +108,8 @@ function ComposantRenduFormule({
   );
   const texteFallback = (
     <TexteTheme
-      darkColor="#FFFFFF"
-      lightColor="#243B53"
+      darkColor={darkColor}
+      lightColor={lightColor}
       style={[
         styles.fallback,
         centered ? styles.centered : undefined,

@@ -8,6 +8,8 @@ type ProprietesRenduFormule = {
   fallback: string;
   mathematiques: string;
   centered?: boolean;
+  darkColor?: string;
+  lightColor?: string;
   mathViewMobile?: boolean;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 };
@@ -23,14 +25,16 @@ const FONT_SIZE = {
 function ComposantRenduFormule({
   fallback,
   centered = false,
+  darkColor = '#FFFFFF',
+  lightColor = '#000000',
   size = 'md',
 }: ProprietesRenduFormule) {
   const displayFormula = useMemo(() => formaterFormulePourAffichage(fallback), [fallback]);
 
   return (
     <TexteTheme
-      darkColor="#FFFFFF"
-      lightColor="#000000"
+      darkColor={darkColor}
+      lightColor={lightColor}
       style={[
         styles.fallback,
         centered ? styles.centered : undefined,

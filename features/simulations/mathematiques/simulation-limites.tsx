@@ -608,7 +608,7 @@ export function SimulationLimites() {
                         onPress={() => setFunctionIndex(index)}
                         style={[styles.functionButtonWide, isActive ? styles.functionButtonActive : undefined]}>
                         <View style={styles.functionButtonFormula}>
-                          <RenduFormule centered fallback={entry.label} mathematiques={entry.latex} size="sm" />
+                          <RenduFormule centered darkColor={isActive ? themeActif.activeInk : undefined} fallback={entry.label} mathematiques={entry.latex} size="sm" />
                         </View>
                       </Pressable>
                     );

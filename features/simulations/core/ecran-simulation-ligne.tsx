@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
-import { obtenirThemeApplication } from '@/constantes/theme';
+import { obtenirThemeApplication, obtenirThemesSimulationEcrans } from '@/constantes/theme';
 import {
   EnteteEcranSimulation,
   ESPACE_CONTENU_ENTETE_SIMULATION,
@@ -69,10 +69,32 @@ const DETAILS_DOMAINE: Record<
 export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulationLigne) {
   const modeSombre = useSchemaCouleur() === 'dark';
   const themeActif = obtenirThemeApplication(modeSombre);
+  const themeSimulationJava = obtenirThemesSimulationEcrans(modeSombre).programmationJava;
   const defilementY = useRef(new Animated.Value(0)).current;
   const pulsation = useRef(new Animated.Value(0)).current;
   const detailDomaine = DETAILS_DOMAINE[domaine];
-  const couleurDouce = modeSombre ? themeActif.cardDark : detailDomaine.couleurDouce;
+  const couleurs =
+    domaine === 'programmation-java'
+      ? {
+          accent: themeSimulationJava.accent,
+          background: themeSimulationJava.background,
+          border: themeSimulationJava.border,
+          cardText: themeSimulationJava.mutedInk,
+          halo: themeSimulationJava.approximation,
+          ink: themeSimulationJava.ink,
+          panel: themeSimulationJava.panel,
+          soft: themeSimulationJava.surface,
+        }
+      : {
+          accent: detailDomaine.couleurAccent,
+          background: themeActif.background,
+          border: themeActif.border,
+          cardText: themeActif.cardText,
+          halo: modeSombre ? themeActif.cardDark : detailDomaine.couleurDouce,
+          ink: themeActif.ink,
+          panel: themeActif.panel,
+          soft: themeActif.soft,
+        };
 
   useEffect(() => {
     const animationPulsation = Animated.loop(
@@ -119,11 +141,11 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
   });
 
   return (
-    <SafeAreaView edges={[]} style={[styles.safeArea, { backgroundColor: themeActif.background }]}>
+    <SafeAreaView edges={[]} style={[styles.safeArea, { backgroundColor: couleurs.background }]}>
       <VueTheme
-        darkColor={themeActif.background}
-        lightColor={themeActif.background}
-        style={[styles.container, { backgroundColor: themeActif.background }]}>
+        darkColor={couleurs.background}
+        lightColor={couleurs.background}
+        style={[styles.container, { backgroundColor: couleurs.background }]}>
         <Animated.View
           style={[
             styles.superpositionEntete,
@@ -143,24 +165,24 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
           scrollEventThrottle={16}
           showsVerticalScrollIndicator={false}>
           <VueTheme
-            darkColor={themeActif.background}
-            lightColor={themeActif.background}
-            style={[styles.contenu, { backgroundColor: themeActif.background }]}>
+            darkColor={couleurs.background}
+            lightColor={couleurs.background}
+            style={[styles.contenu, { backgroundColor: couleurs.background }]}>
             <View
               style={[
                 styles.vitrine,
-                { backgroundColor: themeActif.panel, borderColor: themeActif.border },
+                { backgroundColor: couleurs.panel, borderColor: couleurs.border },
               ]}>
               <View style={styles.motif}>
                 {detailDomaine.motif.map((symbole, index) => (
                   <TexteTheme
                     key={`${symbole}-${index}`}
-                    darkColor={themeActif.ink}
-                    lightColor={themeActif.ink}
+                    darkColor={couleurs.ink}
+                    lightColor={couleurs.ink}
                     style={[
                       styles.symbole,
                       {
-                        color: themeActif.ink,
+                        color: couleurs.ink,
                         left: `${10 + index * 18}%`,
                         top: index % 2 === 0 ? 20 : 72,
                       },
@@ -174,7 +196,7 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
                 style={[
                   styles.halo,
                   {
-                    backgroundColor: couleurDouce,
+                    backgroundColor: couleurs.halo,
                     opacity: opaciteHalo,
                     transform: [{ scale: echelleHalo }],
                   },
@@ -184,50 +206,50 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
               <View
                 style={[
                   styles.cercleIcone,
-                  { backgroundColor: couleurDouce, borderColor: themeActif.border },
+                  { backgroundColor: couleurs.halo, borderColor: couleurs.border },
                 ]}>
-                <MaterialCommunityIcons color={detailDomaine.couleurAccent} name={detailDomaine.icone} size={52} />
+                <MaterialCommunityIcons color={couleurs.accent} name={detailDomaine.icone} size={52} />
               </View>
 
               <View
                 style={[
                   styles.badgeDomaine,
-                  { backgroundColor: themeActif.soft, borderColor: themeActif.border },
+                  { backgroundColor: couleurs.soft, borderColor: couleurs.border },
                 ]}>
-                <MaterialCommunityIcons color={themeActif.ink} name="timer-sand" size={16} />
+                <MaterialCommunityIcons color={couleurs.ink} name="timer-sand" size={16} />
                 <TexteTheme
-                  darkColor={themeActif.ink}
-                  lightColor={themeActif.ink}
-                  style={[styles.texteBadgeDomaine, { color: themeActif.ink }]}>
+                  darkColor={couleurs.ink}
+                  lightColor={couleurs.ink}
+                  style={[styles.texteBadgeDomaine, { color: couleurs.ink }]}>
                   {detailDomaine.libelle}
                 </TexteTheme>
               </View>
 
               <TexteTheme
-                darkColor={themeActif.ink}
-                lightColor={themeActif.ink}
-                style={[styles.titrePrincipal, { color: themeActif.ink }]}>
+                darkColor={couleurs.ink}
+                lightColor={couleurs.ink}
+                style={[styles.titrePrincipal, { color: couleurs.ink }]}>
                 Bientot disponible
               </TexteTheme>
 
               <TexteTheme
-                darkColor={themeActif.cardText}
-                lightColor={themeActif.cardText}
-                style={[styles.description, { color: themeActif.cardText }]}>
+                darkColor={couleurs.cardText}
+                lightColor={couleurs.cardText}
+                style={[styles.description, { color: couleurs.cardText }]}>
                 {detailDomaine.description}
               </TexteTheme>
 
               <View style={styles.zoneProgression}>
-                <View style={[styles.ligneProgression, { backgroundColor: themeActif.soft }]}>
-                  <View style={[styles.progressionActive, { backgroundColor: detailDomaine.couleurAccent }]} />
+                <View style={[styles.ligneProgression, { backgroundColor: couleurs.soft }]}>
+                  <View style={[styles.progressionActive, { backgroundColor: couleurs.accent }]} />
                 </View>
                 <View style={styles.etapes}>
                   {['Idee', 'Design', 'Simulation'].map((etape) => (
                     <TexteTheme
                       key={etape}
-                      darkColor={themeActif.cardText}
-                      lightColor={themeActif.cardText}
-                      style={[styles.texteEtape, { color: themeActif.cardText }]}>
+                      darkColor={couleurs.cardText}
+                      lightColor={couleurs.cardText}
+                      style={[styles.texteEtape, { color: couleurs.cardText }]}>
                       {etape}
                     </TexteTheme>
                   ))}
@@ -238,14 +260,14 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
                 onPress={() => router.replace(detailDomaine.cheminRetour)}
                 style={({ pressed, hovered }) => [
                   styles.boutonRetour,
-                  { backgroundColor: themeActif.soft, borderColor: detailDomaine.couleurAccent },
+                  { backgroundColor: couleurs.soft, borderColor: couleurs.accent },
                   pressed || hovered ? styles.boutonRetourSurvol : null,
                 ]}>
-                <MaterialCommunityIcons color={themeActif.ink} name="arrow-left" size={18} />
+                <MaterialCommunityIcons color={couleurs.ink} name="arrow-left" size={18} />
                 <TexteTheme
-                  darkColor={themeActif.ink}
-                  lightColor={themeActif.ink}
-                  style={[styles.texteBoutonRetour, { color: themeActif.ink }]}>
+                  darkColor={couleurs.ink}
+                  lightColor={couleurs.ink}
+                  style={[styles.texteBoutonRetour, { color: couleurs.ink }]}>
                   Retour aux simulations
                 </TexteTheme>
               </Pressable>
