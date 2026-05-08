@@ -284,13 +284,11 @@ function CurseurX({
   };
 
   const setFromEvent = useCallback((event: GestureResponderEvent) => {
-    const width = event.currentTarget.measure((_x, _y, measuredWidth, _height, pageX) => {
+    event.currentTarget.measure((_x, _y, measuredWidth, _height, pageX) => {
       const position = borner(event.nativeEvent.pageX - pageX, 0, measuredWidth);
       const nextValue = TRACK_MIN + (position / measuredWidth) * (TRACK_MAX - TRACK_MIN);
       onChange(Number(nextValue.toFixed(2)));
     });
-
-    return width;
   }, [onChange]);
 
   const panResponder = useMemo(

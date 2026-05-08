@@ -1,7 +1,7 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useFocusEffect } from '@react-navigation/native';
 import { Href, router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCallback, useState } from 'react';
 
@@ -11,6 +11,10 @@ import ListeSucces from '@/components/profil/ListeSucces';
 import { obtenirThemeApplication } from '@/constantes/theme';
 import { donneesLocales } from '@/db/donnees-principales';
 import type { ParametresApplication, SuccesProgression } from '@/db/donnees-principales';
+
+const STYLE_BOUTON_CLIQUABLE_WEB =
+  Platform.OS === 'web' ? ({ cursor: 'pointer', pointerEvents: 'auto', userSelect: 'none' } as any) : undefined;
+const STYLE_VISUEL_NON_CLIQUABLE_WEB = Platform.OS === 'web' ? ({ pointerEvents: 'none' } as any) : undefined;
 
 export default function PageSucces() {
   const [successes, setSuccesses] = useState<SuccesProgression[]>([]);
@@ -62,9 +66,14 @@ export default function PageSucces() {
       />
       <View style={styles.topRow}>
         <Pressable
+          hitSlop={8}
           onPress={() => setSettingsOpen(true)}
-          style={[styles.utilityButton, { backgroundColor: themeActif.surface, borderColor: `${themeActif.border}25` }]}>
-          <MaterialIcons name="menu" size={24} color={themeActif.text} />
+          style={[styles.utilityButton, STYLE_BOUTON_CLIQUABLE_WEB, { backgroundColor: themeActif.surface, borderColor: `${themeActif.border}25` }]}>
+          <View pointerEvents="none" style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
+            <View style={[styles.menuIconBar, { backgroundColor: themeActif.text }]} />
+            <View style={[styles.menuIconBar, { backgroundColor: themeActif.text }]} />
+            <View style={[styles.menuIconBar, { backgroundColor: themeActif.text }]} />
+          </View>
         </Pressable>
 
         <Pressable onPress={() => router.push('/(tabs)/accueil' as Href)} style={styles.logoButton}>
@@ -124,7 +133,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     height: 44,
     justifyContent: 'center',
+    position: 'relative',
     width: 44,
+  },
+  menuIconWrapper: {
+    alignItems: 'center',
+    height: 24,
+    justifyContent: 'center',
+    left: 10,
+    position: 'absolute',
+    top: 10,
+    width: 24,
+  },
+  menuIconBar: {
+    borderRadius: 999,
+    height: 2,
+    marginVertical: 2,
+    width: 18,
   },
   content: {
     alignSelf: 'center',

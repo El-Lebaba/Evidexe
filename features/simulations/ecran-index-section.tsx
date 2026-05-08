@@ -3,6 +3,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { Href, router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import {
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,6 +13,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import PanneauParametres from '@/components/accueil/PanneauParametres';
+import type { ParametresApplication } from '@/components/accueil/PanneauParametres';
 import { LogoEvidexe } from '@/components/logo-evidexe';
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
@@ -32,6 +35,9 @@ type ProprietesEcranIndexSection = {
 
 type FiltreTableauBord = string;
 const TAILLE_PAGE = 10;
+const STYLE_BOUTON_CLIQUABLE_WEB =
+  Platform.OS === 'web' ? ({ cursor: 'pointer', pointerEvents: 'auto', userSelect: 'none' } as any) : undefined;
+const STYLE_VISUEL_NON_CLIQUABLE_WEB = Platform.OS === 'web' ? ({ pointerEvents: 'none' } as any) : undefined;
 
 const THEME_MATHS = {
   background: '#EEF5ED',
@@ -251,6 +257,8 @@ function EcranSectionTableauBord({
   const [requete, definirRequete] = useState('');
   const [filtresActifs, definirFiltresActifs] = useState<FiltreTableauBord[]>([]);
   const [menuFiltresOuvert, definirMenuFiltresOuvert] = useState(false);
+  const [menuParametresOuvert, definirMenuParametresOuvert] = useState(false);
+  const [parametres, definirParametres] = useState<ParametresApplication>(() => donneesLocales.obtenirParametres());
   const [pageActive, definirPageActive] = useState(0);
 
   const requeteNormalisee = requete.trim().toLowerCase();
@@ -310,6 +318,10 @@ function EcranSectionTableauBord({
 
   const choisirDivisionJava = (division: FiltreTableauBord) => {
     definirFiltresActifs((filtresCourants) => (filtresCourants.includes(division) ? [] : [division]));
+  };
+
+  const enregistrerParametres = (parametresSuivants: ParametresApplication) => {
+    definirParametres(parametresSuivants);
   };
 
   const compterSimulationsDivisionJava = (division: string) =>
@@ -423,6 +435,12 @@ function EcranSectionTableauBord({
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: themeApplication.background }]}>
+      <PanneauParametres
+        open={menuParametresOuvert}
+        onClose={() => definirMenuParametresOuvert(false)}
+        settings={parametres}
+        onSave={enregistrerParametres}
+      />
       <VueTheme lightColor={themeApplication.background} darkColor={themeApplication.background} style={styles.mathSafeArea}>
         <SymbolesMathematiquesFlottants
           isActive={estFocalise}
@@ -448,18 +466,21 @@ function EcranSectionTableauBord({
               </Pressable>
 
               <Pressable
-                onPress={() => router.push('/(tabs)/profil' as Href)}
+                hitSlop={8}
+                onPress={() => definirMenuParametresOuvert(true)}
                 style={[
                   styles.heroProfileButton,
+                  STYLE_BOUTON_CLIQUABLE_WEB,
                   {
                     backgroundColor: paletteSimulation.panneau,
                     borderColor: paletteSimulation.carteBordure,
                   },
                 ]}>
-                <MaterialCommunityIcons color={paletteSimulation.encre} name="account-circle-outline" size={18} />
-                <TexteTheme darkColor={paletteSimulation.encre} lightColor={paletteSimulation.encre} style={[styles.heroProfileText, { color: paletteSimulation.encre }]}>
-                  Profil
-                </TexteTheme>
+                <View pointerEvents="none" style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
+                  <View style={[styles.menuIconBar, { backgroundColor: paletteSimulation.encre }]} />
+                  <View style={[styles.menuIconBar, { backgroundColor: paletteSimulation.encre }]} />
+                  <View style={[styles.menuIconBar, { backgroundColor: paletteSimulation.encre }]} />
+                </View>
               </Pressable>
 
               <TexteTheme
@@ -888,19 +909,28 @@ const styles = StyleSheet.create({
     borderColor: '#A8B59A',
     borderRadius: 999,
     borderWidth: 1,
-    flexDirection: 'row',
-    gap: 8,
+    height: 44,
+    justifyContent: 'center',
     position: 'absolute',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
     right: 22,
     top: 24,
+    width: 44,
     zIndex: 2,
   },
-  heroProfileText: {
-    fontSize: 13,
-    fontWeight: '700',
-    lineHeight: 18,
+  menuIconWrapper: {
+    alignItems: 'center',
+    height: 24,
+    justifyContent: 'center',
+    left: 10,
+    position: 'absolute',
+    top: 10,
+    width: 24,
+  },
+  menuIconBar: {
+    borderRadius: 999,
+    height: 2,
+    marginVertical: 2,
+    width: 18,
   },
   heroTitle: {
     color: '#243B53',

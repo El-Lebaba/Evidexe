@@ -32,10 +32,12 @@ const WEBVIEW_HEIGHT = {
   xxl: 88,
 } as const;
 
+const MATHJAX_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+
 function creerDocumentMathJax(formule: string, couleur: string) {
   return `
 <!doctype html>
-<html>
+<html lang="fr">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <script>
@@ -45,7 +47,7 @@ function creerDocumentMathJax(formule: string, couleur: string) {
         startup: { typeset: false }
       };
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="${MATHJAX_SCRIPT_URL}"></script>
     <style>
       html, body {
         align-items: center;
@@ -68,13 +70,13 @@ function creerDocumentMathJax(formule: string, couleur: string) {
         text-align: center;
       }
 
-      mjx-container,
-      mjx-container svg {
+      [jax="SVG"],
+      [jax="SVG"] svg {
         color: ${couleur} !important;
       }
 
-      mjx-container svg path,
-      mjx-container svg use {
+      [jax="SVG"] svg path,
+      [jax="SVG"] svg use {
         fill: ${couleur} !important;
         stroke: ${couleur} !important;
       }

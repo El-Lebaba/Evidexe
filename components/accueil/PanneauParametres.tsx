@@ -76,12 +76,12 @@ export default function PanneauParametres({
             styles.panel,
             {
               backgroundColor: themeActif.surface,
-              borderRightColor: `${themeActif.border}40`,
+              borderLeftColor: `${themeActif.border}40`,
               transform: [
                 {
                   translateX: slideValue.interpolate({
                     inputRange: [-1, 0],
-                    outputRange: [-360, 0],
+                    outputRange: [360, 0],
                   }),
                 },
               ],
@@ -203,14 +203,14 @@ const styles = StyleSheet.create({
   },
   panel: {
     backgroundColor: '#F3F1E7',
-    borderRightColor: '#243B5340',
-    borderRightWidth: 1,
-    borderBottomRightRadius: 22,
-    borderTopRightRadius: 22,
+    borderLeftColor: '#243B5340',
+    borderLeftWidth: 1,
+    borderBottomLeftRadius: 22,
+    borderTopLeftRadius: 22,
     bottom: 0,
-    left: 0,
     maxWidth: 360,
     position: 'absolute',
+    right: 0,
     top: 0,
     width: '86%',
   },

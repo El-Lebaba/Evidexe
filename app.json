@@ -29,7 +29,8 @@
       "typedRoutes": true
     },
     "plugins": [
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-sqlite"
     ]
   }
 }

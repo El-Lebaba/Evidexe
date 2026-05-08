@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Href, Link, router } from 'expo-router';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { LogoEvidexe } from '@/components/logo-evidexe';
 import { obtenirThemeApplication } from '@/constantes/theme';
 
 const CouleursBase = obtenirThemeApplication(false);
+const STYLE_BOUTON_CLIQUABLE_WEB =
+  Platform.OS === 'web' ? ({ cursor: 'pointer', pointerEvents: 'auto', userSelect: 'none' } as any) : undefined;
+const STYLE_VISUEL_NON_CLIQUABLE_WEB = Platform.OS === 'web' ? ({ pointerEvents: 'none' } as any) : undefined;
 
 type InfosUtilisateur = {
   name?: string;
@@ -61,8 +64,12 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
       ]}
     >
       <View style={styles.content}>
-        <Pressable onPress={openSettings} style={styles.utilityButton}>
-          <MaterialIcons onPress={openSettings} name="menu" size={24} color={Couleurs.text} />
+        <Pressable hitSlop={8} onPress={openSettings} style={[styles.utilityButton, STYLE_BOUTON_CLIQUABLE_WEB]}>
+          <View pointerEvents="none" style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
+            <View style={[styles.menuIconBar, { backgroundColor: Couleurs.text }]} />
+            <View style={[styles.menuIconBar, { backgroundColor: Couleurs.text }]} />
+            <View style={[styles.menuIconBar, { backgroundColor: Couleurs.text }]} />
+          </View>
         </Pressable>
 
         <View style={styles.nav}>
@@ -161,7 +168,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     height: 42,
     justifyContent: 'center',
+    position: 'relative',
     width: 42,
+  },
+  menuIconWrapper: {
+    alignItems: 'center',
+    height: 24,
+    justifyContent: 'center',
+    left: 9,
+    position: 'absolute',
+    top: 9,
+    width: 24,
+  },
+  menuIconBar: {
+    borderRadius: 999,
+    height: 2,
+    marginVertical: 2,
+    width: 18,
   },
   nav: {
     alignItems: 'center',

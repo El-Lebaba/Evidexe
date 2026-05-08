@@ -264,7 +264,6 @@ export function SimulationMouvementCirculaire() {
   const horizontalPadding = width >= 1200 ? 12 : 16;
   const contentWidth = width - horizontalPadding * 2;
   const isWide = width >= 980;
-  const isCompact = width < 560;
   const graphWidth = isWide ? Math.round(contentWidth * 0.665) : contentWidth;
   const graphHeight = isWide
     ? borner(Math.round(graphWidth * 0.62), 460, 660)

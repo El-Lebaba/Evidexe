@@ -335,7 +335,7 @@ export function SimulationFrottement() {
   const [coefficientStatique, definirCoefficientStatique] = useState(0.5);
   const [forceAppliquee, definirForceAppliquee] = useState(5);
   const [enPause, definirEnPause] = useState(false);
-  const [image, definirImage] = useState(0);
+  const [, forcerRendu] = useState(0);
   const mouvementRef = useRef({ position: 0, vitesse: 0 });
   const defilementY = useRef(new Animated.Value(0)).current;
   const estActif = useIsFocused();
@@ -355,21 +355,21 @@ export function SimulationFrottement() {
   const avancerSimulation = useCallback(() => {
     if (!etat.mouvement) {
       mouvementRef.current.vitesse = 0;
-      definirImage((valeur) => valeur + 1);
+      forcerRendu((valeur) => valeur + 1);
       return;
     }
 
     const prochaineVitesse = mouvementRef.current.vitesse + etat.acceleration * 0.05;
     mouvementRef.current.vitesse = Math.max(prochaineVitesse, 0);
     mouvementRef.current.position += mouvementRef.current.vitesse * 0.05 * 42;
-    definirImage((valeur) => valeur + 1);
+    forcerRendu((valeur) => valeur + 1);
   }, [etat.acceleration, etat.mouvement]);
 
   utiliserIntervalleSimulation(estActif && !enPause, avancerSimulation, 50);
 
   const reinitialiserBloc = useCallback(() => {
     mouvementRef.current = { position: 0, vitesse: 0 };
-    definirImage((valeur) => valeur + 1);
+    forcerRendu((valeur) => valeur + 1);
   }, []);
 
   const remplissageHorizontal = width >= 1200 ? 12 : 16;
@@ -432,7 +432,7 @@ export function SimulationFrottement() {
               hauteur={hauteurGraphique}
               largeur={largeurGraphique}
               masse={masse}
-              positionBloc={mouvementRef.current.position + image * 0}
+              positionBloc={mouvementRef.current.position}
             />
 
             <View style={[styles.sidebar, { paddingRight: affichageLarge ? 44 : 0, width: largeurPanneau }]}>

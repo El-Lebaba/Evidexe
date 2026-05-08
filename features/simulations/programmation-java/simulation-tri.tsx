@@ -225,9 +225,8 @@ function* triInsertion(valeursDepart: number[]) {
 function* triFusion(valeursDepart: number[]) {
   const valeurs = [...valeursDepart];
   const valeursAuxiliaires = [...valeursDepart];
-  const etapes: EtatTri[] = [];
 
-  function fusionner(debut: number, milieu: number, fin: number) {
+  function* fusionner(debut: number, milieu: number, fin: number): Generator<EtatTri> {
     for (let indiceCopie = debut; indiceCopie <= fin; indiceCopie += 1) {
       valeursAuxiliaires[indiceCopie] = valeurs[indiceCopie];
     }
@@ -250,73 +249,71 @@ function* triFusion(valeursDepart: number[]) {
         indiceGauche += 1;
       }
 
-      etapes.push({ indicesActifs: [indiceFusion], valeurs: [...valeurs], operation: true, plageActive: [debut, fin] });
+      yield { indicesActifs: [indiceFusion], valeurs: [...valeurs], operation: true, plageActive: [debut, fin] };
     }
   }
 
-  function diviserEtFusionner(debut: number, fin: number) {
+  function* diviserEtFusionner(debut: number, fin: number): Generator<EtatTri> {
     if (fin <= debut) {
       return;
     }
 
     const milieu = Math.floor((debut + fin) / 2);
-    diviserEtFusionner(debut, milieu);
-    diviserEtFusionner(milieu + 1, fin);
-    fusionner(debut, milieu, fin);
+    yield* diviserEtFusionner(debut, milieu);
+    yield* diviserEtFusionner(milieu + 1, fin);
+    yield* fusionner(debut, milieu, fin);
   }
 
-  diviserEtFusionner(0, valeurs.length - 1);
-  yield* etapes;
+  yield* diviserEtFusionner(0, valeurs.length - 1);
   yield { indicesActifs: [], valeurs: [...valeurs], termine: true, indicesTries: Array.from({ length: valeurs.length }, (_, index) => index) };
 }
 
 function* triRapide(valeursDepart: number[]) {
   const valeurs = [...valeursDepart];
-  const etapes: EtatTri[] = [];
   const indicesPivots = new Set<number>();
 
-  function partitionner(debut: number, fin: number) {
+  function* partitionner(debut: number, fin: number): Generator<EtatTri, number> {
     const valeurPivot = valeurs[fin];
     let indicePlusPetit = debut - 1;
 
     for (let indiceLecture = debut; indiceLecture < fin; indiceLecture += 1) {
-      etapes.push({
+      yield {
         valeurs: [...valeurs],
         indicesComparaison: [indiceLecture, fin],
         operation: true,
         indicePivot: fin,
         indicesPivots: [...indicesPivots],
-      });
+      };
 
       if (valeurs[indiceLecture] <= valeurPivot) {
         indicePlusPetit += 1;
         [valeurs[indicePlusPetit], valeurs[indiceLecture]] = [valeurs[indiceLecture], valeurs[indicePlusPetit]];
-        etapes.push({
+        yield {
           valeurs: [...valeurs],
           indicesComparaison: [indicePlusPetit, indiceLecture],
           operation: true,
           indicePivot: fin,
           indicesPivots: [...indicesPivots],
           echange: indicePlusPetit !== indiceLecture,
-        });
+        };
       }
     }
 
     [valeurs[indicePlusPetit + 1], valeurs[fin]] = [valeurs[fin], valeurs[indicePlusPetit + 1]];
     indicesPivots.add(indicePlusPetit + 1);
-    etapes.push({
+    yield {
       valeurs: [...valeurs],
       indicesComparaison: [],
       operation: true,
       indicePivot: indicePlusPetit + 1,
       indicesPivots: [...indicesPivots],
       echange: indicePlusPetit + 1 !== fin,
-    });
+    };
 
     return indicePlusPetit + 1;
   }
 
-  function trierRapidement(debut: number, fin: number) {
+  function* trierRapidement(debut: number, fin: number): Generator<EtatTri> {
     if (debut >= fin) {
       if (debut === fin) {
         indicesPivots.add(debut);
@@ -325,13 +322,12 @@ function* triRapide(valeursDepart: number[]) {
       return;
     }
 
-    const indicePivot = partitionner(debut, fin);
-    trierRapidement(debut, indicePivot - 1);
-    trierRapidement(indicePivot + 1, fin);
+    const indicePivot = yield* partitionner(debut, fin);
+    yield* trierRapidement(debut, indicePivot - 1);
+    yield* trierRapidement(indicePivot + 1, fin);
   }
 
-  trierRapidement(0, valeurs.length - 1);
-  yield* etapes;
+  yield* trierRapidement(0, valeurs.length - 1);
   yield {
     valeurs: [...valeurs],
     indicesComparaison: [],

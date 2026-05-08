@@ -1,7 +1,6 @@
 import { Appearance, Platform } from 'react-native';
 
 const couleurTeinteClaire = '#BC8559';
-const couleurTeinteSombre = '#E8E0C9';
 
 export const Couleurs = {
   light: {
