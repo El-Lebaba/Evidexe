@@ -95,6 +95,51 @@ function formaterNombre(value: number) {
   return value.toFixed(3);
 }
 
+function obtenirValiditeConvergence(label: string, x: number) {
+  if (label === 'ln(1+x)') {
+    const valide = x > -1 && x <= 1;
+    return {
+      avertissement: valide
+        ? null
+        : "Attention : x est hors de l'intervalle de convergence de cette série. L'approximation peut diverger.",
+      etat: valide ? "Dans l'intervalle" : 'Hors intervalle',
+      fiable: valide,
+    };
+  }
+
+  if (label === '1/(1-x)') {
+    const valide = Math.abs(x) < 1;
+    return {
+      avertissement: valide
+        ? null
+        : "Attention : x est hors de l'intervalle de convergence de cette série. L'approximation peut diverger.",
+      etat: valide ? "Dans l'intervalle" : 'Hors intervalle',
+      fiable: valide,
+    };
+  }
+
+  if (label === 'arctan(x)') {
+    const valide = Math.abs(x) <= 1;
+    const bord = Math.abs(x) === 1;
+
+    return {
+      avertissement: !valide
+        ? "Attention : x est hors de l'intervalle de convergence de cette série. L'approximation peut diverger."
+        : bord
+          ? 'Attention : x est au bord de l’intervalle de convergence; la convergence est lente.'
+          : null,
+      etat: !valide ? 'Hors intervalle' : bord ? 'Valide, convergence lente' : "Dans l'intervalle",
+      fiable: valide,
+    };
+  }
+
+  return {
+    avertissement: null,
+    etat: 'Valide pour tout x',
+    fiable: true,
+  };
+}
+
 function etiquettePuissance(power: number) {
   if (power === 0) {
     return '1';
@@ -291,7 +336,7 @@ const FUNCTIONS: TaylorFunction[] = [
 
       return sum;
     },
-    convergenceDetail: 'Convergente si |x| < 1, divergente au dela',
+    convergenceDetail: 'Convergente pour -1 < x <= 1 avec cette série de Maclaurin',
     convergenceLabel: 'Conditionnelle',
     fn: (x) => (x > -1 ? Math.log(1 + x) : NaN),
     label: 'ln(1+x)',
@@ -381,7 +426,7 @@ const FUNCTIONS: TaylorFunction[] = [
 
       return sum;
     },
-    convergenceDetail: 'Convergente si |x| <= 1, divergente si |x| > 1',
+    convergenceDetail: 'Convergente si |x| <= 1, lente aux bornes x = -1 et x = 1',
     convergenceLabel: 'Conditionnelle',
     fn: Math.atan,
     label: 'arctan(x)',
@@ -720,6 +765,7 @@ export function SimulationSerieTaylor() {
   const activeFunction = FUNCTIONS[functionIndex];
   const approximationAtSample = activeFunction.approx(APPROXIMATION_SAMPLE_X, order);
   const functionAtSample = activeFunction.fn(APPROXIMATION_SAMPLE_X);
+  const validiteApproximation = obtenirValiditeConvergence(activeFunction.label, APPROXIMATION_SAMPLE_X);
   const headerTranslateY = scrollY.interpolate({
     inputRange: [0, 120],
     outputRange: [0, 0],
@@ -854,10 +900,10 @@ export function SimulationSerieTaylor() {
                 <View style={styles.statCard}>
                   <View style={styles.statFormulaWrap}>
                     <TexteTheme lightColor={themeActif.mutedInk} style={styles.statLabel}>
-                      Approximation en x = 10
+                      Approximation polynomiale
                     </TexteTheme>
                   </View>
-                  <TexteTheme lightColor={themeActif.ink} style={styles.statValue}>
+                  <TexteTheme lightColor={validiteApproximation.fiable ? themeActif.ink : themeActif.point} style={styles.statValue}>
                     {formaterNombre(approximationAtSample)}
                   </TexteTheme>
                 </View>
@@ -871,7 +917,28 @@ export function SimulationSerieTaylor() {
                     {formaterNombre(functionAtSample)}
                   </TexteTheme>
                 </View>
+                <View style={styles.statCard}>
+                  <View style={styles.statFormulaWrap}>
+                    <TexteTheme lightColor={themeActif.mutedInk} style={styles.statLabel}>
+                      Validité en x = 10
+                    </TexteTheme>
+                  </View>
+                  <TexteTheme lightColor={validiteApproximation.fiable ? themeActif.ink : themeActif.point} style={styles.validityValue}>
+                    {validiteApproximation.etat}
+                  </TexteTheme>
+                </View>
               </View>
+
+              {validiteApproximation.avertissement ? (
+                <View style={styles.warningCard}>
+                  <TexteTheme lightColor={themeActif.ink} style={styles.warningTitle}>
+                    Validité de la série
+                  </TexteTheme>
+                  <TexteTheme lightColor={themeActif.mutedInk} style={styles.warningText}>
+                    {validiteApproximation.avertissement}
+                  </TexteTheme>
+                </View>
+              ) : null}
 
             </View>
           </View>
@@ -1191,6 +1258,33 @@ function creerStyles() {
     fontSize: 26,
     fontWeight: '800',
     lineHeight: 32,
+  },
+  validityValue: {
+    color: themeActif.ink,
+    fontSize: 16,
+    fontWeight: '800',
+    lineHeight: 22,
+    textAlign: 'center',
+  },
+  warningCard: {
+    backgroundColor: themeActif.panel,
+    borderColor: themeActif.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 6,
+    padding: 14,
+  },
+  warningTitle: {
+    color: themeActif.ink,
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  warningText: {
+    color: themeActif.mutedInk,
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 18,
   },
 });
 }
