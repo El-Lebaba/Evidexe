@@ -1,96 +1,109 @@
-# Evidexe
+# Evidex
 
-Application educative interactive construite avec **Expo**, **React Native** et **TypeScript** pour explorer des notions de **mathematiques**, de **physique** et de **programmation Java** avec des cours, des simulations et un suivi de progression local.
+Evidex is an interactive learning application built with **Expo**, **React Native** and **TypeScript**. It helps students explore mathematics, physics and Java programming through short lessons, visual simulations, quizzes and local progress tracking.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/React%20Native-Mobile-blue?style=for-the-badge&logo=react">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="https://img.shields.io/badge/Expo-Framework-black?style=for-the-badge&logo=expo">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="https://img.shields.io/badge/TypeScript-Language-blue?style=for-the-badge&logo=typescript">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="https://img.shields.io/badge/Expo%20Router-Navigation-purple?style=for-the-badge&logo=expo">
+  <img src="https://img.shields.io/badge/Expo-54-000020?style=for-the-badge&logo=expo" alt="Expo 54">
+  <img src="https://img.shields.io/badge/React%20Native-0.81-61DAFB?style=for-the-badge&logo=react" alt="React Native 0.81">
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react" alt="React 19">
+  <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript 5.9">
 </p>
 
----
+## Overview
 
-## Description
+Evidex turns abstract concepts into things students can inspect and manipulate. The app combines:
 
-**Evid.exe** transforme des concepts abstraits en experiences manipulables. L'utilisateur peut lire des cours courts, lancer des simulations interactives, completer des quiz et suivre sa progression avec de l'XP, des niveaux et des cours recents.
+- guided course slides with examples and final quizzes;
+- interactive simulations for mathematics, physics and Java algorithms;
+- local user profiles with XP, levels, recent courses, achievements and settings;
+- a modular Expo Router structure that makes new sections and simulations easy to add.
 
-Le projet fonctionne avec Expo Router et une architecture modulaire: les routes sont dans `app/`, les composants reutilisables dans `components/`, les simulations dans `features/simulations/`, les cours dans `data/` et la persistence locale dans `db/`.
+The project is currently a local-first educational app. It does not include a remote backend or account synchronization.
 
----
+## Features
 
-## Fonctionnalites principales
+### Courses
 
-### Cours
-- Cours de mathematiques: derivees, integrales et limites.
-- Cours de physique: cinematique, forces et energie.
-- Cours Java: variables, types, transtypage, chaines, operateurs, conditions, boucles, tableaux, methodes, classes, objets et logique booleenne.
-- Quiz final et progression sauvegardee localement.
+- Mathematics: derivatives, integrals and limits.
+- Physics: kinematics, forces and energy.
+- Java: variables, data types, type casting, strings, operators, `Math`, conditionals, `switch`, loops, arrays, methods, classes and boolean logic.
+- Course progress is saved per active local user.
+- A course reaches 100% only after the final exercise is completed.
 
 ### Simulations
-- Mathematiques: derivees, integrales, serie de Taylor, limites, Fourier, champ de pentes et series.
-- Physique: gravite, pendule, mouvement projectile, ressort et loi de Hooke, mouvement circulaire, champs magnetiques, champs electriques, optique et refraction, mecanique orbitale et frottement.
-- Programmation Java: catalogue de simulations en preparation, avec des entrees prevues autour des tris et des structures de donnees.
-- Catalogue extensible avec certaines simulations encore marquees comme a venir ou fermees.
 
-### Profil
-- Utilisateurs locaux.
-- XP, niveau, cours recents, cours actifs et cours termines.
-- Parametres locaux: mode sombre, langue et notifications.
+Available simulations:
 
----
+- Mathematics: derivatives, integrals, Taylor series, limits, Fourier series, slope fields and numeric series.
+- Physics: gravity, pendulum, projectile motion, Hooke's law spring, circular motion, magnetic fields, electric fields, optics/refraction, orbital mechanics and friction.
+- Java: bubble sort, selection sort, insertion sort, merge sort, quicksort and `ArrayList`.
 
-## Technologies utilisees
+The catalog also contains placeholder or locked entries for future work, including vector fields, elastic collisions and several Java data-structure or language-feature simulations.
 
-- **Expo 54** et **Expo Router** pour le lancement, le routage et la navigation.
-- **React Native 0.81** et **React 19** pour l'interface.
-- **TypeScript / TSX** pour le code applicatif.
-- **React Native SVG**, **KaTeX** et rendu mathematique pour les visualisations.
-- **Stockage local applicatif** via `localStorage` sur web, avec fallback memoire si necessaire.
+### Profile And Progression
 
-> Note: une dependance `sqlite` est presente dans le projet, mais le stockage actuel n'utilise pas encore une base SQLite active.
+- Multiple local users by display name.
+- XP and level progression.
+- Recent, active and completed courses.
+- Achievement progress for courses, flashcards and simulation usage.
+- Local settings for dark mode, language, notifications and the developer FPS counter.
+- Flashcard storage by topic.
 
----
+## Tech Stack
 
-## Installation
+- **Expo 54** with **Expo Router 6** for routing and app entry.
+- **React Native 0.81**, **React 19** and **React Native Web** for mobile/web UI.
+- **TypeScript 5.9** with strict mode enabled.
+- **React Native SVG** and **KaTeX** for diagrams and mathematical notation.
+- **Expo SQLite** for native key-value persistence.
+- **IndexedDB** for web key-value persistence.
+- **ESLint** with Expo's flat config.
 
-### Prerequis
+## Requirements
 
-- Node.js
-- npm
-- Git
-- Expo Go, Android Studio ou un navigateur web selon la plateforme cible
+- Node.js 20 or newer is recommended.
+- npm.
+- Git.
+- One of the following runtime targets:
+  - Expo Go or a development build for physical devices;
+  - Android Studio for Android emulator;
+  - Xcode for iOS simulator on macOS;
+  - a modern browser for the web build.
 
-### Cloner le depot
+## Getting Started
+
+Clone the repository:
 
 ```bash
 git clone https://github.com/Veng143/Evidex.git
 cd Evidex
 ```
 
-### Installer les dependances
+Install dependencies:
 
 ```bash
 npm install
 ```
 
----
-
-## Lancement
-
-Demarrer Expo en local:
-
-```bash
-npm run startlocal
-```
-
-Demarrer avec tunnel:
+Start Expo on the local network:
 
 ```bash
 npm start
 ```
 
-Lancer directement une cible:
+Start Expo without forcing LAN hosting:
+
+```bash
+npm run startlocal
+```
+
+Start Expo with a tunnel:
+
+```bash
+npm run start:tunnel
+```
+
+Run a specific target:
 
 ```bash
 npm run android
@@ -98,33 +111,80 @@ npm run ios
 npm run web
 ```
 
----
+## Scripts
 
-## Verification
+| Command | Description |
+| --- | --- |
+| `npm start` | Starts Expo with cache cleared and LAN hosting. |
+| `npm run startlocal` | Starts Expo with cache cleared using Expo's default host behavior. |
+| `npm run start:tunnel` | Starts Expo with cache cleared through a tunnel. |
+| `npm run android` | Opens the project on Android through Expo. |
+| `npm run ios` | Opens the project on iOS through Expo. |
+| `npm run web` | Starts the web target. |
+| `npm run lint` | Runs Expo ESLint. |
+| `npm run reinitialiser-projet` | Runs the local reset utility in `scripts/reinitialiser-projet.js`. |
+
+## Quality Checks
+
+Run linting:
 
 ```bash
 npm run lint
+```
+
+Run a TypeScript type check:
+
+```bash
 npx tsc --noEmit
 ```
 
----
+There is currently no automated test script in `package.json`.
 
-## Structure du projet
+## Project Structure
 
 ```text
-app/          Routes Expo Router et ecrans principaux
-components/   Composants reutilisables
-features/     Sections, simulations et logique de presentation
-data/         Donnees des cours, diapositives et quiz
-db/           Stockage local et progression utilisateur
-constantes/   Constantes visuelles partagees
-hooks/        Hooks React locaux
-assets/       Images, icones et ressources statiques
-scripts/      Scripts utilitaires du projet
+app/                       Expo Router routes and screens
+assets/                    Images, icons and static assets
+components/                Shared UI components
+components/accueil/        Home screen panels and header
+components/cours/          Course cards
+components/profil/         Profile and achievement panels
+constantes/                Shared theme constants
+data/                      Course, slide and quiz data
+db/                        Local persistence and user progress logic
+features/cours/            Course reading screen
+features/sections/         Section screen helpers
+features/simulations/      Simulation catalog, screens and shared simulation UI
+hooks/                     Theme and color-scheme hooks
+scripts/                   Utility scripts
 ```
 
----
+## Persistence Model
 
-## Etat du projet
+The app stores all user data locally under one application data object. Native platforms use `expo-sqlite`; the web implementation uses IndexedDB. The shared data layer in `db/donnees-principales.tsx` manages users, settings, course progress, flashcards, achievements and XP.
 
-Le projet est fonctionnel pour consulter les cours, lancer les simulations disponibles en mathematiques et en physique, suivre la progression et utiliser le profil. Les prochaines ameliorations naturelles seraient de completer les simulations Java, renforcer les tests automatises et remplacer le stockage local actuel par une persistence plus robuste si le projet evolue vers une utilisation multi-appareils.
+This persistence model is local to the device/browser. Data is not synchronized across devices.
+
+## Current Limitations
+
+- Some catalog entries are placeholders or locked rather than complete simulations.
+- The app is local-first and has no remote authentication or cloud backup.
+- Automated tests have not been added yet.
+- The UI and content are mostly French, while some older helper text and code identifiers remain mixed between French and English.
+
+## Roadmap
+
+- Complete the remaining locked and placeholder simulations.
+- Add automated tests for persistence, quiz completion, XP, achievements and simulation math.
+- Improve accessibility and responsive polish across small screens.
+- Add a stronger persistence strategy if the project evolves toward multi-device use.
+- Consider a teacher/classroom mode for assigning lessons and reviewing progress.
+
+## Contributors
+
+- Tony Khabbaz
+- Aris Hadjeb
+
+## License
+
+No license file is currently included in this repository. Add one before distributing or accepting external contributions.
