@@ -42,6 +42,9 @@ const studyingBoy = require('@/assets/images/studying-boy-hq.png');
 const NOMBRE_VIGNETTES_ACCUEIL = 3;
 const SLOT_DEPART_VIGNETTES = 1;
 const ORDRE_DEFILEMENT_VIGNETTES = [2, 0, 1, 2, 0] as const;
+const STYLE_BOUTON_CLIQUABLE_WEB =
+  Platform.OS === 'web' ? ({ cursor: 'pointer', pointerEvents: 'auto', userSelect: 'none' } as any) : undefined;
+const STYLE_VISUEL_NON_CLIQUABLE_WEB = Platform.OS === 'web' ? ({ pointerEvents: 'none' } as any) : undefined;
 
 type BubbleSpec = {
   height: number;
@@ -737,16 +740,22 @@ export default function EcranAccueil() {
         showsVerticalScrollIndicator={false}>
         <View style={[styles.zoneVignettesAccueil, { backgroundColor: themeApplication.background }]}>
           <View style={styles.homeProfileRow}>
+            <View style={styles.homeProfileSpacer} />
             <Pressable
+              hitSlop={8}
               onPress={() => setSettingsOpen(true)}
               style={[
                 styles.menuButton,
+                STYLE_BOUTON_CLIQUABLE_WEB,
                 isCompact ? styles.menuButtonCompact : null,
                 isDarkMode ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
               ]}>
-              <MaterialIcons name="menu" size={24} color={isDarkMode ? themeApplication.ink : palette.ink} />
+              <View pointerEvents="none" style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
+                <View style={[styles.menuIconBar, { backgroundColor: isDarkMode ? themeApplication.ink : palette.ink }]} />
+                <View style={[styles.menuIconBar, { backgroundColor: isDarkMode ? themeApplication.ink : palette.ink }]} />
+                <View style={[styles.menuIconBar, { backgroundColor: isDarkMode ? themeApplication.ink : palette.ink }]} />
+              </View>
             </Pressable>
-            <View style={styles.homeProfileSpacer} />
           </View>
 
           <View
@@ -1158,7 +1167,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     height: 44,
     justifyContent: 'center',
+    position: 'relative',
     width: 44,
+    zIndex: 50,
+  },
+  menuIconWrapper: {
+    alignItems: 'center',
+    height: 24,
+    justifyContent: 'center',
+    left: 10,
+    position: 'absolute',
+    top: 10,
+    width: 24,
+  },
+  menuIconBar: {
+    borderRadius: 999,
+    height: 2,
+    marginVertical: 2,
+    width: 18,
   },
   menuButtonCompact: {
     height: 40,

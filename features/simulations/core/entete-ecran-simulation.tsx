@@ -1,10 +1,14 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Href, router } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
+import PanneauParametres from '@/components/accueil/PanneauParametres';
+import type { ParametresApplication } from '@/components/accueil/PanneauParametres';
 import { LogoEvidexe } from '@/components/logo-evidexe';
 import { TexteTheme } from '@/components/texte-theme';
 import { obtenirThemeApplication } from '@/constantes/theme';
+import { donneesLocales } from '@/db/donnees-principales';
 import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
 type ProprietesEnteteEcranSimulation = {
@@ -18,6 +22,9 @@ export const HAUTEUR_TOTALE_ENTETE_SIMULATION =
   HAUTEUR_OMBRE_HAUT_ENTETE_SIMULATION + HAUTEUR_BARRE_ENTETE_SIMULATION;
 export const ESPACE_CONTENU_ENTETE_SIMULATION = 44;
 const COULEUR_ARRIERE_PLAN_PAGE_SIMULATION = '#EAE3D2';
+const STYLE_BOUTON_CLIQUABLE_WEB =
+  Platform.OS === 'web' ? ({ cursor: 'pointer', pointerEvents: 'auto', userSelect: 'none' } as any) : undefined;
+const STYLE_VISUEL_NON_CLIQUABLE_WEB = Platform.OS === 'web' ? ({ pointerEvents: 'none' } as any) : undefined;
 
 function obtenirHrefSection(domaine: string): Href {
   return (domaine === 'mathematiques'
@@ -30,13 +37,25 @@ function obtenirHrefSection(domaine: string): Href {
 export function EnteteEcranSimulation({ titre, domaine }: ProprietesEnteteEcranSimulation) {
   const modeSombre = useSchemaCouleur() === 'dark';
   const themeActif = obtenirThemeApplication(modeSombre);
+  const [menuParametresOuvert, definirMenuParametresOuvert] = useState(false);
+  const [parametres, definirParametres] = useState<ParametresApplication>(() => donneesLocales.obtenirParametres());
 
   function fermerSimulation() {
     router.replace(obtenirHrefSection(domaine));
   }
 
+  function enregistrerParametres(parametresSuivants: ParametresApplication) {
+    definirParametres(parametresSuivants);
+  }
+
   return (
     <View style={styles.enveloppeEntete}>
+      <PanneauParametres
+        open={menuParametresOuvert}
+        onClose={() => definirMenuParametresOuvert(false)}
+        settings={parametres}
+        onSave={enregistrerParametres}
+      />
       {HAUTEUR_OMBRE_HAUT_ENTETE_SIMULATION > 0 ? (
         <View
           style={[
@@ -77,12 +96,18 @@ export function EnteteEcranSimulation({ titre, domaine }: ProprietesEnteteEcranS
             </View>
           </View>
           <Pressable
-            onPress={() => router.replace('/(tabs)/profil' as Href)}
+            hitSlop={8}
+            onPress={() => definirMenuParametresOuvert(true)}
             style={[
               styles.boutonProfil,
+              STYLE_BOUTON_CLIQUABLE_WEB,
               { backgroundColor: themeActif.panel, borderColor: themeActif.border },
             ]}>
-            <MaterialCommunityIcons color={themeActif.ink} name="account-circle-outline" size={20} />
+            <View pointerEvents="none" style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
+              <View style={[styles.menuIconBar, { backgroundColor: themeActif.ink }]} />
+              <View style={[styles.menuIconBar, { backgroundColor: themeActif.ink }]} />
+              <View style={[styles.menuIconBar, { backgroundColor: themeActif.ink }]} />
+            </View>
           </Pressable>
         </View>
       </View>
@@ -144,7 +169,23 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     height: 38,
     justifyContent: 'center',
+    position: 'relative',
     width: 38,
+  },
+  menuIconWrapper: {
+    alignItems: 'center',
+    height: 24,
+    justifyContent: 'center',
+    left: 7,
+    position: 'absolute',
+    top: 7,
+    width: 24,
+  },
+  menuIconBar: {
+    borderRadius: 999,
+    height: 2,
+    marginVertical: 2,
+    width: 18,
   },
   titre: {
     fontSize: 30,
