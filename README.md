@@ -1,107 +1,128 @@
 # Evidex
 
-Evidex is an interactive learning application built with **Expo**, **React Native** and **TypeScript**. It helps students explore mathematics, physics and Java programming through short lessons, visual simulations, quizzes and local progress tracking.
+Evidex est une application d'apprentissage interactive construite avec **Expo**, **React Native** et **TypeScript**. Elle aide les étudiants à explorer les mathématiques, la physique et la programmation Java avec des cours courts, des simulations visuelles, des quiz et un suivi de progression local.
 
-![Expo 54](https://img.shields.io/badge/Expo-54-000020?style=for-the-badge&logo=expo)
-![React Native 0.81](https://img.shields.io/badge/React%20Native-0.81-61DAFB?style=for-the-badge&logo=react)
-![React 19](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)
-![TypeScript 5.9](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript)
+<div style="text-align: center;">
 
-## Overview
+  <img src="https://img.shields.io/badge/Expo-Framework-000020?style=for-the-badge&logo=expo&logoColor=white" alt="Expo Framework" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/Expo%20Router-Navigation-000020?style=for-the-badge&logo=expo&logoColor=white" alt="Expo Router Navigation" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/React%20Native-Mobile-61DAFB?style=for-the-badge&logo=react&logoColor=20232A" alt="React Native Mobile" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/React-UI-61DAFB?style=for-the-badge&logo=react&logoColor=20232A" alt="React UI" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/React%20Navigation-Tabs-6B52AE?style=for-the-badge&logo=react&logoColor=white" alt="React Navigation Tabs" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/TypeScript-Language-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Language" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/JavaScript-Runtime%20Support-F7DF1E?style=for-the-badge&logo=javascript&logoColor=20232A" alt="JavaScript Runtime Support" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/Java-Course%20Content-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java Course Content" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/Node.js-Tooling-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js Tooling" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/npm-Package%20Manager-CB3837?style=for-the-badge&logo=npm&logoColor=white" alt="npm Package Manager" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/SQLite-Native%20Storage-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite Native Storage" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/IndexedDB-Web%20Storage-4A5568?style=for-the-badge&logo=databricks&logoColor=white" alt="IndexedDB Web Storage" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/KaTeX-Math%20Rendering-4A90E2?style=for-the-badge&logo=katex&logoColor=white" alt="KaTeX Math Rendering" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/SVG-Visualisations-FFB13B?style=for-the-badge&logo=svg&logoColor=20232A" alt="SVG Visualisations" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/Android-Mobile%20Target-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android Mobile Target" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/iOS-Mobile%20Target-000000?style=for-the-badge&logo=apple&logoColor=white" alt="iOS Mobile Target" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/Web-Browser%20Target-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Web Browser Target" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/ESLint-Code%20Quality-4B32C3?style=for-the-badge&logo=eslint&logoColor=white" alt="ESLint Code Quality" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/Git-Version%20Control-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git Version Control" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Repository" style="margin: 4px;">
+  <img src="https://img.shields.io/badge/WebStorm-IDE-000000?style=for-the-badge&logo=webstorm&logoColor=white" alt="WebStorm IDE" style="margin: 4px;">
 
-Evidex turns abstract concepts into things students can inspect and manipulate. The app combines:
+</div>
 
-- guided course slides with examples and final quizzes;
-- interactive simulations for mathematics, physics and Java algorithms;
-- local user profiles with XP, levels, recent courses, achievements and settings;
-- a modular Expo Router structure that makes new sections and simulations easy to add.
+## Aperçu
 
-The project is currently a local-first educational app. It does not include a remote backend or account synchronization.
+Evidex transforme des concepts abstraits en éléments que l'étudiant peut observer et manipuler. L'application combine :
 
-## Features
+- des diapositives de cours guidées avec exemples et quiz final;
+- des simulations interactives pour les mathématiques, la physique et les algorithmes Java;
+- des profils locaux avec XP, niveaux, cours récents, succès et paramètres;
+- une architecture modulaire avec Expo Router pour faciliter l'ajout de sections et de simulations.
 
-### Courses
+Le projet est actuellement une application éducative centrée sur le stockage local. Il ne contient pas de serveur distant, d'authentification distante ni de synchronisation de compte.
 
-- Mathematics: derivatives, integrals and limits.
-- Physics: kinematics, forces and energy.
-- Java: variables, data types, type casting, strings, operators, `Math`, conditionals, `switch`, loops, arrays, methods, classes and boolean logic.
-- Course progress is saved per active local user.
-- A course reaches 100% only after the final exercise is completed.
+## Fonctionnalités
+
+### Cours
+
+- Mathématiques : dérivées, intégrales et limites.
+- Physique : cinématique, forces et énergie.
+- Java : variables, types de données, transtypage, chaînes, opérateurs, `Math`, conditions, `switch`, boucles, tableaux, méthodes, classes et logique booléenne.
+- La progression des cours est sauvegardée pour l'utilisateur local actif.
+- Un cours atteint 100 % seulement lorsque l'exercice final est complété.
 
 ### Simulations
 
-Available simulations:
+Simulations disponibles :
 
-- Mathematics: derivatives, integrals, Taylor series, limits, Fourier series, slope fields and numeric series.
-- Physics: gravity, pendulum, projectile motion, Hooke's law spring, circular motion, magnetic fields, electric fields, optics/refraction, orbital mechanics and friction.
-- Java: bubble sort, selection sort, insertion sort, merge sort, quicksort and `ArrayList`.
+- Mathématiques : dérivées, intégrales, série de Taylor, limites, Fourier, champ de pentes et séries numériques.
+- Physique : gravité, pendule, mouvement projectile, ressort et loi de Hooke, mouvement circulaire, champs magnétiques, champs électriques, optique et réfraction, mécanique orbitale et frottement.
+- Java : tri à bulles, tri par sélection, tri par insertion, tri fusion, tri rapide et `ArrayList`.
 
-The catalog also contains placeholder or locked entries for future work, including vector fields, elastic collisions and several Java data-structure or language-feature simulations.
+Le catalogue contient aussi des entrées verrouillées ou en préparation, notamment le champ vectoriel, les collisions élastiques et plusieurs simulations Java sur les structures de données ou les notions avancées du langage.
 
-### Profile And Progression
+### Profil et progression
 
-- Multiple local users by display name.
-- XP and level progression.
-- Recent, active and completed courses.
-- Achievement progress for courses, flashcards and simulation usage.
-- Local settings for dark mode, language, notifications and the developer FPS counter.
-- Flashcard storage by topic.
+- Plusieurs utilisateurs locaux par nom d'affichage.
+- Progression par XP et niveaux.
+- Cours récents, cours actifs et cours terminés.
+- Succès liés aux cours, aux cartes mémoire et à l'utilisation des simulations.
+- Paramètres locaux pour le mode sombre, la langue, les notifications et le compteur de FPS de développement.
+- Stockage de cartes mémoire par sujet.
 
-## Tech Stack
+## Technologies
 
-- **Expo 54** with **Expo Router 6** for routing and app entry.
-- **React Native 0.81**, **React 19** and **React Native Web** for mobile/web UI.
-- **TypeScript 5.9** with strict mode enabled.
-- **React Native SVG** and **KaTeX** for diagrams and mathematical notation.
-- **Expo SQLite** for native key-value persistence.
-- **IndexedDB** for web key-value persistence.
-- **ESLint** with Expo's flat config.
+- **Expo 54** avec **Expo Router 6** pour le routage et le point d'entrée de l'application.
+- **React Native 0.81**, **React 19** et **React Native Web** pour l'interface mobile et web.
+- **TypeScript 5.9** avec le mode strict activé.
+- **React Native SVG** et **KaTeX** pour les schémas et la notation mathématique.
+- **Expo SQLite** pour la persistance clé-valeur sur plateformes natives.
+- **IndexedDB** pour la persistance clé-valeur sur le web.
+- **ESLint** avec la configuration Expo.
 
-## Requirements
+## Prérequis
 
-- Node.js 20 or newer is recommended.
+- Node.js 20 ou plus récent est recommandé.
 - npm.
 - Git.
-- One of the following runtime targets:
-  - Expo Go or a development build for physical devices;
-  - Android Studio for Android emulator;
-  - Xcode for iOS simulator on macOS;
-  - a modern browser for the web build.
+- Une des cibles d'exécution suivantes :
+  - Expo Go ou une version de développement sur appareil physique;
+  - Android Studio pour l'émulateur Android;
+  - Xcode pour le simulateur iOS sur macOS;
+  - un navigateur moderne pour la version web.
 
-## Getting Started
+## Installation
 
-Clone the repository:
+Cloner le dépôt :
 
 ```bash
 git clone https://github.com/Veng143/Evidex.git
 cd Evidex
 ```
 
-Install dependencies:
+Installer les dépendances :
 
 ```bash
 npm install
 ```
 
-Start Expo on the local network:
+Démarrer Expo sur le réseau local :
 
 ```bash
 npm start
 ```
 
-Start Expo without forcing LAN hosting:
+Démarrer Expo avec le comportement d'hébergement par défaut :
 
 ```bash
 npm run startlocal
 ```
 
-Start Expo with a tunnel:
+Démarrer Expo avec un tunnel :
 
 ```bash
 npm run start:tunnel
 ```
 
-Run a specific target:
+Lancer une cible précise :
 
 ```bash
 npm run android
@@ -111,78 +132,78 @@ npm run web
 
 ## Scripts
 
-| Command | Description |
+| Commande | Description |
 | --- | --- |
-| `npm start` | Starts Expo with cache cleared and LAN hosting. |
-| `npm run startlocal` | Starts Expo with cache cleared using Expo's default host behavior. |
-| `npm run start:tunnel` | Starts Expo with cache cleared through a tunnel. |
-| `npm run android` | Opens the project on Android through Expo. |
-| `npm run ios` | Opens the project on iOS through Expo. |
-| `npm run web` | Starts the web target. |
-| `npm run lint` | Runs Expo ESLint. |
-| `npm run reinitialiser-projet` | Runs the local reset utility in `scripts/reinitialiser-projet.js`. |
+| `npm start` | Démarre Expo avec le cache vidé et l'hébergement sur le réseau local. |
+| `npm run startlocal` | Démarre Expo avec le cache vidé et le comportement d'hébergement par défaut. |
+| `npm run start:tunnel` | Démarre Expo avec le cache vidé à travers un tunnel. |
+| `npm run android` | Ouvre le projet sur Android avec Expo. |
+| `npm run ios` | Ouvre le projet sur iOS avec Expo. |
+| `npm run web` | Démarre la cible web. |
+| `npm run lint` | Lance ESLint avec Expo. |
+| `npm run reinitialiser-projet` | Lance l'utilitaire local `scripts/reinitialiser-projet.js`. |
 
-## Quality Checks
+## Vérification
 
-Run linting:
+Lancer l'analyse du code :
 
 ```bash
 npm run lint
 ```
 
-Run a TypeScript type check:
+Lancer la vérification TypeScript :
 
 ```bash
 npx tsc --noEmit
 ```
 
-There is currently no automated test script in `package.json`.
+Il n'y a actuellement aucun script de tests automatisés dans `package.json`.
 
-## Project Structure
+## Structure du projet
 
 ```text
-app/                       Expo Router routes and screens
-assets/                    Images, icons and static assets
-components/                Shared UI components
-components/accueil/        Home screen panels and header
-components/cours/          Course cards
-components/profil/         Profile and achievement panels
-constantes/                Shared theme constants
-data/                      Course, slide and quiz data
-db/                        Local persistence and user progress logic
-features/cours/            Course reading screen
-features/sections/         Section screen helpers
-features/simulations/      Simulation catalog, screens and shared simulation UI
-hooks/                     Theme and color-scheme hooks
-scripts/                   Utility scripts
+app/                       Routes Expo Router et écrans
+assets/                    Images, icônes et ressources statiques
+components/                Composants d'interface partagés
+components/accueil/        Panneaux et barre supérieure de l'accueil
+components/cours/          Cartes de cours
+components/profil/         Panneaux de profil et de succès
+constantes/                Constantes de thème partagées
+data/                      Données des cours, diapositives et quiz
+db/                        Persistance locale et logique de progression
+features/cours/            Écran de lecture des cours
+features/sections/         Aides pour les écrans de section
+features/simulations/      Catalogue, écrans et interface partagée des simulations
+hooks/                     Fonctions React de thème et de schéma de couleur
+scripts/                   Scripts utilitaires
 ```
 
-## Persistence Model
+## Modèle de persistance
 
-The app stores all user data locally under one application data object. Native platforms use `expo-sqlite`; the web implementation uses IndexedDB. The shared data layer in `db/donnees-principales.tsx` manages users, settings, course progress, flashcards, achievements and XP.
+L'application stocke toutes les données utilisateur localement dans un seul objet de données applicatives. Les plateformes natives utilisent `expo-sqlite`; la version web utilise IndexedDB. La couche partagée dans `db/donnees-principales.tsx` gère les utilisateurs, les paramètres, la progression des cours, les cartes mémoire, les succès et l'XP.
 
-This persistence model is local to the device/browser. Data is not synchronized across devices.
+Ce modèle de persistance reste local à l'appareil ou au navigateur. Les données ne sont pas synchronisées entre plusieurs appareils.
 
-## Current Limitations
+## Limites Actuelles
 
-- Some catalog entries are placeholders or locked rather than complete simulations.
-- The app is local-first and has no remote authentication or cloud backup.
-- Automated tests have not been added yet.
-- The UI and content are mostly French, while some older helper text and code identifiers remain mixed between French and English.
+- Certaines entrées du catalogue sont des simulations verrouillées ou en préparation.
+- L'application fonctionne avec des données locales et ne possède pas d'authentification distante ni de sauvegarde infonuagique.
+- Les tests automatisés ne sont pas encore ajoutés.
+- L'interface et le contenu sont principalement en français, mais certains identifiants techniques restent en anglais dans le code.
 
-## Roadmap
+## Feuille De Route
 
-- Complete the remaining locked and placeholder simulations.
-- Add automated tests for persistence, quiz completion, XP, achievements and simulation math.
-- Improve accessibility and responsive polish across small screens.
-- Add a stronger persistence strategy if the project evolves toward multi-device use.
-- Consider a teacher/classroom mode for assigning lessons and reviewing progress.
+- Compléter les simulations verrouillées et les entrées en préparation.
+- Ajouter des tests automatisés pour la persistance, les quiz, l'XP, les succès et les calculs des simulations.
+- Améliorer l'accessibilité et l'adaptation aux petits écrans.
+- Renforcer la stratégie de persistance si le projet évolue vers une utilisation sur plusieurs appareils.
+- Étudier un mode enseignant pour assigner des cours et consulter la progression.
 
-## Contributors
+## Contributeurs
 
 - Tony Khabbaz
 - Aris Hadjeb
 
-## License
+## Licence
 
-No license file is currently included in this repository. Add one before distributing or accepting external contributions.
+Aucun fichier de licence n'est actuellement inclus dans ce dépôt. Il faudra en ajouter un avant une distribution publique ou l'acceptation de contributions externes.
