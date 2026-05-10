@@ -1,4 +1,4 @@
-# Evidex
+# Evidexe
 
 Evidex est une application d'apprentissage interactive construite avec **Expo**, **React Native** et **TypeScript**. Elle aide les étudiants à explorer les mathématiques, la physique et la programmation Java avec des cours courts, des simulations visuelles, des quiz et un suivi de progression local.
 
