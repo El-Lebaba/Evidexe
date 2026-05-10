@@ -1,24 +1,29 @@
 const nomBaseIndexedDb = 'evidex_app_database';
 const versionBaseIndexedDb = 1;
-const nomStore = 'kv';
+const nomMagasin = 'kv';
 
 let baseIndexedDb: Promise<IDBDatabase> | null = null;
+const stockageMemoireServeur = new Map<string, string>();
+
+function indexedDbDisponible() {
+  return typeof globalThis.indexedDB !== 'undefined';
+}
 
 function obtenirBaseIndexedDb() {
   if (!baseIndexedDb) {
-    baseIndexedDb = new Promise((resolve, reject) => {
-      const request = indexedDB.open(nomBaseIndexedDb, versionBaseIndexedDb);
+    baseIndexedDb = new Promise((resoudre, rejeter) => {
+      const requete = globalThis.indexedDB.open(nomBaseIndexedDb, versionBaseIndexedDb);
 
-      request.onupgradeneeded = () => {
-        const db = request.result;
+      requete.onupgradeneeded = () => {
+        const base = requete.result;
 
-        if (!db.objectStoreNames.contains(nomStore)) {
-          db.createObjectStore(nomStore);
+        if (!base.objectStoreNames.contains(nomMagasin)) {
+          base.createObjectStore(nomMagasin);
         }
       };
 
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
+      requete.onsuccess = () => resoudre(requete.result);
+      requete.onerror = () => rejeter(requete.error);
     });
   }
 
@@ -27,26 +32,35 @@ function obtenirBaseIndexedDb() {
 
 async function transactionIndexedDb<T>(
   mode: IDBTransactionMode,
-  action: (store: IDBObjectStore) => IDBRequest<T>,
+  operation: (magasin: IDBObjectStore) => IDBRequest<T>,
 ) {
-  const db = await obtenirBaseIndexedDb();
+  const base = await obtenirBaseIndexedDb();
 
-  return new Promise<T>((resolve, reject) => {
-    const transaction = db.transaction(nomStore, mode);
-    const store = transaction.objectStore(nomStore);
-    const request = action(store);
+  return new Promise<T>((resoudre, rejeter) => {
+    const transaction = base.transaction(nomMagasin, mode);
+    const magasin = transaction.objectStore(nomMagasin);
+    const requete = operation(magasin);
 
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-    transaction.onerror = () => reject(transaction.error);
+    requete.onsuccess = () => resoudre(requete.result);
+    requete.onerror = () => rejeter(requete.error);
+    transaction.onerror = () => rejeter(transaction.error);
   });
 }
 
-export async function lireValeurStockee(key: string) {
-  const value = await transactionIndexedDb<unknown>('readonly', (store) => store.get(key));
-  return typeof value === 'string' ? value : null;
+export async function lireValeurStockee(cle: string) {
+  if (!indexedDbDisponible()) {
+    return stockageMemoireServeur.get(cle) ?? null;
+  }
+
+  const valeur = await transactionIndexedDb<unknown>('readonly', (magasin) => magasin.get(cle));
+  return typeof valeur === 'string' ? valeur : null;
 }
 
-export async function ecrireValeurStockee(key: string, value: string) {
-  await transactionIndexedDb<IDBValidKey>('readwrite', (store) => store.put(value, key));
+export async function ecrireValeurStockee(cle: string, valeur: string) {
+  if (!indexedDbDisponible()) {
+    stockageMemoireServeur.set(cle, valeur);
+    return;
+  }
+
+  await transactionIndexedDb<IDBValidKey>('readwrite', (magasin) => magasin.put(valeur, cle));
 }

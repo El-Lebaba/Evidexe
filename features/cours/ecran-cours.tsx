@@ -2,9 +2,11 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { Href, router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import PanneauParametres from '@/components/accueil/PanneauParametres';
+import type { ParametresApplication } from '@/components/accueil/PanneauParametres';
 import CarteCours from '@/components/cours/CarteCours';
 import { LogoEvidexe } from '@/components/logo-evidexe';
 import { TexteTheme } from '@/components/texte-theme';
@@ -16,10 +18,14 @@ import {
   ETIQUETTES_MATIERES,
   obtenirResumesCoursApprentissage,
 } from '@/data/cours';
+import { donneesLocales } from '@/db/donnees-principales';
 import { SymbolesMathematiquesFlottants } from '@/features/simulations/core/symboles-mathematiques-flottants';
 import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
 const SUBJECTS: MatiereCours[] = ['java', 'mathematiques', 'physique'];
+const STYLE_BOUTON_CLIQUABLE_WEB =
+  Platform.OS === 'web' ? ({ cursor: 'pointer', pointerEvents: 'auto', userSelect: 'none' } as any) : undefined;
+const STYLE_VISUEL_NON_CLIQUABLE_WEB = Platform.OS === 'web' ? ({ pointerEvents: 'none' } as any) : undefined;
 
 function isCourseSubject(value: string | undefined): value is MatiereCours {
   return Boolean(value && SUBJECTS.includes(value as MatiereCours));
@@ -28,14 +34,7 @@ function isCourseSubject(value: string | undefined): value is MatiereCours {
 const themeActif = {
   background: '#EAE3D2',
   border: '#243B53',
-  copper: '#BC8559',
-  ink: '#243B53',
-  muted: '#6E7F73',
-  panel: '#DDE4D5',
-  sage: '#B7C7B0',
   soft: '#F3F1E7',
-  blue: '#7EA6E0',
-  yellow: '#D8A94A',
 };
 
 export function EcranCours() {
@@ -46,6 +45,13 @@ export function EcranCours() {
   const initialSubject = isCourseSubject(params.subject) ? params.subject : 'java';
   const [activeSubject, setActiveSubject] = useState<MatiereCours>(initialSubject);
   const [courseSummaries, setCourseSummaries] = useState(obtenirResumesCoursApprentissage);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settings, setSettings] = useState<ParametresApplication>({
+    darkMode: false,
+    fpsCounterEnabled: true,
+    language: 'fr',
+    notifications: true,
+  });
   const subjectMotion = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -54,9 +60,24 @@ export function EcranCours() {
     }
   }, [params.subject]);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    void donneesLocales.init().then(() => {
+      if (isMounted) {
+        setSettings(donneesLocales.obtenirParametres());
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   useFocusEffect(
       useCallback(() => {
         setCourseSummaries(obtenirResumesCoursApprentissage());
+        setSettings(donneesLocales.obtenirParametres());
       }, [])
   );
 
@@ -94,6 +115,12 @@ export function EcranCours() {
 
   return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: themeApplication.background }]}>
+        <PanneauParametres
+          open={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+          settings={settings}
+          onSave={setSettings}
+        />
         <VueTheme lightColor={themeApplication.background} darkColor={themeApplication.background} style={styles.page}>
           <SymbolesMathematiquesFlottants
             showGlow={false}
@@ -103,22 +130,39 @@ export function EcranCours() {
             ]}
           />
           <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-            <Pressable
-              onPress={() => {
-                router.dismissAll();
-                router.push('/(tabs)/accueil' as Href);
-              }}
-              style={[
-                styles.backButton,
-                isDarkMode ? { backgroundColor: themeApplication.surface, borderColor: themeApplication.border } : null,
-              ]}>
-              <MaterialCommunityIcons color={isDarkMode ? themeApplication.text : themeActif.ink} name="arrow-left" size={18} />
-              <TexteTheme lightColor={isDarkMode ? themeApplication.text : themeActif.ink} style={styles.backButtonText}>
-                Retour
-              </TexteTheme>
-            </Pressable>
+            <View style={styles.topBar}>
+              <Pressable
+                onPress={() => {
+                  router.dismissAll();
+                  router.push('/(tabs)/accueil' as Href);
+                }}
+                style={[
+                  styles.backButton,
+                  { backgroundColor: themeApplication.soft, borderColor: themeApplication.border },
+                ]}>
+                <MaterialCommunityIcons color={themeApplication.text} name="arrow-left" size={18} />
+                <TexteTheme lightColor={themeApplication.text} darkColor={themeApplication.text} style={styles.backButtonText}>
+                  Retour
+                </TexteTheme>
+              </Pressable>
 
-            <TexteTheme lightColor={isDarkMode ? themeApplication.muted : themeActif.muted} style={styles.screenKicker}>
+              <Pressable
+                hitSlop={8}
+                onPress={() => setSettingsOpen(true)}
+                style={[
+                  styles.menuButton,
+                  STYLE_BOUTON_CLIQUABLE_WEB,
+                  { backgroundColor: themeApplication.soft, borderColor: themeApplication.border },
+                ]}>
+                <View style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
+                  <View style={[styles.menuIconBar, { backgroundColor: themeApplication.text }]} />
+                  <View style={[styles.menuIconBar, { backgroundColor: themeApplication.text }]} />
+                  <View style={[styles.menuIconBar, { backgroundColor: themeApplication.text }]} />
+                </View>
+              </Pressable>
+            </View>
+
+            <TexteTheme lightColor={themeApplication.muted} darkColor={themeApplication.muted} style={styles.screenKicker}>
               Cours / {ETIQUETTES_MATIERES[activeSubject]}
             </TexteTheme>
 
@@ -130,37 +174,40 @@ export function EcranCours() {
                 />
               </Pressable>
 
-              <TexteTheme lightColor={isDarkMode ? themeApplication.text : themeActif.ink} style={styles.title}>
+              <TexteTheme lightColor={themeApplication.text} darkColor={themeApplication.text} style={styles.title}>
                 Apprendre {ETIQUETTES_MATIERES[activeSubject]}
               </TexteTheme>
-              <TexteTheme lightColor={isDarkMode ? themeApplication.yellow : '#8f9b8e'} style={styles.titleAccent}>
+              <TexteTheme lightColor={themeApplication.yellow} darkColor={themeApplication.yellow} style={styles.titleAccent}>
                 visuellement.
               </TexteTheme>
-              <TexteTheme lightColor={isDarkMode ? themeApplication.muted : themeActif.muted} style={styles.subtitle}>
+              <TexteTheme lightColor={themeApplication.muted} darkColor={themeApplication.muted} style={styles.subtitle}>
                 Mini-cours interactifs avec exemples clairs, suivi de progression et questions rapides.
               </TexteTheme>
 
               <View style={styles.statsRow}>
                 <TexteTheme
-                  lightColor={isDarkMode ? themeApplication.text : themeActif.muted}
-                  style={[styles.statText, isDarkMode ? { backgroundColor: themeApplication.surface, borderColor: themeApplication.border } : null]}>
+                  lightColor={themeApplication.text}
+                  darkColor={themeApplication.text}
+                  style={[styles.statText, { backgroundColor: themeApplication.soft, borderColor: themeApplication.border }]}>
                   {courses.length} mini-cours
                 </TexteTheme>
                 <TexteTheme
-                  lightColor={isDarkMode ? themeApplication.text : themeActif.muted}
-                  style={[styles.statText, isDarkMode ? { backgroundColor: themeApplication.surface, borderColor: themeApplication.border } : null]}>
+                  lightColor={themeApplication.text}
+                  darkColor={themeApplication.text}
+                  style={[styles.statText, { backgroundColor: themeApplication.soft, borderColor: themeApplication.border }]}>
                   {totalSlides} diapos
                 </TexteTheme>
                 <TexteTheme
-                  lightColor={isDarkMode ? themeApplication.text : themeActif.muted}
-                  style={[styles.statText, isDarkMode ? { backgroundColor: themeApplication.surface, borderColor: themeApplication.border } : null]}>
+                  lightColor={themeApplication.text}
+                  darkColor={themeApplication.text}
+                  style={[styles.statText, { backgroundColor: themeApplication.soft, borderColor: themeApplication.border }]}>
                   {subjectProgress}% termine
                 </TexteTheme>
               </View>
             </Animated.View>
 
             <Animated.View style={[styles.courseSection, { opacity: subjectMotion, transform: [{ translateX: subjectTranslate }] }]}>
-              <TexteTheme lightColor={isDarkMode ? themeApplication.muted : themeActif.muted} style={styles.sectionLabel}>
+              <TexteTheme lightColor={themeApplication.muted} darkColor={themeApplication.muted} style={styles.sectionLabel}>
                 Mini-cours
               </TexteTheme>
 
@@ -181,6 +228,7 @@ export function EcranCours() {
                           index={index}
                           key={CoursLocal.id}
                           subject={activeSubject}
+                          themeApplication={themeApplication}
                       />
                   );
                 })}
@@ -197,7 +245,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   page: {
-    backgroundColor: themeActif.background,
     flex: 1,
     overflow: 'hidden',
   },
@@ -213,8 +260,12 @@ const styles = StyleSheet.create({
     paddingBottom: 42,
     width: '100%',
   },
+  topBar: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   screenKicker: {
-    color: themeActif.muted,
     fontSize: 12,
     fontWeight: '900',
     letterSpacing: 0.8,
@@ -234,10 +285,36 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
   },
   backButtonText: {
-    color: themeActif.ink,
     fontSize: 13,
     fontWeight: '900',
     lineHeight: 18,
+  },
+  menuButton: {
+    alignItems: 'center',
+    backgroundColor: themeActif.soft,
+    borderColor: themeActif.border,
+    borderRadius: 999,
+    borderWidth: 1,
+    height: 42,
+    justifyContent: 'center',
+    position: 'relative',
+    width: 42,
+    zIndex: 5,
+  },
+  menuIconWrapper: {
+    alignItems: 'center',
+    height: 24,
+    justifyContent: 'center',
+    left: 9,
+    position: 'absolute',
+    top: 9,
+    width: 24,
+  },
+  menuIconBar: {
+    borderRadius: 999,
+    height: 2,
+    marginVertical: 2,
+    width: 18,
   },
   hero: {
     alignItems: 'center',
@@ -256,21 +333,18 @@ const styles = StyleSheet.create({
     width: 160,
   },
   title: {
-    color: themeActif.ink,
     fontSize: 44,
     fontWeight: '900',
     lineHeight: 48,
     textAlign: 'center',
   },
   titleAccent: {
-    color: themeActif.yellow,
     fontSize: 44,
     fontWeight: '900',
     lineHeight: 48,
     textAlign: 'center',
   },
   subtitle: {
-    color: themeActif.muted,
     fontSize: 16,
     lineHeight: 24,
     maxWidth: 760,
@@ -288,7 +362,6 @@ const styles = StyleSheet.create({
     borderColor: themeActif.border,
     borderRadius: 999,
     borderWidth: 1,
-    color: themeActif.ink,
     fontSize: 13,
     fontWeight: '800',
     lineHeight: 18,
@@ -300,7 +373,6 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   sectionLabel: {
-    color: themeActif.muted,
     fontSize: 13,
     fontWeight: '900',
     letterSpacing: 0.8,

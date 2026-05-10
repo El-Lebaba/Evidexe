@@ -34,7 +34,7 @@ export default function PanneauCompletionsRecentes({
   darkMode = false,
 }: ProprietesPanneauCompletionsRecentes) {
   const themeActif = darkMode ? darkColors : lightColors;
-  const completedCourses = courses.filter((course) => course.completed);
+  const recentCourses = courses.filter((course) => course.progress > 0);
 
   function openCourse(course: CoursLocal) {
     if (!course.subject || !course.courseId) {
@@ -50,25 +50,31 @@ export default function PanneauCompletionsRecentes({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: themeActif.text }]}>Completions recentes</Text>
+        <Text style={[styles.title, { color: themeActif.text }]}>Cours recents</Text>
         <View style={[styles.countBadge, { borderColor: `${themeActif.border}30` }]}>
-          <MaterialIcons name="done-all" size={17} color={themeActif.green} />
+          <MaterialIcons name="trending-up" size={17} color={themeActif.green} />
           <Text style={[styles.countText, { color: themeActif.muted }]}>
-            {completedCourses.length}
+            {recentCourses.length}
           </Text>
         </View>
       </View>
 
       <View style={styles.list}>
-        {completedCourses.length === 0 ? (
+        {recentCourses.length === 0 ? (
           <View style={styles.emptyBox}>
-            <MaterialIcons name="workspace-premium" size={34} color={themeActif.muted} />
+            <MaterialIcons name="school" size={34} color={themeActif.muted} />
             <Text style={[styles.emptyText, { color: themeActif.muted }]}>
-              Termine un cours pour le retrouver ici.
+              Commence un cours pour suivre ta progression ici.
             </Text>
           </View>
         ) : (
-          completedCourses.slice(0, 8).map((course) => (
+          recentCourses.slice(0, 8).map((course) => {
+            const progress = Math.max(0, Math.min(100, Math.round(course.progress)));
+            const statusColor = course.completed ? themeActif.green : themeActif.yellow;
+            const statusIcon = course.completed ? 'check-circle' : 'play-circle-filled';
+            const statusText = course.completed ? 'termine' : 'en cours';
+
+            return (
             <Pressable
               key={course.id}
               onPress={() => openCourse(course)}
@@ -80,18 +86,22 @@ export default function PanneauCompletionsRecentes({
                 },
                 pressed ? styles.pressed : null,
               ]}>
-              <View style={[styles.iconWrap, { backgroundColor: `${themeActif.green}35` }]}>
-                <MaterialIcons name="check-circle" size={21} color={themeActif.green} />
+              <View style={[styles.iconWrap, { backgroundColor: `${statusColor}35` }]}>
+                <MaterialIcons name={statusIcon} size={21} color={statusColor} />
               </View>
               <View style={styles.completionText}>
                 <Text style={[styles.courseName, { color: themeActif.text }]}>{course.name}</Text>
                 <Text style={[styles.courseMeta, { color: themeActif.muted }]}>
-                  100% termine
+                  {progress}% {statusText}
                 </Text>
+                <View style={[styles.progressTrack, { backgroundColor: `${themeActif.border}16` }]}>
+                  <View style={[styles.progressFill, { backgroundColor: statusColor, width: `${progress}%` }]} />
+                </View>
               </View>
               <MaterialIcons name="chevron-right" size={22} color={themeActif.muted} />
             </Pressable>
-          ))
+          );
+        })
         )}
       </View>
     </View>
@@ -175,5 +185,16 @@ const styles = StyleSheet.create({
     color: lightColors.muted,
     fontSize: 12,
     fontWeight: '800',
+  },
+  progressTrack: {
+    borderRadius: 999,
+    height: 6,
+    marginTop: 4,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  progressFill: {
+    borderRadius: 999,
+    height: '100%',
   },
 });

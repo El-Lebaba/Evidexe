@@ -18,19 +18,19 @@ function obtenirBaseSqlite() {
   return baseSqlite;
 }
 
-export async function lireValeurStockee(key: string) {
-  const row = obtenirBaseSqlite().getFirstSync<{ value: string }>(
+export async function lireValeurStockee(cle: string) {
+  const ligne = obtenirBaseSqlite().getFirstSync<{ value: string }>(
     'SELECT value FROM kv WHERE key = ?',
-    key,
+    cle,
   );
 
-  return row?.value ?? null;
+  return ligne?.value ?? null;
 }
 
-export async function ecrireValeurStockee(key: string, value: string) {
+export async function ecrireValeurStockee(cle: string, valeur: string) {
   obtenirBaseSqlite().runSync(
     'INSERT OR REPLACE INTO kv (key, value) VALUES (?, ?)',
-    key,
-    value,
+    cle,
+    valeur,
   );
 }

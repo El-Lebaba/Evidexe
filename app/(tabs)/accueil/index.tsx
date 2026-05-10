@@ -211,7 +211,7 @@ export default function EcranAccueil() {
     },
     {
       key: 'physique',
-      title: 'Physiques',
+      title: 'Physique',
       subtitle: 'Mouvement, forces, energie',
       accent: palette.blue,
       icon: 'science',
