@@ -11,7 +11,7 @@ export type EntreeSimulation = {
   title: string;
 };
 
-function creerEntreesbientôt(
+function creerEntreesBientot(
   section: SectionSimulation,
   prefixe: string,
   debut: number,
@@ -114,7 +114,7 @@ export const CATALOGUE_SIMULATIONS: Record<SectionSimulation, EntreeSimulation[]
       tags: ['statistiques', 'probabilites', 'distribution'],
       title: 'Loi de Student',
     },
-    ...creerEntreesbientôt('mathematiques', 'mathematiques', 11, 10),
+    ...creerEntreesBientot('mathematiques', 'mathematiques', 11, 10),
   ],
   physique: [
     {
@@ -206,7 +206,7 @@ export const CATALOGUE_SIMULATIONS: Record<SectionSimulation, EntreeSimulation[]
       tags: ['mecanique', 'energie'],
       title: 'Collisions élastiques',
     },
-    ...creerEntreesbientôt('physique', 'physique', 12, 9),
+    ...creerEntreesBientot('physique', 'physique', 12, 9),
   ],
   'programmation-java': [
     {

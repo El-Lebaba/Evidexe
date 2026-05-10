@@ -289,7 +289,6 @@ function GraphiqueChampsElectriques({
                 fill={themeActif.surface}
                 fontSize="18"
                 fontWeight="900"
-                pointerEvents="none"
                 textAnchor="middle"
                 x={charge.x}
                 y={charge.y + 6}>
@@ -331,7 +330,7 @@ function GraphiqueChampsElectriques({
         ) : null}
       </Svg>
 
-      <View pointerEvents="none" style={styles.legendeDansGraphique}>
+      <View style={[styles.legendeDansGraphique, styles.pointerEventsNone]}>
         <View style={styles.legendRow}>
           <View style={[styles.legendDot, { backgroundColor: themeActif.chargePositive }]} />
           <TexteTheme lightColor={themeActif.mutedInk} style={styles.legendText}>
@@ -610,6 +609,9 @@ function creerStyles() {
     paddingHorizontal: 10,
     paddingVertical: 7,
     position: 'absolute',
+  },
+  pointerEventsNone: {
+    pointerEvents: 'none' as any,
   },
   panel: {
     backgroundColor: themeActif.panel,

@@ -5,7 +5,6 @@ import {
   GestureResponderEvent,
   PanResponder,
   Platform,
-  Pressable,
   StyleSheet,
   Text,
   TextInput,

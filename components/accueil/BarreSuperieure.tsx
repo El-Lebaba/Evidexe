@@ -65,7 +65,7 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
     >
       <View style={styles.content}>
         <Pressable hitSlop={8} onPress={openSettings} style={[styles.utilityButton, STYLE_BOUTON_CLIQUABLE_WEB]}>
-          <View pointerEvents="none" style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
+          <View style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
             <View style={[styles.menuIconBar, { backgroundColor: Couleurs.text }]} />
             <View style={[styles.menuIconBar, { backgroundColor: Couleurs.text }]} />
             <View style={[styles.menuIconBar, { backgroundColor: Couleurs.text }]} />

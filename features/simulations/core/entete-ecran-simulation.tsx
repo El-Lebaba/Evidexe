@@ -103,7 +103,7 @@ export function EnteteEcranSimulation({ titre, domaine }: ProprietesEnteteEcranS
               STYLE_BOUTON_CLIQUABLE_WEB,
               { backgroundColor: themeActif.panel, borderColor: themeActif.border },
             ]}>
-            <View pointerEvents="none" style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
+            <View style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
               <View style={[styles.menuIconBar, { backgroundColor: themeActif.ink }]} />
               <View style={[styles.menuIconBar, { backgroundColor: themeActif.ink }]} />
               <View style={[styles.menuIconBar, { backgroundColor: themeActif.ink }]} />

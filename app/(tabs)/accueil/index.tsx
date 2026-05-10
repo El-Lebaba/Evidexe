@@ -750,7 +750,7 @@ export default function EcranAccueil() {
                 isCompact ? styles.menuButtonCompact : null,
                 isDarkMode ? { backgroundColor: themeApplication.panel, borderColor: themeApplication.border } : null,
               ]}>
-              <View pointerEvents="none" style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
+              <View style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
                 <View style={[styles.menuIconBar, { backgroundColor: isDarkMode ? themeApplication.ink : palette.ink }]} />
                 <View style={[styles.menuIconBar, { backgroundColor: isDarkMode ? themeApplication.ink : palette.ink }]} />
                 <View style={[styles.menuIconBar, { backgroundColor: isDarkMode ? themeApplication.ink : palette.ink }]} />

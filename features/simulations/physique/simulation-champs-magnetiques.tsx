@@ -391,7 +391,7 @@ function GraphiqueChampsMagnetiques({
         ) : null}
       </Svg>
 
-      <View pointerEvents="none" style={styles.legendeDansGraphique}>
+      <View style={[styles.legendeDansGraphique, styles.pointerEventsNone]}>
         <View style={styles.legendRow}>
           <View style={[styles.legendLine, { backgroundColor: themeActif.courantSortant }]} />
           <TexteTheme lightColor={themeActif.mutedInk} style={styles.legendText}>
@@ -645,6 +645,9 @@ function creerStyles() {
     paddingHorizontal: 10,
     paddingVertical: 7,
     position: 'absolute',
+  },
+  pointerEventsNone: {
+    pointerEvents: 'none' as any,
   },
   panel: {
     backgroundColor: themeActif.panel,

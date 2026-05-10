@@ -480,7 +480,7 @@ function EcranSectionTableauBord({
                     borderColor: paletteSimulation.carteBordure,
                   },
                 ]}>
-                <View pointerEvents="none" style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
+                <View style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
                   <View style={[styles.menuIconBar, { backgroundColor: paletteSimulation.encre }]} />
                   <View style={[styles.menuIconBar, { backgroundColor: paletteSimulation.encre }]} />
                   <View style={[styles.menuIconBar, { backgroundColor: paletteSimulation.encre }]} />

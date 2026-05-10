@@ -89,7 +89,7 @@ export default function PanneauParametres({
 
   return (
     <Modal transparent visible={open} animationType="none">
-      <View style={styles.overlay} pointerEvents="box-none">
+      <View style={[styles.overlay, styles.pointerEventsBoxNone]}>
         <Pressable style={styles.closeZone} onPress={onClose} />
 
         <Animated.View
@@ -239,6 +239,9 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     flexDirection: 'row',
+  },
+  pointerEventsBoxNone: {
+    pointerEvents: 'box-none' as any,
   },
   closeZone: {
     bottom: 0,

@@ -524,7 +524,7 @@ function QuizConfetti() {
   }, [particles]);
 
   return (
-    <View pointerEvents="none" style={styles.confettiLayer}>
+    <View style={[styles.confettiLayer, styles.pointerEventsNone]}>
       {particles.map((particle, index) => (
         <Animated.View
           key={`confetti-${index}`}
@@ -871,6 +871,9 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     zIndex: 4,
+  },
+  pointerEventsNone: {
+    pointerEvents: 'none' as any,
   },
   confettiPiece: {
     borderRadius: 2,
