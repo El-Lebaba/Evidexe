@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import PanneauParametres from '@/components/accueil/PanneauParametres';
+import type { ParametresApplication } from '@/components/accueil/PanneauParametres';
 import { TexteTheme } from '@/components/texte-theme';
 import { VueTheme } from '@/components/vue-theme';
 import { obtenirThemeApplication } from '@/constantes/theme';
@@ -133,6 +135,13 @@ export default function EcranLectureCours() {
   const [wrongAnswers, setWrongAnswers] = useState<number[]>([]);
   const [quizCompleted, setQuizCompleted] = useState(savedProgressDetails.exerciseCompleted);
   const [confettiRound, setConfettiRound] = useState(0);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settings, setSettings] = useState<ParametresApplication>({
+    darkMode: false,
+    fpsCounterEnabled: true,
+    language: 'fr',
+    notifications: true,
+  });
   const quiz = useMemo(() => {
     if (!subject || !courseId) {
       return undefined;
@@ -155,6 +164,20 @@ export default function EcranLectureCours() {
     setWrongAnswers([]);
     setQuizCompleted(subject && courseId ? obtenirDetailsProgressionCours(subject, courseId).exerciseCompleted : false);
   }, [courseId, initialSlide, subject]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    void donneesLocales.init().then(() => {
+      if (isMounted) {
+        setSettings(donneesLocales.obtenirParametres());
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Each opened page is persisted immediately so the home/profile cards can show the same integer percentage.
   useEffect(() => {
@@ -270,6 +293,12 @@ export default function EcranLectureCours() {
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: themeDynamique.background }]}>
       <VueTheme lightColor={themeDynamique.background} darkColor={themeDynamique.background} style={[styles.page, { backgroundColor: themeDynamique.background }]}>
+        <PanneauParametres
+          open={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+          settings={settings}
+          onSave={setSettings}
+        />
         <View style={styles.topBar}>
           <Pressable onPress={goBackToCourses} style={[styles.iconButton, { backgroundColor: themeDynamique.panel, borderColor: themeDynamique.border }]}>
             <MaterialCommunityIcons color={themeDynamique.ink} name="arrow-left" size={22} />
@@ -283,6 +312,22 @@ export default function EcranLectureCours() {
               {CoursLocal.title}
             </TexteTheme>
           </View>
+
+          <Pressable
+            accessibilityLabel="Menu du cours"
+            hitSlop={8}
+            onPress={() => setSettingsOpen(true)}
+            style={({ pressed }) => [
+              styles.menuButton,
+              { backgroundColor: themeDynamique.panel, borderColor: themeDynamique.border },
+              pressed ? styles.pressed : null,
+            ]}>
+            <View style={styles.menuIconWrapper}>
+              <View style={[styles.menuIconBar, { backgroundColor: themeDynamique.ink }]} />
+              <View style={[styles.menuIconBar, { backgroundColor: themeDynamique.ink }]} />
+              <View style={[styles.menuIconBar, { backgroundColor: themeDynamique.ink }]} />
+            </View>
+          </Pressable>
         </View>
 
         <View style={styles.progressWrap}>
@@ -578,6 +623,28 @@ const styles = StyleSheet.create({
   },
   topMeta: {
     flex: 1,
+  },
+  menuButton: {
+    alignItems: 'center',
+    backgroundColor: themeActif.panel,
+    borderColor: themeActif.border,
+    borderRadius: 14,
+    borderWidth: 1,
+    height: 46,
+    justifyContent: 'center',
+    width: 46,
+  },
+  menuIconWrapper: {
+    alignItems: 'center',
+    height: 24,
+    justifyContent: 'center',
+    width: 24,
+  },
+  menuIconBar: {
+    borderRadius: 999,
+    height: 2,
+    marginVertical: 2,
+    width: 18,
   },
   subjectText: {
     color: themeActif.muted,

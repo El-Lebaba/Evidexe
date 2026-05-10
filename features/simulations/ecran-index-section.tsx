@@ -85,6 +85,9 @@ const CONFIG_TABLEAU_BORD: Record<
       derivees: 'Derivees',
       comportement: 'Comportement',
       convergence: 'Convergence',
+      statistiques: 'Statistiques',
+      probabilites: 'Probabilites',
+      distribution: 'Distribution',
     },
     filters: [
       { label: 'Actifs', value: 'pret' },
@@ -97,6 +100,7 @@ const CONFIG_TABLEAU_BORD: Record<
       { label: 'Geometrie', value: 'geometrie' },
       { label: 'Vecteurs', value: 'vecteurs' },
       { label: 'Visualisation', value: 'visualisation' },
+      { label: 'Stats', value: 'statistiques' },
       { label: 'A venir', value: 'bientot' },
     ],
     subtitle: 'Explore tes simulations dans une interface plus claire, plus douce et pensee pour reviser efficacement.',

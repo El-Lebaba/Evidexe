@@ -133,7 +133,7 @@ export default function BarreSuperieure({ darkMode = false, onSettingsClick, use
                 ) : (
                   <MaterialIcons name="manage-accounts" size={18} color={Couleurs.text} />
                 )}
-                <Text style={[styles.menuText, { color: Couleurs.text }]}>Profile customization</Text>
+                <Text style={[styles.menuText, { color: Couleurs.text }]}>Personnaliser le profil</Text>
               </Pressable>
 
             </View>
