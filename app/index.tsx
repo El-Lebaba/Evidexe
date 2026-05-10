@@ -64,7 +64,6 @@ export default function IntroScreen() {
     };
   }, [opacity, scale]);
 
-  //animation entrer Ã©cran d'acceuil
   const handleStart = () => {
     if (isLeaving) {
       return;

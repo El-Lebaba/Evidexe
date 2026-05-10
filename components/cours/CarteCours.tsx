@@ -3,6 +3,7 @@ import { Href, router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { TexteTheme } from '@/components/texte-theme';
+import type { ThemeApplication } from '@/constantes/theme';
 import { DetailsProgressionCours, MatiereCours, CoursApprentissage, ETIQUETTES_MATIERES } from '@/data/cours';
 
 type ProprietesCarteCours = {
@@ -10,6 +11,7 @@ type ProprietesCarteCours = {
   progressDetails: DetailsProgressionCours;
   index: number;
   subject: MatiereCours;
+  themeApplication: ThemeApplication;
 };
 
 const themeActif = {
@@ -29,7 +31,7 @@ const subjectIcons: Record<MatiereCours, keyof typeof MaterialCommunityIcons.gly
   physique: 'atom',
 };
 
-export default function CarteCours({ CoursLocal, progressDetails, index, subject }: ProprietesCarteCours) {
+export default function CarteCours({ CoursLocal, progressDetails, index, subject, themeApplication }: ProprietesCarteCours) {
   const accent = accentColors[index % accentColors.length];
   // CoursLocal cards display saved tracking only; progress changes happen inside the reader/exercise flow.
   const hasStarted = progressDetails.progress > 0;
@@ -45,44 +47,51 @@ export default function CarteCours({ CoursLocal, progressDetails, index, subject
           onPress={() => router.replace(href)}
           style={({ pressed }) => [
               styles.card,
-            { borderTopColor: accent },
+            {
+              backgroundColor: themeApplication.card,
+              borderColor: themeApplication.border,
+              borderTopColor: accent,
+            },
             pressed ? styles.pressed : null,
           ]}>
         <View style={styles.cardTop}>
           <View style={[styles.iconBox, { backgroundColor: `${accent}18` }]}>
             <MaterialCommunityIcons color={accent} name={subjectIcons[subject]} size={27} />
           </View>
-          <View style={styles.numberBadge}>
-            <TexteTheme lightColor={themeActif.muted} style={styles.numberText}>
+          <View style={[styles.numberBadge, { backgroundColor: themeApplication.soft, borderColor: themeApplication.border }]}>
+            <TexteTheme lightColor={themeApplication.muted} darkColor={themeApplication.muted} style={styles.numberText}>
               {String(index + 1).padStart(2, '0')}
             </TexteTheme>
           </View>
         </View>
 
         <View style={styles.meta}>
-          <TexteTheme lightColor={themeActif.ink} style={styles.title}>
+          <TexteTheme lightColor={themeApplication.text} darkColor={themeApplication.text} style={styles.title}>
             {CoursLocal.title}
           </TexteTheme>
-          <TexteTheme lightColor={accent} style={styles.subjectLabel}>
+          <TexteTheme lightColor={accent} darkColor={accent} style={styles.subjectLabel}>
             {CoursLocal.subtitle || ETIQUETTES_MATIERES[subject]}
           </TexteTheme>
-          <TexteTheme lightColor={themeActif.muted} numberOfLines={2} style={styles.description}>
+          <TexteTheme lightColor={themeApplication.muted} darkColor={themeApplication.muted} numberOfLines={2} style={styles.description}>
             {CoursLocal.description}
           </TexteTheme>
         </View>
 
-        <View style={styles.cardFooter}>
+        <View style={[styles.cardFooter, { borderTopColor: `${themeApplication.border}24` }]}>
           <View style={styles.footerMeta}>
-            <TexteTheme lightColor={themeActif.muted} style={styles.slideText}>
+            <TexteTheme lightColor={themeApplication.muted} darkColor={themeApplication.muted} style={styles.slideText}>
               {CoursLocal.totalSlides} diapos
             </TexteTheme>
             {hasStarted ? (
-              <TexteTheme lightColor={themeActif.muted} style={styles.slideText}>
+              <TexteTheme lightColor={themeApplication.muted} darkColor={themeApplication.muted} style={styles.slideText}>
                 {`${progress}%`}
               </TexteTheme>
             ) : null}
             {hasStarted ? (
-              <TexteTheme lightColor={progressDetails.exerciseCompleted ? '#10A77A' : '#F59E0B'} style={styles.slideText}>
+              <TexteTheme
+                lightColor={progressDetails.exerciseCompleted ? themeApplication.green : themeApplication.yellow}
+                darkColor={progressDetails.exerciseCompleted ? themeApplication.green : themeApplication.yellow}
+                style={styles.slideText}>
                 {exerciseStatus}
               </TexteTheme>
             ) : null}
@@ -141,7 +150,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   numberText: {
-    color: themeActif.muted,
     fontSize: 13,
     fontWeight: '900',
     lineHeight: 16,
@@ -159,7 +167,6 @@ const styles = StyleSheet.create({
     gap: 7,
   },
   subjectLabel: {
-    color: themeActif.ink,
     fontSize: 11,
     fontWeight: '900',
     letterSpacing: 0.8,
@@ -167,13 +174,11 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   title: {
-    color: themeActif.ink,
     fontSize: 22,
     fontWeight: '900',
     lineHeight: 28,
   },
   description: {
-    color: themeActif.ink,
     fontSize: 15,
     lineHeight: 24,
   },
@@ -191,7 +196,6 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   slideText: {
-    color: themeActif.ink,
     fontSize: 12,
     fontWeight: '900',
     lineHeight: 16,

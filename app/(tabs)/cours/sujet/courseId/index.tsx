@@ -10,7 +10,8 @@ import { obtenirThemeApplication } from '@/constantes/theme';
 import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 import { RenduFormule } from '@/features/simulations/core/rendu-formule';
 import {
-  MatiereCours,
+  type MatiereCours,
+  type QuizCours,
   ETIQUETTES_MATIERES,
   trouverCours,
   obtenirProgressionCours,
@@ -27,60 +28,6 @@ function isCourseSubject(value: string): value is MatiereCours {
   return SUBJECTS.includes(value as MatiereCours);
 }
 
-const highlightedKeywords = [
-  'variable',
-  'variables',
-  'condition',
-  'conditions',
-  'methode',
-  'methodes',
-  'parametres',
-  'tableau',
-  'tableaux',
-  'index',
-  'classe',
-  'classes',
-  'objet',
-  'objets',
-  'constructeur',
-  'boucle',
-  'boucles',
-  'booleen',
-  'booleens',
-  'String',
-  'boolean',
-  'true',
-  'false',
-  'if',
-  'else',
-  'switch',
-  'case',
-  'default',
-  'break',
-  'for',
-  'while',
-  'return',
-  'final',
-  'new',
-  'derivee',
-  'derivees',
-  'integrale',
-  'integrales',
-  'limite',
-  'limites',
-  'fonction',
-  'fonctions',
-  'tangente',
-  'vitesse',
-  'acceleration',
-  'position',
-  'force',
-  'forces',
-  'energie',
-  'travail',
-  'conservation',
-];
-
 function normalizeText(value: string) {
   return value
     .replace(/â€”/g, '-')
@@ -94,14 +41,31 @@ function cleanCodeText(value: string) {
   return normalizeText(value).replace(/\*\*/g, '').replace(/`/g, '');
 }
 
+function estLigneFormuleAutonome(value: string) {
+  const line = value.trim();
+
+  if (!line) {
+    return false;
+  }
+
+  const containsMathSymbol = /[=≈∫√∪∩≡≤≥<>+\-*/^πμσλ]|x²|x³|f'|A\(|P\(|C\(|N\(|B\(/.test(line);
+  const containsSentenceSpacing = /[A-Za-zÀ-ÿ]{3,}\s+[A-Za-zÀ-ÿ]{2,}/.test(line);
+  const isNumberedInstruction = /^\d+\./.test(line);
+
+  return containsMathSymbol && !containsSentenceSpacing && !isNumberedInstruction;
+}
+
+function preserverEspaces(value: string) {
+  return value.replace(/\t/g, '    ').replace(/ /g, '\u00A0');
+}
+
 function renderHighlightedText(value: string) {
   const text = normalizeText(value);
   const markerPattern = /(`[^`]+`|\*\*[^*]+\*\*)/g;
-  const keywordPattern = new RegExp(`\\b(${highlightedKeywords.join('|')})\\b`, 'gi');
 
-  return text.split(markerPattern).flatMap((part, index) => {
+  return text.split(markerPattern).map((part, index) => {
     if (!part) {
-      return [];
+      return null;
     }
 
     const markedAsCode = part.startsWith('`') && part.endsWith('`');
@@ -117,23 +81,32 @@ function renderHighlightedText(value: string) {
       );
     }
 
-    return part.split(keywordPattern).map((piece, pieceIndex) => {
-      const isKeyword = highlightedKeywords.some((keyword) => keyword.toLowerCase() === piece.toLowerCase());
-
-      return isKeyword ? (
-        <Text key={`keyword-${index}-${pieceIndex}`} style={styles.keywordText}>
-          {piece}
-        </Text>
-      ) : (
-        piece
-      );
-    });
+    return part;
   });
+}
+
+function melangerQuiz(quiz: QuizCours): QuizCours {
+  const choices = quiz.choices.map((choice, index) => ({
+    choice,
+    isCorrect: index === quiz.answerIndex,
+  }));
+
+  for (let index = choices.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [choices[index], choices[randomIndex]] = [choices[randomIndex], choices[index]];
+  }
+
+  return {
+    ...quiz,
+    choices: choices.map((entry) => entry.choice),
+    answerIndex: choices.findIndex((entry) => entry.isCorrect),
+  };
 }
 
 export default function EcranLectureCours() {
   const schemaCouleur = useSchemaCouleur();
-  const themeDynamique = obtenirThemeApplication(schemaCouleur === 'dark');
+  const themeSombre = schemaCouleur === 'dark';
+  const themeDynamique = obtenirThemeApplication(themeSombre);
   const params = useLocalSearchParams<{ courseId?: string; subject?: string }>();
   const subject = params.subject && isCourseSubject(params.subject) ? params.subject : undefined;
   const courseId = params.courseId;
@@ -160,6 +133,13 @@ export default function EcranLectureCours() {
   const [wrongAnswers, setWrongAnswers] = useState<number[]>([]);
   const [quizCompleted, setQuizCompleted] = useState(savedProgressDetails.exerciseCompleted);
   const [confettiRound, setConfettiRound] = useState(0);
+  const quiz = useMemo(() => {
+    if (!subject || !courseId) {
+      return undefined;
+    }
+
+    return melangerQuiz(obtenirQuizCours(subject, courseId));
+  }, [courseId, subject]);
 
   useEffect(() => {
     setSlideIndex(initialSlide);
@@ -179,7 +159,7 @@ export default function EcranLectureCours() {
   // Each opened page is persisted immediately so the home/profile cards can show the same integer percentage.
   useEffect(() => {
     if (subject && courseId && CoursLocal) {
-      donneesLocales.saveCourseProgress(
+      donneesLocales.enregistrerProgressionCours(
         subject,
         courseId,
         slideIndex,
@@ -191,7 +171,7 @@ export default function EcranLectureCours() {
     }
   }, [CoursLocal, courseId, savedProgressDetails.exerciseCompleted, slideIndex, subject]);
 
-  if (!subject || !courseId || !CoursLocal) {
+  if (!subject || !courseId || !CoursLocal || !quiz) {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: themeDynamique.background }]}>
         <VueTheme lightColor={themeDynamique.background} darkColor={themeDynamique.background} style={styles.emptyPage}>
@@ -213,11 +193,28 @@ export default function EcranLectureCours() {
   const maxSlideIndex = CoursLocal.totalSlides - 1;
   const progress = savedProgressDetails.progress;
   const isLastSlide = slideIndex === maxSlideIndex;
-  const quiz = obtenirQuizCours(subject, courseId);
+  const quizActif = quiz;
   const canGoPrevious = slideIndex > 0;
   const canGoNext = slideIndex < maxSlideIndex || (isLastSlide && quizCompleted);
   const nextButtonLabel = isLastSlide ? 'Completer' : 'Suivant';
   const utiliseCarteFormule = subject === 'mathematiques' || subject === 'physique';
+  const themeFormule = themeSombre ? {
+    badge: '#111827',
+    border: themeDynamique.border,
+    card: '#050505',
+    hint: '#D1D5DB',
+    icon: '#FFFFFF',
+    surface: '#000000',
+    text: '#FFFFFF',
+  } : {
+    badge: '#e7eae2',
+    border: themeDynamique.border,
+    card: '#d7a950',
+    hint: '#3B4A3D',
+    icon: '#000000',
+    surface: '#e7eae2',
+    text: '#000000',
+  };
   const contenuDiapoTraite = {
     lignesCode: slide.code ? cleanCodeText(slide.code).split('\n') : [],
     theorieRendue: renderHighlightedText(slide.theory),
@@ -252,10 +249,10 @@ export default function EcranLectureCours() {
     setSelectedAnswer(answerIndex);
 
     // The final exercise acts as the 100% gate: correct answer sets the boolean flag and awards XP in donneesLocales once.
-    if (answerIndex === quiz.answerIndex && subject && courseId && CoursLocal) {
+    if (answerIndex === quizActif.answerIndex && subject && courseId && CoursLocal) {
       setQuizCompleted(true);
       setConfettiRound((currentRound) => currentRound + 1);
-      donneesLocales.saveCourseProgress(
+      donneesLocales.enregistrerProgressionCours(
         subject,
         courseId,
         maxSlideIndex,
@@ -340,23 +337,40 @@ export default function EcranLectureCours() {
             ) : null}
 
             {slide.code && utiliseCarteFormule ? (
-              <View style={styles.formulaCard}>
+              <View style={[styles.formulaCard, { backgroundColor: themeFormule.card, borderColor: themeFormule.border }]}>
                 <View style={styles.formulaCardHeader}>
-                  <View style={styles.formulaBadge}>
-                    <MaterialCommunityIcons color={themeDynamique.ink} name="function-variant" size={18} />
-                    <TexteTheme lightColor={themeDynamique.ink} darkColor={themeDynamique.ink} style={[styles.formulaBadgeText, { color: themeDynamique.ink }]}>
+                  <View style={[styles.formulaBadge, { backgroundColor: themeFormule.badge, borderColor: themeFormule.border }]}>
+                    <MaterialCommunityIcons color={themeFormule.icon} name="function-variant" size={18} />
+                    <TexteTheme lightColor={themeFormule.text} darkColor={themeFormule.text} style={[styles.formulaBadgeText, { color: themeFormule.text }]}>
                       Vue mathematique
                     </TexteTheme>
                   </View>
-                  <TexteTheme lightColor={themeDynamique.muted} darkColor={themeDynamique.muted} style={[styles.formulaHint, { color: themeDynamique.muted }]}>
+                  <TexteTheme lightColor={themeFormule.hint} darkColor={themeFormule.hint} style={[styles.formulaHint, { color: themeFormule.hint }]}>
                     Formule cle
                   </TexteTheme>
                 </View>
 
-                <View style={styles.formulaSurface}>
+                <View style={[styles.formulaSurface, { backgroundColor: themeFormule.surface, borderColor: themeFormule.border }]}>
                   {codeLines.map((line, index) => (
-                    <View key={`${line}-${index}`} style={styles.formulaLine}>
-                      <RenduFormule centered fallback={line} mathematiques={line} size="lg" />
+                    <View key={`formula-line-${index}`} style={styles.formulaLine}>
+                      {line.length === 0 ? (
+                        <Text style={[styles.formulaBlankLine, { color: themeFormule.text }]}>{'\u00A0'}</Text>
+                      ) : estLigneFormuleAutonome(line) ? (
+                        <RenduFormule
+                          darkColor={themeFormule.text}
+                          fallback={preserverEspaces(line)}
+                          lightColor={themeFormule.text}
+                          mathematiques={line}
+                          size="lg"
+                        />
+                      ) : (
+                        <TexteTheme
+                          lightColor={themeFormule.text}
+                          darkColor={themeFormule.text}
+                          style={[styles.formulaPlainText, { color: themeFormule.text }]}>
+                          {preserverEspaces(line)}
+                        </TexteTheme>
+                      )}
                     </View>
                   ))}
                 </View>
@@ -370,12 +384,12 @@ export default function EcranLectureCours() {
                   Question rapide
                 </TexteTheme>
                 <TexteTheme lightColor={themeDynamique.ink} darkColor={themeDynamique.ink} style={[styles.quizQuestion, { color: themeDynamique.ink }]}>
-                  {quiz.question}
+                  {quizActif.question}
                 </TexteTheme>
                 <View style={styles.choiceList}>
-                  {quiz.choices.map((choice, index) => {
+                  {quizActif.choices.map((choice, index) => {
                     const selected = selectedAnswer === index;
-                    const correct = quizCompleted && index === quiz.answerIndex;
+                    const correct = quizCompleted && index === quizActif.answerIndex;
                     const incorrect = wrongAnswers.includes(index);
                     const locked = quizCompleted || incorrect;
 
@@ -707,11 +721,11 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   formulaCard: {
-    backgroundColor: themeActif.soft,
-    borderColor: themeActif.border,
+    backgroundColor: '#050505',
+    borderColor: '#1F2937',
     borderRadius: 16,
     borderWidth: 1,
-    gap: 14,
+    gap: 12,
     overflow: 'hidden',
     padding: 16,
   },
@@ -722,8 +736,8 @@ const styles = StyleSheet.create({
   },
   formulaBadge: {
     alignItems: 'center',
-    backgroundColor: 'rgba(216, 169, 74, 0.18)',
-    borderColor: themeActif.border,
+    backgroundColor: '#111827',
+    borderColor: '#374151',
     borderRadius: 999,
     borderWidth: 1,
     flexDirection: 'row',
@@ -732,37 +746,45 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   formulaBadgeText: {
-    color: themeActif.ink,
+    color: '#FFFFFF',
     fontSize: 12,
     fontWeight: '900',
     lineHeight: 16,
     textTransform: 'uppercase',
   },
   formulaHint: {
-    color: themeActif.muted,
+    color: '#D1D5DB',
     fontSize: 12,
     fontWeight: '800',
     lineHeight: 16,
     textTransform: 'uppercase',
   },
   formulaSurface: {
-    backgroundColor: themeActif.panel,
-    borderColor: themeActif.border,
+    backgroundColor: '#000000',
+    borderColor: '#374151',
     borderRadius: 14,
     borderWidth: 1,
-    gap: 12,
+    gap: 0,
     paddingHorizontal: 16,
     paddingVertical: 18,
   },
   formulaLine: {
-    backgroundColor: 'rgba(126, 166, 224, 0.12)',
-    borderColor: 'rgba(36, 59, 83, 0.12)',
-    borderRadius: 12,
-    borderWidth: 1,
-    minHeight: 62,
     justifyContent: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    minHeight: 26,
+  },
+  formulaPlainText: {
+    color: '#FFFFFF',
+    fontFamily: 'monospace',
+    fontSize: 15,
+    fontWeight: '700',
+    lineHeight: 26,
+    textAlign: 'left',
+  },
+  formulaBlankLine: {
+    color: '#FFFFFF',
+    fontFamily: 'monospace',
+    fontSize: 15,
+    lineHeight: 26,
   },
   quizCard: {
     backgroundColor: themeActif.soft,

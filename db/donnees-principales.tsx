@@ -237,42 +237,42 @@ function maintenantIso() {
   return new Date().toISOString();
 }
 
-function normaliserNomUtilisateur(name?: string | null) {
-  const trimmedName = name?.trim();
-  return trimmedName && trimmedName.length > 0 ? trimmedName : nomUtilisateurDefaut;
+function normaliserNomUtilisateur(nom?: string | null) {
+  const nomNettoye = nom?.trim();
+  return nomNettoye && nomNettoye.length > 0 ? nomNettoye : nomUtilisateurDefaut;
 }
 
-function cleUtilisateur(name: string) {
-  return normaliserNomUtilisateur(name).toLocaleLowerCase();
+function cleUtilisateur(nom: string) {
+  return normaliserNomUtilisateur(nom).toLocaleLowerCase();
 }
 
-function creerId(prefix: string) {
-  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+function creerId(prefixe: string) {
+  return `${prefixe}_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
 }
 
-function bornerProgression(progress: number) {
-  if (!Number.isFinite(progress)) {
+function bornerProgression(progression: number) {
+  if (!Number.isFinite(progression)) {
     return 0;
   }
 
-  return Math.max(0, Math.min(100, Math.round(progress)));
+  return Math.max(0, Math.min(100, Math.round(progression)));
 }
 
-// Converts the furthest opened slide into the integer percentage stored in local user data.
-// The last theory slide is capped at 99%; the final exercise flag is required for 100%.
-function progressionDepuisDiapo(slideIndex: number, totalSlides?: number, exerciseCompleted = false) {
-  if (!totalSlides || totalSlides <= 0) {
-    return slideIndex >= 0 ? 1 : 0;
+// Convertit la diapo la plus avancee en pourcentage entier stocke localement.
+// La derniere diapo theorique est limitee a 99%; l'exercice final est requis pour 100%.
+function progressionDepuisDiapo(indiceDiapo: number, totalDiapos?: number, exerciceTermine = false) {
+  if (!totalDiapos || totalDiapos <= 0) {
+    return indiceDiapo >= 0 ? 1 : 0;
   }
 
-  const safeSlide = Math.max(0, Math.min(Math.floor(slideIndex), totalSlides - 1));
-  const reachedLastTheorySlide = safeSlide >= totalSlides - 1;
+  const diapoValide = Math.max(0, Math.min(Math.floor(indiceDiapo), totalDiapos - 1));
+  const derniereDiapoTheorieAtteinte = diapoValide >= totalDiapos - 1;
 
-  if (reachedLastTheorySlide) {
-    return exerciseCompleted ? 100 : 99;
+  if (derniereDiapoTheorieAtteinte) {
+    return exerciceTermine ? 100 : 99;
   }
 
-  return bornerProgression(((safeSlide + 1) / totalSlides) * 100);
+  return bornerProgression(((diapoValide + 1) / totalDiapos) * 100);
 }
 
 function carteSuccesDefaut() {
@@ -281,9 +281,9 @@ function carteSuccesDefaut() {
 
 function carteMemoireDefaut() {
   return Object.fromEntries(
-    Object.entries(cartesMemoireDefaut).map(([topic, cards]) => [
-      topic,
-      cards.map((card) => ({ ...card })),
+    Object.entries(cartesMemoireDefaut).map(([sujet, cartes]) => [
+      sujet,
+      cartes.map((carte) => ({ ...carte })),
     ]),
   );
 }
@@ -295,12 +295,12 @@ function creerStatsSuccesDefaut() {
   };
 }
 
-function creerUtilisateur(name: string): UtilisateurStocke {
-  const displayName = normaliserNomUtilisateur(name);
+function creerUtilisateur(nom: string): UtilisateurStocke {
+  const nomAffiche = normaliserNomUtilisateur(nom);
   return {
     id: creerId('user'),
-    key: cleUtilisateur(displayName),
-    name: displayName,
+    key: cleUtilisateur(nomAffiche),
+    name: nomAffiche,
     xp: 0,
     level: 1,
     createdAt: maintenantIso(),
@@ -319,11 +319,11 @@ function creerDonneesUtilisateur(): DonneesUtilisateur {
 }
 
 function creerDonneesApplicationDefaut() {
-  const user = creerUtilisateur(nomUtilisateurDefaut);
+  const utilisateur = creerUtilisateur(nomUtilisateurDefaut);
   return {
-    activeUserId: user.id,
-    users: { [user.id]: user },
-    DonneesUtilisateur: { [user.id]: creerDonneesUtilisateur() },
+    activeUserId: utilisateur.id,
+    users: { [utilisateur.id]: utilisateur },
+    DonneesUtilisateur: { [utilisateur.id]: creerDonneesUtilisateur() },
   };
 }
 
@@ -386,8 +386,8 @@ function normaliserDonneesApplication(valeur: unknown): DonneesApplication {
 
 async function lireDonneesApplicationStockee(): Promise<DonneesApplication> {
   try {
-    const savedValue = await lireValeurStockee(cleStockage);
-    return savedValue ? normaliserDonneesApplication(JSON.parse(savedValue)) : creerDonneesApplicationDefaut();
+    const valeurSauvegardee = await lireValeurStockee(cleStockage);
+    return valeurSauvegardee ? normaliserDonneesApplication(JSON.parse(valeurSauvegardee)) : creerDonneesApplicationDefaut();
   } catch {
     return creerDonneesApplicationDefaut();
   }
@@ -418,89 +418,89 @@ async function initialiserDonneesApplication() {
   return donneesMemoire;
 }
 
-function ecrireDonneesApplication(nextData: DonneesApplication) {
-  donneesMemoire = nextData;
-  void ecrireValeurStockee(cleStockage, JSON.stringify(nextData));
+function ecrireDonneesApplication(prochainesDonnees: DonneesApplication) {
+  donneesMemoire = prochainesDonnees;
+  void ecrireValeurStockee(cleStockage, JSON.stringify(prochainesDonnees));
 }
 
-function garantirUtilisateurActif(data = lireDonneesApplication()) {
-  data.users = data.users ?? {};
-  data.DonneesUtilisateur = data.DonneesUtilisateur ?? {};
-  let activeUser = data.users[data.activeUserId];
+function garantirUtilisateurActif(donnees = lireDonneesApplication()) {
+  donnees.users = donnees.users ?? {};
+  donnees.DonneesUtilisateur = donnees.DonneesUtilisateur ?? {};
+  let utilisateurActif = donnees.users[donnees.activeUserId];
 
-  if (!activeUser) {
-    activeUser = creerUtilisateur(nomUtilisateurDefaut);
-    data.activeUserId = activeUser.id;
-    data.users[activeUser.id] = activeUser;
+  if (!utilisateurActif) {
+    utilisateurActif = creerUtilisateur(nomUtilisateurDefaut);
+    donnees.activeUserId = utilisateurActif.id;
+    donnees.users[utilisateurActif.id] = utilisateurActif;
   }
 
-  if (!data.DonneesUtilisateur[activeUser.id]) {
-    data.DonneesUtilisateur[activeUser.id] = creerDonneesUtilisateur();
+  if (!donnees.DonneesUtilisateur[utilisateurActif.id]) {
+    donnees.DonneesUtilisateur[utilisateurActif.id] = creerDonneesUtilisateur();
   }
 
-  return activeUser;
+  return utilisateurActif;
 }
 
-function obtenirDonneesUtilisateurActif(data = lireDonneesApplication()) {
-  const user = garantirUtilisateurActif(data);
-  return data.DonneesUtilisateur[user.id];
+function obtenirDonneesUtilisateurActif(donnees = lireDonneesApplication()) {
+  const utilisateur = garantirUtilisateurActif(donnees);
+  return donnees.DonneesUtilisateur[utilisateur.id];
 }
 
-function trouverUtilisateurParNom(data: DonneesApplication, name: string) {
-  const key = cleUtilisateur(name);
-  return Object.values(data.users).find((user) => user.key === key);
+function trouverUtilisateurParNom(donnees: DonneesApplication, nom: string) {
+  const cle = cleUtilisateur(nom);
+  return Object.values(donnees.users).find((utilisateur) => utilisateur.key === cle);
 }
 
-function identiteCours(CoursLocal: Partial<CoursLocal>) {
-  const idText = String(CoursLocal.id ?? '');
+function identiteCours(coursLocal: Partial<CoursLocal>) {
+  const texteId = String(coursLocal.id ?? '');
 
-  if (CoursLocal.subject && CoursLocal.courseId) {
+  if (coursLocal.subject && coursLocal.courseId) {
     return {
-      subject: CoursLocal.subject,
-      courseId: CoursLocal.courseId,
-      id: `${CoursLocal.subject}:${CoursLocal.courseId}`,
+      subject: coursLocal.subject,
+      courseId: coursLocal.courseId,
+      id: `${coursLocal.subject}:${coursLocal.courseId}`,
     };
   }
 
-  if (idText.includes(':')) {
-    const [subject, courseId] = idText.split(':');
-    return { subject, courseId, id: idText };
+  if (texteId.includes(':')) {
+    const [subject, courseId] = texteId.split(':');
+    return { subject, courseId, id: texteId };
   }
 
-  return { subject: 'general', courseId: idText, id: idText };
+  return { subject: 'general', courseId: texteId, id: texteId };
 }
 
-function mapperCours(CoursLocal: ProgressionCoursStockee): CoursLocal {
+function mapperCours(coursLocal: ProgressionCoursStockee): CoursLocal {
   return {
-    id: CoursLocal.id,
-    name: CoursLocal.name,
-    progress: CoursLocal.progress,
-    completed: CoursLocal.completed,
-    subject: CoursLocal.subject,
-    courseId: CoursLocal.courseId,
-    totalSlides: CoursLocal.totalSlides,
-    highestSlideIndex: CoursLocal.highestSlideIndex,
-    exerciseCompleted: Boolean(CoursLocal.exerciseCompleted),
-    lastOpenedAt: CoursLocal.lastOpenedAt,
+    id: coursLocal.id,
+    name: coursLocal.name,
+    progress: coursLocal.progress,
+    completed: coursLocal.completed,
+    subject: coursLocal.subject,
+    courseId: coursLocal.courseId,
+    totalSlides: coursLocal.totalSlides,
+    highestSlideIndex: coursLocal.highestSlideIndex,
+    exerciseCompleted: Boolean(coursLocal.exerciseCompleted),
+    lastOpenedAt: coursLocal.lastOpenedAt,
   };
 }
 
-function calculerRangSucces(progress: number, thresholds: number[]) {
-  const completedThresholds = thresholds.filter((threshold) => progress >= threshold).length;
-  const rankIndex = Math.min(completedThresholds, rangsSucces.length - 1);
-  const completed = progress >= thresholds[thresholds.length - 1];
-  const target = completed ? thresholds[thresholds.length - 1] : thresholds[completedThresholds] ?? thresholds[thresholds.length - 1];
+function calculerRangSucces(progression: number, seuils: number[]) {
+  const seuilsCompletes = seuils.filter((seuil) => progression >= seuil).length;
+  const indiceRang = Math.min(seuilsCompletes, rangsSucces.length - 1);
+  const completed = progression >= seuils[seuils.length - 1];
+  const target = completed ? seuils[seuils.length - 1] : seuils[seuilsCompletes] ?? seuils[seuils.length - 1];
 
   return {
     completed,
-    rang: rangsSucces[rankIndex],
+    rang: rangsSucces[indiceRang],
     target,
   };
 }
 
-function compterCoursTerminesParMatiere(DonneesUtilisateur: DonneesUtilisateur, subject: string) {
-  return Object.values(DonneesUtilisateur.courses).filter(
-    (CoursLocal) => CoursLocal.subject === subject && CoursLocal.completed,
+function compterCoursTerminesParMatiere(donneesUtilisateur: DonneesUtilisateur, matiere: string) {
+  return Object.values(donneesUtilisateur.courses).filter(
+    (coursLocal) => coursLocal.subject === matiere && coursLocal.completed,
   ).length;
 }
 
@@ -511,145 +511,97 @@ function emettreChangementParametres() {
 }
 
 export const donneesLocales = {
-  async init(userName?: string) {
-    const data = await initialiserDonneesApplication();
-    garantirUtilisateurActif(data);
+  async init(nomUtilisateur?: string) {
+    const donnees = await initialiserDonneesApplication();
+    garantirUtilisateurActif(donnees);
 
-    if (userName) {
-      return donneesLocales.definirUtilisateurActif(userName);
+    if (nomUtilisateur) {
+      return donneesLocales.definirUtilisateurActif(nomUtilisateur);
     }
 
-    ecrireDonneesApplication(data);
+    ecrireDonneesApplication(donnees);
   },
 
-  definirUtilisateurActif(userName: string) {
-    const data = lireDonneesApplication();
-    const displayName = normaliserNomUtilisateur(userName);
-    let user = trouverUtilisateurParNom(data, displayName);
+  definirUtilisateurActif(nomUtilisateur: string) {
+    const donnees = lireDonneesApplication();
+    const nomAffiche = normaliserNomUtilisateur(nomUtilisateur);
+    let utilisateur = trouverUtilisateurParNom(donnees, nomAffiche);
 
-    if (!user) {
-      user = creerUtilisateur(displayName);
-      data.users[user.id] = user;
-      data.DonneesUtilisateur[user.id] = creerDonneesUtilisateur();
+    if (!utilisateur) {
+      utilisateur = creerUtilisateur(nomAffiche);
+      donnees.users[utilisateur.id] = utilisateur;
+      donnees.DonneesUtilisateur[utilisateur.id] = creerDonneesUtilisateur();
     }
 
-    user.name = displayName;
-    user.key = cleUtilisateur(displayName);
-    user.lastSeenAt = maintenantIso();
-    data.activeUserId = user.id;
-    garantirUtilisateurActif(data);
-    ecrireDonneesApplication(data);
+    utilisateur.name = nomAffiche;
+    utilisateur.key = cleUtilisateur(nomAffiche);
+    utilisateur.lastSeenAt = maintenantIso();
+    donnees.activeUserId = utilisateur.id;
+    garantirUtilisateurActif(donnees);
+    ecrireDonneesApplication(donnees);
 
     return donneesLocales.obtenirUtilisateur();
-  },
-
-  synchroniserUtilisateur(userName: string) {
-    return donneesLocales.definirUtilisateurActif(userName);
-  },
-
-  renommerUtilisateurActif(nextName: string) {
-    const data = lireDonneesApplication();
-    const currentUser = garantirUtilisateurActif(data);
-    const displayName = normaliserNomUtilisateur(nextName);
-    const existingUser = trouverUtilisateurParNom(data, displayName);
-
-    if (existingUser && existingUser.id !== currentUser.id) {
-      data.activeUserId = existingUser.id;
-      existingUser.lastSeenAt = maintenantIso();
-      garantirUtilisateurActif(data);
-      ecrireDonneesApplication(data);
-      return donneesLocales.obtenirUtilisateur();
-    }
-
-    currentUser.name = displayName;
-    currentUser.key = cleUtilisateur(displayName);
-    currentUser.lastSeenAt = maintenantIso();
-    ecrireDonneesApplication(data);
-    return donneesLocales.obtenirUtilisateur();
-  },
-
-  obtenirUtilisateurs() {
-    const data = lireDonneesApplication();
-    return Object.values(data.users)
-      .sort((left, right) => right.lastSeenAt.localeCompare(left.lastSeenAt))
-      .map((user) => ({
-        id: user.id,
-        name: user.name,
-        avatarUri: user.avatarUri,
-        xp: user.xp,
-        level: user.level,
-      }));
   },
 
   obtenirUtilisateur(): InfosUtilisateur {
-    const data = lireDonneesApplication();
-    const user = garantirUtilisateurActif(data);
+    const donnees = lireDonneesApplication();
+    const utilisateur = garantirUtilisateurActif(donnees);
     return {
-      id: user.id,
-      name: user.name,
-      avatarUri: user.avatarUri,
-      xp: user.xp,
-      level: user.level,
+      id: utilisateur.id,
+      name: utilisateur.name,
+      avatarUri: utilisateur.avatarUri,
+      xp: utilisateur.xp,
+      level: utilisateur.level,
     };
   },
 
-  enregistrerUtilisateur(InfosUtilisateur: InfosUtilisateur) {
-    const data = lireDonneesApplication();
-    const user = garantirUtilisateurActif(data);
+  enregistrerUtilisateur(infosUtilisateur: InfosUtilisateur) {
+    const donnees = lireDonneesApplication();
+    const utilisateur = garantirUtilisateurActif(donnees);
 
-    if (InfosUtilisateur.name) {
-      user.name = normaliserNomUtilisateur(InfosUtilisateur.name);
-      user.key = cleUtilisateur(user.name);
+    if (infosUtilisateur.name) {
+      utilisateur.name = normaliserNomUtilisateur(infosUtilisateur.name);
+      utilisateur.key = cleUtilisateur(utilisateur.name);
     }
 
-    user.avatarUri = InfosUtilisateur.avatarUri;
-    user.xp = Math.max(0, Math.round(InfosUtilisateur.xp));
-    user.level = Math.max(1, Math.round(InfosUtilisateur.level));
-    user.lastSeenAt = maintenantIso();
-    ecrireDonneesApplication(data);
+    utilisateur.avatarUri = infosUtilisateur.avatarUri;
+    utilisateur.xp = Math.max(0, Math.round(infosUtilisateur.xp));
+    utilisateur.level = Math.max(1, Math.round(infosUtilisateur.level));
+    utilisateur.lastSeenAt = maintenantIso();
+    ecrireDonneesApplication(donnees);
   },
 
-  ajouterXp(amount: number) {
-    const user = donneesLocales.obtenirUtilisateur();
-    const xp = Math.max(0, user.xp + amount);
-    const level = Math.floor(xp / 100) + 1;
-    const nextUser = { ...user, xp, level };
-
-    donneesLocales.enregistrerUtilisateur(nextUser);
-    return nextUser;
-  },
-
-  obtenirCoursRecents(limit = 6) {
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif();
-    return Object.values(DonneesUtilisateur.courses)
-      .filter((CoursLocal) => CoursLocal.progress > 0)
-      .sort((left, right) => right.lastOpenedAt.localeCompare(left.lastOpenedAt))
-      .slice(0, limit)
+  obtenirCoursRecents(limite = 6) {
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif();
+    return Object.values(donneesUtilisateur.courses)
+      .filter((coursLocal) => coursLocal.progress > 0)
+      .sort((gauche, droite) => droite.lastOpenedAt.localeCompare(gauche.lastOpenedAt))
+      .slice(0, limite)
       .map(mapperCours);
   },
 
   obtenirCarteProgressionCours() {
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif();
-    return Object.values(DonneesUtilisateur.courses).reduce<Record<string, number>>((progressMap, CoursLocal) => {
-      if (CoursLocal.progress > 0) {
-        progressMap[CoursLocal.id] = CoursLocal.highestSlideIndex ?? 0;
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif();
+    return Object.values(donneesUtilisateur.courses).reduce<Record<string, number>>((carteProgression, coursLocal) => {
+      if (coursLocal.progress > 0) {
+        carteProgression[coursLocal.id] = coursLocal.highestSlideIndex ?? 0;
       }
 
-      return progressMap;
+      return carteProgression;
     }, {});
   },
 
-  obtenirProgressionCours(subject: string, courseId: string) {
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif();
-    const CoursLocal = DonneesUtilisateur.courses[`${subject}:${courseId}`];
-    return CoursLocal?.highestSlideIndex ?? 0;
+  obtenirProgressionCours(matiere: string, idCours: string) {
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif();
+    const coursLocal = donneesUtilisateur.courses[`${matiere}:${idCours}`];
+    return coursLocal?.highestSlideIndex ?? 0;
   },
 
-  obtenirDetailsProgressionCours(subject: string, courseId: string) {
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif();
-    const CoursLocal = DonneesUtilisateur.courses[`${subject}:${courseId}`];
+  obtenirDetailsProgressionCours(matiere: string, idCours: string) {
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif();
+    const coursLocal = donneesUtilisateur.courses[`${matiere}:${idCours}`];
 
-    if (!CoursLocal) {
+    if (!coursLocal) {
       return {
         completed: false,
         exerciseCompleted: false,
@@ -659,200 +611,284 @@ export const donneesLocales = {
     }
 
     return {
-      completed: CoursLocal.completed,
-      exerciseCompleted: Boolean(CoursLocal.exerciseCompleted),
-      highestSlideIndex: CoursLocal.highestSlideIndex ?? -1,
-      progress: CoursLocal.progress,
+      completed: coursLocal.completed,
+      exerciseCompleted: Boolean(coursLocal.exerciseCompleted),
+      highestSlideIndex: coursLocal.highestSlideIndex ?? -1,
+      progress: coursLocal.progress,
     };
   },
 
-  saveCourseProgress(
-    subject: string,
-    courseId: string,
-    slideIndex: number,
-    totalSlides?: number,
-    courseName?: string,
-    exerciseCompleted = false,
+  enregistrerProgressionCours(
+    matiere: string,
+    idCours: string,
+    indiceDiapo: number,
+    totalDiapos?: number,
+    nomCours?: string,
+    exerciceTermine = false,
   ) {
-    const data = lireDonneesApplication();
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif(data);
-    const id = `${subject}:${courseId}`;
-    const existing = DonneesUtilisateur.courses[id];
-    const nextExerciseCompleted = Boolean(existing?.exerciseCompleted || exerciseCompleted);
-    const progress = progressionDepuisDiapo(slideIndex, totalSlides, nextExerciseCompleted);
+    const donnees = lireDonneesApplication();
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif(donnees);
+    const id = `${matiere}:${idCours}`;
+    const coursExistant = donneesUtilisateur.courses[id];
+    const prochainExerciceTermine = Boolean(coursExistant?.exerciseCompleted || exerciceTermine);
+    const progression = progressionDepuisDiapo(indiceDiapo, totalDiapos, prochainExerciceTermine);
 
-    if (progress <= 0) {
+    if (progression <= 0) {
       return;
     }
 
-    const highestSlideIndex = Math.max(existing?.highestSlideIndex ?? -1, Math.max(0, Math.floor(slideIndex)));
-    const existingProgressUnderCurrentRule = nextExerciseCompleted ? existing?.progress ?? 0 : Math.min(existing?.progress ?? 0, 99);
-    const nextProgress = Math.max(existingProgressUnderCurrentRule, progress);
-    const shouldAwardCompletionXp = nextExerciseCompleted && nextProgress >= 100 && !existing?.xpAwarded;
+    const plusHautIndiceDiapo = Math.max(coursExistant?.highestSlideIndex ?? -1, Math.max(0, Math.floor(indiceDiapo)));
+    const progressionExistanteSelonRegle = prochainExerciceTermine ? coursExistant?.progress ?? 0 : Math.min(coursExistant?.progress ?? 0, 99);
+    const prochaineProgression = Math.max(progressionExistanteSelonRegle, progression);
+    const doitAttribuerXpCompletion = prochainExerciceTermine && prochaineProgression >= 100 && !coursExistant?.xpAwarded;
 
-    if (shouldAwardCompletionXp) {
-      const user = garantirUtilisateurActif(data);
-      user.xp = Math.max(0, user.xp + 25);
-      user.level = Math.floor(user.xp / 100) + 1;
-      user.lastSeenAt = maintenantIso();
+    if (doitAttribuerXpCompletion) {
+      const utilisateur = garantirUtilisateurActif(donnees);
+      utilisateur.xp = Math.max(0, utilisateur.xp + 25);
+      utilisateur.level = Math.floor(utilisateur.xp / 100) + 1;
+      utilisateur.lastSeenAt = maintenantIso();
     }
 
-    DonneesUtilisateur.courses[id] = {
+    donneesUtilisateur.courses[id] = {
       id,
-      subject,
-      courseId,
-      name: courseName ?? existing?.name ?? `${subject} - ${courseId}`,
-      progress: nextProgress,
-      completed: nextProgress >= 100,
-      totalSlides: totalSlides ?? existing?.totalSlides,
-      highestSlideIndex,
-      exerciseCompleted: nextExerciseCompleted,
-      xpAwarded: Boolean(existing?.xpAwarded || shouldAwardCompletionXp),
+      subject: matiere,
+      courseId: idCours,
+      name: nomCours ?? coursExistant?.name ?? `${matiere} - ${idCours}`,
+      progress: prochaineProgression,
+      completed: prochaineProgression >= 100,
+      totalSlides: totalDiapos ?? coursExistant?.totalSlides,
+      highestSlideIndex: plusHautIndiceDiapo,
+      exerciseCompleted: prochainExerciceTermine,
+      xpAwarded: Boolean(coursExistant?.xpAwarded || doitAttribuerXpCompletion),
       lastOpenedAt: maintenantIso(),
     };
 
-    if (nextProgress >= 100) {
-      const completedCourseCount = Object.values(DonneesUtilisateur.courses).filter((CoursLocal) => CoursLocal.completed).length;
-      DonneesUtilisateur.achievements['3'] = { ...succesDefaut[2], completed: true };
+    if (prochaineProgression >= 100) {
+      const nombreCoursTermines = Object.values(donneesUtilisateur.courses).filter((coursLocal) => coursLocal.completed).length;
+      donneesUtilisateur.achievements['3'] = { ...succesDefaut[2], completed: true };
 
-      if (completedCourseCount >= 5) {
-        DonneesUtilisateur.achievements['4'] = { ...succesDefaut[3], completed: true };
+      if (nombreCoursTermines >= 5) {
+        donneesUtilisateur.achievements['4'] = { ...succesDefaut[3], completed: true };
       }
     }
 
-    ecrireDonneesApplication(data);
+    ecrireDonneesApplication(donnees);
   },
 
-  enregistrerCours(courses: CoursLocal[]) {
-    courses.forEach((CoursLocal) => {
-      const identity = identiteCours(CoursLocal);
+  enregistrerCours(cours: CoursLocal[]) {
+    cours.forEach((coursLocal) => {
+      const identite = identiteCours(coursLocal);
 
-      if (CoursLocal.highestSlideIndex !== undefined) {
-        donneesLocales.saveCourseProgress(
-          identity.subject,
-          identity.courseId,
-          CoursLocal.highestSlideIndex,
-          CoursLocal.totalSlides,
-          CoursLocal.name,
-          CoursLocal.exerciseCompleted,
+      if (coursLocal.highestSlideIndex !== undefined) {
+        donneesLocales.enregistrerProgressionCours(
+          identite.subject,
+          identite.courseId,
+          coursLocal.highestSlideIndex,
+          coursLocal.totalSlides,
+          coursLocal.name,
+          coursLocal.exerciseCompleted,
         );
         return;
       }
 
-      if (CoursLocal.progress > 0) {
-        const slideIndex = CoursLocal.totalSlides
-          ? Math.max(0, Math.ceil((CoursLocal.progress / 100) * CoursLocal.totalSlides) - 1)
+      if (coursLocal.progress > 0) {
+        const indiceDiapo = coursLocal.totalSlides
+          ? Math.max(0, Math.ceil((coursLocal.progress / 100) * coursLocal.totalSlides) - 1)
           : 0;
-        donneesLocales.saveCourseProgress(
-          identity.subject,
-          identity.courseId,
-          slideIndex,
-          CoursLocal.totalSlides,
-          CoursLocal.name,
-          CoursLocal.exerciseCompleted,
+        donneesLocales.enregistrerProgressionCours(
+          identite.subject,
+          identite.courseId,
+          indiceDiapo,
+          coursLocal.totalSlides,
+          coursLocal.name,
+          coursLocal.exerciseCompleted,
         );
       }
     });
   },
 
-  mettreAJourCours(id: number | string, patch: Partial<CoursLocal>) {
-    const identity = identiteCours({ ...patch, id });
-    const existingProgress = donneesLocales.obtenirProgressionCours(identity.subject, identity.courseId);
+  mettreAJourCours(id: number | string, correctif: Partial<CoursLocal>) {
+    const identite = identiteCours({ ...correctif, id });
+    const progressionExistante = donneesLocales.obtenirProgressionCours(identite.subject, identite.courseId);
 
-    donneesLocales.saveCourseProgress(
-      identity.subject,
-      identity.courseId,
-      patch.highestSlideIndex ?? existingProgress,
-      patch.totalSlides,
-      patch.name,
-      patch.exerciseCompleted,
+    donneesLocales.enregistrerProgressionCours(
+      identite.subject,
+      identite.courseId,
+      correctif.highestSlideIndex ?? progressionExistante,
+      correctif.totalSlides,
+      correctif.name,
+      correctif.exerciseCompleted,
     );
   },
 
   supprimerCours(id: number | string) {
-    const data = lireDonneesApplication();
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif(data);
-    const identity = identiteCours({ id });
-    delete DonneesUtilisateur.courses[identity.id];
-    ecrireDonneesApplication(data);
+    const donnees = lireDonneesApplication();
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif(donnees);
+    const identite = identiteCours({ id });
+    delete donneesUtilisateur.courses[identite.id];
+    ecrireDonneesApplication(donnees);
   },
 
   enregistrerCreationCarte() {
-    const data = lireDonneesApplication();
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif(data);
-    DonneesUtilisateur.achievementStats.createdCards = Math.max(
+    const donnees = lireDonneesApplication();
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif(donnees);
+    donneesUtilisateur.achievementStats.createdCards = Math.max(
       0,
-      Math.round(DonneesUtilisateur.achievementStats.createdCards ?? 0),
+      Math.round(donneesUtilisateur.achievementStats.createdCards ?? 0),
     ) + 1;
-    ecrireDonneesApplication(data);
+    ecrireDonneesApplication(donnees);
   },
 
   obtenirCartesMemoire() {
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif();
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif();
     return Object.fromEntries(
-      Object.entries(DonneesUtilisateur.cartesMemoire).map(([topic, cards]) => [
-        topic,
-        cards.map((card) => ({ ...card })),
+      Object.entries(donneesUtilisateur.cartesMemoire).map(([sujet, cartes]) => [
+        sujet,
+        cartes.map((carte) => ({ ...carte })),
       ]),
     );
   },
 
-  obtenirCartesMemoireSujet(topic: string) {
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif();
-    return (DonneesUtilisateur.cartesMemoire[topic] ?? []).map((card) => ({ ...card }));
+  obtenirCartesMemoireSujet(sujet: string) {
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif();
+    return (donneesUtilisateur.cartesMemoire[sujet] ?? []).map((carte) => ({ ...carte }));
   },
 
-  enregistrerCarteMemoire(topic: string, card: CarteMemoire) {
-    const trimmedTopic = topic.trim();
-    const front = card.front.trim();
-    const back = card.back.trim();
+  enregistrerCarteMemoire(sujet: string, carte: CarteMemoire) {
+    const sujetNettoye = sujet.trim();
+    const recto = carte.front.trim();
+    const verso = carte.back.trim();
 
-    if (!trimmedTopic || !front || !back) {
+    if (!sujetNettoye || !recto || !verso) {
       return [];
     }
 
-    const data = lireDonneesApplication();
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif(data);
-    const currentCards = DonneesUtilisateur.cartesMemoire[trimmedTopic] ?? [];
-    const nextCards = [...currentCards, { front, back }];
+    const donnees = lireDonneesApplication();
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif(donnees);
+    const cartesActuelles = donneesUtilisateur.cartesMemoire[sujetNettoye] ?? [];
+    const prochainesCartes = [...cartesActuelles, { front: recto, back: verso }];
 
-    DonneesUtilisateur.cartesMemoire[trimmedTopic] = nextCards;
-    DonneesUtilisateur.achievementStats.createdCards = Math.max(
+    donneesUtilisateur.cartesMemoire[sujetNettoye] = prochainesCartes;
+    donneesUtilisateur.achievementStats.createdCards = Math.max(
       0,
-      Math.round(DonneesUtilisateur.achievementStats.createdCards ?? 0),
+      Math.round(donneesUtilisateur.achievementStats.createdCards ?? 0),
     ) + 1;
-    ecrireDonneesApplication(data);
+    ecrireDonneesApplication(donnees);
 
-    return nextCards.map((savedCard) => ({ ...savedCard }));
+    return prochainesCartes.map((carteSauvegardee) => ({ ...carteSauvegardee }));
   },
 
-  enregistrerClicSimulation(section: string, simulationId: string) {
-    const data = lireDonneesApplication();
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif(data);
-    const currentClicks = DonneesUtilisateur.achievementStats.simulationClicksBySection[section] ?? [];
+  enregistrerSerieCartesMemoire(sujet: string, cartes: CarteMemoire[]) {
+    const sujetNettoye = sujet.trim();
+    const cartesValides = cartes
+      .map((carte) => ({
+        front: carte.front.trim(),
+        back: carte.back.trim(),
+      }))
+      .filter((carte) => carte.front.length > 0 && carte.back.length > 0);
 
-    if (!currentClicks.includes(simulationId)) {
-      DonneesUtilisateur.achievementStats.simulationClicksBySection[section] = [...currentClicks, simulationId];
-      ecrireDonneesApplication(data);
+    if (!sujetNettoye || cartesValides.length === 0) {
+      return [];
+    }
+
+    const donnees = lireDonneesApplication();
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif(donnees);
+    const cartesActuelles = donneesUtilisateur.cartesMemoire[sujetNettoye] ?? [];
+    const prochainesCartes = [...cartesActuelles, ...cartesValides];
+
+    donneesUtilisateur.cartesMemoire[sujetNettoye] = prochainesCartes;
+    donneesUtilisateur.achievementStats.createdCards = Math.max(
+      0,
+      Math.round(donneesUtilisateur.achievementStats.createdCards ?? 0),
+    ) + cartesValides.length;
+    ecrireDonneesApplication(donnees);
+
+    return prochainesCartes.map((carteSauvegardee) => ({ ...carteSauvegardee }));
+  },
+
+  renommerSujetCartesMemoire(ancienSujet: string, nouveauSujet: string) {
+    const ancienSujetNettoye = ancienSujet.trim();
+    const nouveauSujetNettoye = nouveauSujet.trim();
+
+    if (!ancienSujetNettoye || !nouveauSujetNettoye) {
+      return donneesLocales.obtenirCartesMemoire();
+    }
+
+    if (ancienSujetNettoye === nouveauSujetNettoye) {
+      return donneesLocales.obtenirCartesMemoire();
+    }
+
+    const donnees = lireDonneesApplication();
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif(donnees);
+    const cartesAnciennes = donneesUtilisateur.cartesMemoire[ancienSujetNettoye] ?? [];
+    const cartesDestination = donneesUtilisateur.cartesMemoire[nouveauSujetNettoye] ?? [];
+
+    donneesUtilisateur.cartesMemoire[nouveauSujetNettoye] = [...cartesDestination, ...cartesAnciennes];
+    delete donneesUtilisateur.cartesMemoire[ancienSujetNettoye];
+    ecrireDonneesApplication(donnees);
+
+    return donneesLocales.obtenirCartesMemoire();
+  },
+
+  supprimerCarteMemoire(sujet: string, indiceCarte: number) {
+    const sujetNettoye = sujet.trim();
+    const donnees = lireDonneesApplication();
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif(donnees);
+    const cartesActuelles = donneesUtilisateur.cartesMemoire[sujetNettoye] ?? [];
+
+    if (!sujetNettoye || indiceCarte < 0 || indiceCarte >= cartesActuelles.length) {
+      return cartesActuelles.map((carte) => ({ ...carte }));
+    }
+
+    const prochainesCartes = cartesActuelles.filter((_carte, indice) => indice !== indiceCarte);
+    donneesUtilisateur.cartesMemoire[sujetNettoye] = prochainesCartes;
+    ecrireDonneesApplication(donnees);
+
+    return prochainesCartes.map((carte) => ({ ...carte }));
+  },
+
+  supprimerSujetCartesMemoire(sujet: string) {
+    const sujetNettoye = sujet.trim();
+
+    if (!sujetNettoye) {
+      return donneesLocales.obtenirCartesMemoire();
+    }
+
+    const donnees = lireDonneesApplication();
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif(donnees);
+    delete donneesUtilisateur.cartesMemoire[sujetNettoye];
+    ecrireDonneesApplication(donnees);
+
+    return donneesLocales.obtenirCartesMemoire();
+  },
+
+  enregistrerClicSimulation(section: string, idSimulation: string) {
+    const donnees = lireDonneesApplication();
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif(donnees);
+    const clicsActuels = donneesUtilisateur.achievementStats.simulationClicksBySection[section] ?? [];
+
+    if (!clicsActuels.includes(idSimulation)) {
+      donneesUtilisateur.achievementStats.simulationClicksBySection[section] = [...clicsActuels, idSimulation];
+      ecrireDonneesApplication(donnees);
     }
   },
 
   obtenirSuccesProgression(): SuccesProgression[] {
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif();
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif();
 
     return succesProgressionDefaut.map((Succes) => {
-      let progress = 0;
-      const thresholds = Succes.category === 'course' ? seuilsCoursSucces : seuilsSuccesSimple;
+      let progression = 0;
+      const seuils = Succes.category === 'course' ? seuilsCoursSucces : seuilsSuccesSimple;
 
       if (Succes.category === 'course') {
-        progress = compterCoursTerminesParMatiere(DonneesUtilisateur, Succes.subject);
+        progression = compterCoursTerminesParMatiere(donneesUtilisateur, Succes.subject);
       } else if (Succes.category === 'cards') {
-        progress = DonneesUtilisateur.achievementStats.createdCards;
+        progression = donneesUtilisateur.achievementStats.createdCards;
       } else {
-        progress = DonneesUtilisateur.achievementStats.simulationClicksBySection[Succes.subject]?.length ?? 0;
+        progression = donneesUtilisateur.achievementStats.simulationClicksBySection[Succes.subject]?.length ?? 0;
       }
 
-      const rankState = calculerRangSucces(progress, thresholds);
+      const etatRang = calculerRangSucces(progression, seuils);
 
       return {
         id: Succes.id,
@@ -860,62 +896,62 @@ export const donneesLocales = {
         description: Succes.description,
         category: Succes.category,
         subject: 'subject' in Succes ? Succes.subject : undefined,
-        progress,
-        ...rankState,
+        progress: progression,
+        ...etatRang,
       };
     });
   },
 
   obtenirSucces() {
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif();
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif();
     return succesDefaut.map((Succes) => ({
       ...Succes,
-      ...DonneesUtilisateur.achievements[String(Succes.id)],
+      ...donneesUtilisateur.achievements[String(Succes.id)],
     }));
   },
 
   terminerSucces(id: number) {
-    const data = lireDonneesApplication();
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif(data);
-    const existing = DonneesUtilisateur.achievements[String(id)] ?? succesDefaut.find((Succes) => Succes.id === id);
+    const donnees = lireDonneesApplication();
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif(donnees);
+    const succesExistant = donneesUtilisateur.achievements[String(id)] ?? succesDefaut.find((Succes) => Succes.id === id);
 
-    if (existing) {
-      DonneesUtilisateur.achievements[String(id)] = { ...existing, completed: true };
-      ecrireDonneesApplication(data);
+    if (succesExistant) {
+      donneesUtilisateur.achievements[String(id)] = { ...succesExistant, completed: true };
+      ecrireDonneesApplication(donnees);
     }
   },
 
-  enregistrerSucces(Succes: Succes) {
-    const data = lireDonneesApplication();
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif(data);
-    const existing = DonneesUtilisateur.achievements[String(Succes.id)];
-    DonneesUtilisateur.achievements[String(Succes.id)] = {
-      ...Succes,
-      completed: existing?.completed || Succes.completed,
+  enregistrerSucces(succes: Succes) {
+    const donnees = lireDonneesApplication();
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif(donnees);
+    const succesExistant = donneesUtilisateur.achievements[String(succes.id)];
+    donneesUtilisateur.achievements[String(succes.id)] = {
+      ...succes,
+      completed: succesExistant?.completed || succes.completed,
     };
-    ecrireDonneesApplication(data);
+    ecrireDonneesApplication(donnees);
   },
 
   obtenirParametres() {
     return { ...obtenirDonneesUtilisateurActif().settings };
   },
 
-  enregistrerParametres(settings: ParametresApplication) {
-    const data = lireDonneesApplication();
-    const DonneesUtilisateur = obtenirDonneesUtilisateurActif(data);
-    DonneesUtilisateur.settings = { ...settings };
-    ecrireDonneesApplication(data);
+  enregistrerParametres(parametres: ParametresApplication) {
+    const donnees = lireDonneesApplication();
+    const donneesUtilisateur = obtenirDonneesUtilisateurActif(donnees);
+    donneesUtilisateur.settings = { ...parametres };
+    ecrireDonneesApplication(donnees);
     emettreChangementParametres();
   },
 
   reinitialiserDonneesUtilisateurActif() {
-    const data = lireDonneesApplication();
-    const user = garantirUtilisateurActif(data);
-    data.DonneesUtilisateur[user.id] = creerDonneesUtilisateur();
-    user.xp = 0;
-    user.level = 1;
-    user.lastSeenAt = maintenantIso();
-    ecrireDonneesApplication(data);
+    const donnees = lireDonneesApplication();
+    const utilisateur = garantirUtilisateurActif(donnees);
+    donnees.DonneesUtilisateur[utilisateur.id] = creerDonneesUtilisateur();
+    utilisateur.xp = 0;
+    utilisateur.level = 1;
+    utilisateur.lastSeenAt = maintenantIso();
+    ecrireDonneesApplication(donnees);
     emettreChangementParametres();
   },
 };
