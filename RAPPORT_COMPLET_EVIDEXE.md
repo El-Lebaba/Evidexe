@@ -41,11 +41,11 @@ Chaque cours contient des diapositives de theorie, parfois du code d'exemple, pu
 
 Le module de simulations contient un catalogue separe des cours. Les simulations deja disponibles sont:
 
-- mathematiques: derivees, integrales, serie de Taylor, limites, Fourier, champ de pentes et series;
+- mathematiques: derivees, integrales, serie de Taylor, limites, Fourier, champ de pentes, champ vectoriel, series, loi normale standard et loi de Student;
 - physique: gravite, pendule, mouvement projectile, ressort et loi de Hooke, mouvement circulaire, champs magnetiques, champs electriques, optique et refraction, mecanique orbitale et frottement;
-- programmation Java: tri a bulles et tri par selection.
+- programmation Java: tri a bulles, tri par selection, tri par insertion, tri fusion, tri rapide, pile, file, liste chainee, ArrayList, tableaux, chaines de caracteres et multithreading.
 
-Certaines simulations sont encore indiquees comme a venir ou fermees dans le catalogue, par exemple le champ vectoriel, les collisions elastiques et plusieurs simulations Java avancees. Elles doivent donc etre presentees comme limites actuelles, pas comme fonctionnalites terminees.
+Certaines simulations sont encore indiquees comme a venir dans le catalogue, par exemple les collisions elastiques, le transtypage, les collisions de hachage, l'heritage et plusieurs cartes generiques "Bientot". Elles doivent donc etre presentees comme limites actuelles, pas comme fonctionnalites terminees.
 
 Le profil utilisateur permet de consulter les cours recents, les cours actifs, les cours termines, l'XP, le niveau et les parametres. Les parametres incluent le mode sombre, la langue et les notifications. L'application gere aussi plusieurs utilisateurs locaux par nom.
 
@@ -75,7 +75,7 @@ Node.js n'est pas un backend actif du projet. Il sert principalement a executer 
 
 ### 6.1 Mathematiques
 
-Le contenu mathematique actuel couvre les derivees, les integrales et les limites dans les cours. Les simulations couvrent davantage de sujets: derivees, integrales, serie de Taylor, limites, Fourier, champ de pentes, champ vectoriel ferme et series.
+Le contenu mathematique actuel couvre les derivees, les integrales et les limites dans les cours. Les simulations couvrent davantage de sujets: derivees, integrales, serie de Taylor, limites, Fourier, champ de pentes, champ vectoriel, series, loi normale standard et loi de Student.
 
 Les notions abordees incluent:
 
@@ -105,7 +105,7 @@ Les notions abordees incluent:
 
 ### 6.3 Programmation Java
 
-Le module Java contient surtout des cours structures et des exercices. Le catalogue contient aussi deux simulations disponibles sur les tris, tandis que les autres simulations Java restent a venir.
+Le module Java contient des cours structures, des exercices et plusieurs simulations disponibles. Le catalogue couvre les tris, les structures de donnees de base, les chaines de caracteres et une visualisation du multithreading, tandis que certaines notions avancees comme le transtypage, les collisions de hachage et l'heritage restent a venir.
 
 Les cours Java couvrent:
 
@@ -188,21 +188,19 @@ flowchart TD
   ChoixSimulations -->|Physique| IndexSimPhysique[EcranIndexSection physique]
   ChoixSimulations -->|Java| IndexSimJava[EcranIndexSection programmation Java]
 
-  IndexSimMath --> SimMathDisponible[Simulation mathematiques disponible]
-  IndexSimMath --> SimMathLimitee[Simulation mathematiques non disponible]
-  IndexSimMath --> SimMathFermee[Simulation mathematiques ferme]
-  IndexSimPhysique --> SimPhysiqueDisponible[Simulation physique disponible]
-  IndexSimPhysique --> SimPhysiqueLimitee[Simulation physique non disponible]
-  IndexSimJava --> SimJavaDisponible[Simulation Java disponible]
-  IndexSimJava --> SimJavaLimitee[Simulation Java non disponible]
+  IndexSimMath --> SimMathPret[Simulation mathematiques prete]
+  IndexSimMath --> SimMathBientot[Carte mathematiques Bientot]
+  IndexSimPhysique --> SimPhysiquePret[Simulation physique prete]
+  IndexSimPhysique --> SimPhysiqueBientot[Carte physique Bientot]
+  IndexSimJava --> SimJavaPret[Simulation Java prete]
+  IndexSimJava --> SimJavaBientot[Simulation Java a venir]
 
-  SimMathDisponible --> EcranSimulation[Ecran de simulation]
-  SimPhysiqueDisponible --> EcranSimulation
-  SimJavaDisponible --> EcranSimulation
-  SimMathLimitee --> EcranAttente[Ecran a venir ou ferme]
-  SimPhysiqueLimitee --> EcranAttente
-  SimJavaLimitee --> EcranAttente
-  SimMathFermee --> EcranAttente
+  SimMathPret --> EcranSimulation[Ecran de simulation]
+  SimPhysiquePret --> EcranSimulation
+  SimJavaPret --> EcranSimulation
+  SimMathBientot --> EcranAttente[Ecran a venir]
+  SimPhysiqueBientot --> EcranAttente
+  SimJavaBientot --> EcranAttente
 
   EcranSimulation -->|Modifier controles| Recalcul[Recalculer et redessiner]
   Recalcul --> EcranSimulation
@@ -238,6 +236,8 @@ flowchart LR
   Mathematiques --> M6[Champ de pentes]
   Mathematiques --> M7[Champ vectoriel]
   Mathematiques --> M8[Series]
+  Mathematiques --> M9[Loi normale standard]
+  Mathematiques --> M10[Loi de Student]
 
   Physique --> P1[Gravite]
   Physique --> P2[Pendule]
@@ -319,8 +319,10 @@ flowchart TB
 | Limites | choisir fonction; modifier la distance d'approche | affichage des points gauche/droite et de la valeur limite |
 | Fourier | choisir signal carre, dent de scie ou triangle; modifier le nombre d'harmoniques | affichage de l'onde approximee et des phasors |
 | Champ de pentes | choisir equation differentielle; modifier `y0` et la densite | affichage du champ et de la courbe solution |
+| Champ vectoriel | choisir un champ; activer/desactiver les particules | affichage des vecteurs, de la rotation, de la divergence et du flux anime |
 | Series | choisir serie; modifier le nombre de termes | affichage des termes et des sommes partielles |
-| Champ vectoriel | choisir champ; activer/desactiver les particules | simulation fermee dans le catalogue, composant present dans le code |
+| Loi normale standard | modifier la moyenne, l'ecart-type et les bornes | calcul de la probabilite entre deux bornes et affichage de la courbe normale |
+| Loi de Student | modifier les degres de liberte et le niveau alpha | affichage de la valeur critique, de l'intervalle central et des proprietes de la loi |
 
 ### 11.2 Simulations physiques
 
@@ -343,6 +345,16 @@ flowchart TB
 | --- | --- | --- |
 | Tri a bulles | choisir ou melanger un tableau; avancer les comparaisons et les echanges | visualisation pas a pas du tri par comparaisons adjacentes |
 | Tri par selection | choisir ou melanger un tableau; avancer les recherches du minimum et les placements | visualisation pas a pas du minimum selectionne et de la partie triee |
+| Tri par insertion | choisir ou melanger un tableau; avancer les insertions | visualisation de la partie triee et des deplacements |
+| Tri fusion | choisir ou melanger un tableau; avancer les divisions et fusions | visualisation recursive des copies et comparaisons |
+| Tri rapide | choisir ou melanger un tableau; avancer les partitions | visualisation du pivot, des partitions et des echanges |
+| Pile - LIFO | saisir une valeur; utiliser `push`, `pop`, `peek` | visualisation du sommet et des operations en `O(1)` |
+| File - FIFO | saisir une valeur; utiliser `offer`, `poll`, `peek` | visualisation de l'avant, de l'arriere et des operations en `O(1)` |
+| Liste chainee | ajouter, retirer ou parcourir des noeuds | visualisation des liens entre noeuds et des modifications de pointeurs |
+| ArrayList | modifier la taille et simuler des operations | visualisation de la capacite, de l'occupation et du redimensionnement |
+| Tableaux | choisir un index et une operation | visualisation des cases, des acces directs et des decalages |
+| Chaines et caracteres | modifier texte et index | visualisation des caracteres, sous-chaines et longueurs |
+| Multithreading | modifier threads, iterations et synchronisation | comparaison entre execution synchronisee et risque de condition de course |
 
 
 ## 12. Fonctions internes importantes
@@ -371,6 +383,7 @@ flowchart TB
 | Champ de pentes | `borner`, `formaterNombre`, `obtenirPointEcran`, `creerChemin`, `construireCheminSolution`, `GraphiqueChampPentes`, `CurseurNumerique`, `SimulationChampDePentes` |
 | Champ vectoriel | `borner`, `particuleAleatoire`, `versPointEcran`, `formaterInvariant`, `GraphiqueChampVectoriel`, `SimulationChampVectoriel` |
 | Series | `borner`, `formaterValeur`, `creerCheminSvg`, `construireSommesPartielles`, `GraphiqueSommesPartielles`, `GraphiqueBarresTermes`, `CurseurNombreEntier`, `SimulationSeries` |
+| Lois statistiques | `gamma`, `betaIncompleteRegularisee`, `tPDF`, `tCDF`, `normalPDF`, `normalCDF`, `valeurCritiqueT`, `GraphiqueNormale`, `GraphiqueStudent`, `SimulationLoiNormaleStandard`, `SimulationLoiStudent` |
 
 ### 12.3 Simulations physiques
 
@@ -388,22 +401,23 @@ flowchart TB
 | Mecanique orbitale | `borner`, `arrondirAuPas`, `formaterNombre`, `resoudreKepler`, `obtenirPointOrbital`, `calculerDemiGrandAxe`, `calculerPerihelie`, `calculerAphelie`, `calculerPeriodeOrbitale`, `calculerVitesseVisViva`, `calculerOrbite`, `GraphiqueMecaniqueOrbitale`, `SimulationMecaniqueOrbitale` |
 | Frottement | `borner`, `arrondirAuPas`, `formaterNombre`, `calculerForceNormale`, `calculerFrottementStatiqueMax`, `calculerFrottementCinetique`, `verifierBlocEnMouvement`, `calculerFrottementActuel`, `calculerForceNette`, `calculerAcceleration`, `GraphiqueFrottement`, `SimulationFrottement` |
 
-## Perspectives et ameliorations
+### 12.4 Simulations Java
 
-Avec le double du temps, la priorite serait de terminer les simulations encore a venir, surtout en Java, car le module Java possede beaucoup de cours mais peu de simulations finalisees. Des simulations visuelles pour les variables, conditions, boucles, tableaux et methodes rendraient cette partie plus coherente avec l'objectif principal du projet.
-
-Une deuxieme amelioration serait de remplacer ou completer le stockage local actuel par une vraie base SQLite sur mobile, ou par une synchronisation distante. Cela permettrait de conserver les donnees entre plusieurs appareils, d'avoir des comptes utilisateurs reels et de sauvegarder la progression de maniere plus robuste.
-
-Il serait aussi utile d'ajouter plus de tests automatises. Le projet contient deja un test autour de la physique de la gravite, mais les calculs de progression, les quiz, les parametres, le mode sombre et les simulations pourraient etre mieux couverts.
-
-L'application pourrait ensuite integrer un mode enseignant. Un enseignant pourrait choisir les cours a proposer, consulter la progression d'un groupe et ajouter ses propres questions. Cela transformerait Evidex en outil pedagogique utilisable dans un contexte de classe.
-
-Enfin, l'experience utilisateur pourrait etre enrichie avec des objectifs quotidiens, des badges plus visibles, des statistiques detaillees, des animations plus completes et une meilleure accessibilite pour les petits ecrans.
+| Simulation | Fonctions/composants internes |
+| --- | --- |
+| Tris | `genererTableau`, generateurs de tri, `DEFINITIONS_TRIS`, `EtiquetteStat`, `EcranSimulationTri` |
+| Pile - LIFO | `normaliserValeur`, `CarteStatistique`, `BoutonOperation`, `ElementPile`, `SimulationPile` |
+| File - FIFO | `normaliserValeur`, `CarteStatistique`, `BoutonOperation`, `ElementFile`, `SimulationFile` |
+| Liste chainee | `normaliserValeur`, composants de noeuds et operations de liste, `SimulationListeChainee` |
+| ArrayList | gestion de taille/capacite, cartes statistiques et operations de liste dynamique, `SimulationArrayList` |
+| Tableaux | gestion des cases, index et operations visuelles, `SimulationTableaux` |
+| Chaines et caracteres | fonctions d'indexation et sous-chaines, `SimulationChainesCaracteres` |
+| Multithreading | gestion des threads, iterations et synchronisation, `SimulationMultithreading` |
 
 ## Conclusion
 
 Evidex est une application educative interactive qui combine cours, simulations et suivi de progression pour faciliter la comprehension de notions abstraites. Le projet montre une base technique solide avec Expo, React Native, TypeScript, une navigation structuree, des donnees de cours organisees et une couche locale de progression utilisateur.
 
-La version actuelle est deja fonctionnelle pour consulter des cours, explorer plusieurs simulations de mathematiques et de physique, suivre son profil et sauvegarder localement l'avancement. Le rapport a ete ajuste pour mieux refleter le code reel: le projet utilise TypeScript, ne possede pas de backend Node.js, n'utilise pas encore SQLite comme stockage effectif et contient certaines simulations encore en preparation.
+La version actuelle est deja fonctionnelle pour consulter des cours, explorer plusieurs simulations de mathematiques, de physique et de programmation Java, suivre son profil et sauvegarder localement l'avancement. Le rapport a ete ajuste pour mieux refleter le code reel: le projet utilise TypeScript, ne possede pas de backend Node.js, n'utilise pas encore SQLite comme stockage effectif et contient certaines simulations encore en preparation.
 
 La suite naturelle du projet serait de completer les simulations restantes, renforcer la persistance des donnees, ajouter des tests et developper des fonctionnalites collaboratives ou enseignantes. Avec ces ameliorations, Evidex pourrait devenir une application d'apprentissage plus complete, plus fiable et plus utile pour accompagner les etudiants dans la comprehension des concepts scientifiques et informatiques.
