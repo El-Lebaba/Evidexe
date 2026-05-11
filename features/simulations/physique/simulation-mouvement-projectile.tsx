@@ -61,6 +61,26 @@ function formaterNombre(value: number, digits = 1) {
   return Number.isFinite(value) ? value.toFixed(digits) : '--';
 }
 
+function obtenirPasGrille(valeurMax: number) {
+  const cible = Math.max(valeurMax / 7, 1);
+  const puissance = 10 ** Math.floor(Math.log10(cible));
+  const normalise = cible / puissance;
+
+  if (normalise <= 1) {
+    return puissance;
+  }
+
+  if (normalise <= 2) {
+    return 2 * puissance;
+  }
+
+  if (normalise <= 5) {
+    return 5 * puissance;
+  }
+
+  return 10 * puissance;
+}
+
 function obtenirValeursProjectile(speed: number, angleDeg: number, gravity: number) {
   const angleRad = (angleDeg * Math.PI) / 180;
   const vx = speed * Math.cos(angleRad);
@@ -83,6 +103,7 @@ function creerCheminTrajectoire({
   flightTime,
   gravity,
   groundY,
+  originX,
   steps = 96,
   vx,
   vy0,
@@ -92,6 +113,7 @@ function creerCheminTrajectoire({
   flightTime: number;
   gravity: number;
   groundY: number;
+  originX: number;
   steps?: number;
   vx: number;
   vy0: number;
@@ -100,7 +122,7 @@ function creerCheminTrajectoire({
 }) {
   return Array.from({ length: steps + 1 }, (_, index) => {
     const time = (index / steps) * flightTime;
-    const x = vx * time * xScale;
+    const x = originX + vx * time * xScale;
     const height = vy0 * time - 0.5 * gravity * time * time;
     const y = groundY - height * yScale;
 
@@ -179,35 +201,47 @@ function GraphiqueProjectile({
   values: ReturnType<typeof obtenirValeursProjectile>;
 }) {
   const groundY = graphHeight - 42;
-  const xScale = graphWidth / Math.max(values.range * 1.16, 12);
-  const yScale = (groundY - 26) / Math.max(values.maxHeight * 1.35, 5);
+  const origineX = 22;
+  const margeDroite = 18;
+  const margeHaut = 24;
+  const largeurTrace = Math.max(1, graphWidth - origineX - margeDroite);
+  const hauteurTrace = Math.max(1, groundY - margeHaut);
+  const largeurMonde = Math.max(values.range * 1.08, 12);
+  const hauteurMonde = Math.max(values.maxHeight * 1.22, 5);
+  const metresParPixel = Math.max(largeurMonde / largeurTrace, hauteurMonde / hauteurTrace);
+  const xScale = 1 / metresParPixel;
+  const yScale = xScale;
+  const largeurVisibleMetres = largeurTrace / xScale;
+  const hauteurVisibleMetres = hauteurTrace / yScale;
+  const pasGrille = obtenirPasGrille(Math.max(largeurVisibleMetres, hauteurVisibleMetres));
   const trajectoryD = useMemo(
     () =>
       creerCheminTrajectoire({
         flightTime: values.flightTime,
         gravity,
         groundY,
+        originX: origineX,
         vx: values.vx,
         vy0: values.vy0,
         xScale,
         yScale,
       }),
-    [gravity, groundY, values.flightTime, values.vx, values.vy0, xScale, yScale]
+    [gravity, groundY, origineX, values.flightTime, values.vx, values.vy0, xScale, yScale]
   );
   const horizontalGrid = useMemo(
-    () => Array.from({ length: 8 }, (_, index) => (index / 7) * groundY),
-    [groundY]
+    () => Array.from({ length: Math.floor(hauteurVisibleMetres / pasGrille) + 1 }, (_, index) => groundY - index * pasGrille * yScale),
+    [groundY, hauteurVisibleMetres, pasGrille, yScale]
   );
   const verticalGrid = useMemo(
-    () => Array.from({ length: 9 }, (_, index) => (index / 8) * graphWidth),
-    [graphWidth]
+    () => Array.from({ length: Math.floor(largeurVisibleMetres / pasGrille) + 1 }, (_, index) => origineX + index * pasGrille * xScale),
+    [largeurVisibleMetres, origineX, pasGrille, xScale]
   );
 
   const activeTime = borner(elapsed, 0, values.flightTime);
   const currentX = values.vx * activeTime;
   const currentHeight = values.vy0 * activeTime - 0.5 * gravity * activeTime * activeTime;
   const currentYVelocity = values.vy0 - gravity * activeTime;
-  const projectileX = currentX * xScale;
+  const projectileX = origineX + currentX * xScale;
   const projectileY = groundY - currentHeight * yScale;
   const showProjectile = isLaunched || elapsed > 0;
   const vectorScale = borner(graphWidth / 260, 1.1, 2.2);
@@ -282,7 +316,7 @@ function GraphiqueProjectile({
             <Circle cx={projectileX} cy={projectileY} fill="url(#projectileDot)" r={8} stroke={themeActif.surface} strokeOpacity={0.7} strokeWidth={1.3} />
           </>
         ) : (
-          <Circle cx={0} cy={groundY} fill="url(#projectileDot)" r={8} stroke={themeActif.surface} strokeOpacity={0.7} strokeWidth={1.3} />
+          <Circle cx={origineX} cy={groundY} fill="url(#projectileDot)" r={8} stroke={themeActif.surface} strokeOpacity={0.7} strokeWidth={1.3} />
         )}
 
       </Svg>

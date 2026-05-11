@@ -1,5 +1,5 @@
-import { EcranSimulationLigne } from '@/features/simulations/core/ecran-simulation-ligne';
+import { SimulationMultithreading } from '@/features/simulations/programmation-java/simulation-multithreading';
 
 export default function EcranMultithreading() {
-  return <EcranSimulationLigne titre="Multithreading" domaine="programmation-java" />;
+  return <SimulationMultithreading />;
 }
