@@ -6,7 +6,7 @@ Les tableaux ci-dessous reprennent les valeurs affichees dans les cartes de stat
 
 Notes de lecture :
 - Les simulations animees sont calculees a l'etat initial apres changement des controles.
-- Les simulations qui demandent une selection manuelle d'un point indiquent `non selectionne` lorsque la carte de l'application affiche aussi une valeur vide avant selection.
+- Les champs magnetiques et electriques utilisent un point fixe de reference pour rendre les valeurs comparables dans ce rapport automatique.
 - Les entrees du catalogue marquees comme verrouillees, en preparation ou "Bientot" ne sont pas incluses, car elles n'ont pas de statistiques de simulation exploitables.
 - Pour les calculs qui dependent de la taille du graphe, le script utilise une taille representative de 640 x 450.
 
@@ -69,26 +69,26 @@ Entrees exclues du rapport pour cette raison : Champ vectoriel, Collisions elast
 
 | # | Fonction | Ordre | Approximation en x=10 | Valeur reelle en x=10 |
 | --- | --- | --- | --- | --- |
-| 1 | sin(x) | 2 | -156.6667 | -0.5440 |
-| 2 | cos(x) | 9 | 121.7535 | -0.8391 |
-| 3 | e^x | 16 | 20952.8870 | 22026.4658 |
+| 1 | sin(x) | 2 | 10.0000 | -0.5440 |
+| 2 | cos(x) | 9 | 1458.9365 | -0.8391 |
+| 3 | e^x | 16 | 21430.8347 | 22026.4658 |
 | 4 | ln(1+x) | 4 | -2206.6667 | 2.3979 |
-| 5 | 1/(1-x) | 11 | 1.111e+10 | -0.1111 |
-| 6 | arctan(x) | 18 | -2.827e+33 | 1.4711 |
-| 7 | sin(x) | 6 | -1056.9392 | -0.5440 |
-| 8 | cos(x) | 13 | -0.6205 | -0.8391 |
-| 9 | e^x | 1 | 1.0000 | 22026.4658 |
+| 5 | 1/(1-x) | 11 | 1.111e+11 | -0.1111 |
+| 6 | arctan(x) | 18 | 5.816e+15 | 1.4711 |
+| 7 | sin(x) | 6 | 676.6667 | -0.5440 |
+| 8 | cos(x) | 13 | 790.8803 | -0.8391 |
+| 9 | e^x | 1 | 11.0000 | 22026.4658 |
 | 10 | ln(1+x) | 8 | -1.122e+7 | 2.3979 |
-| 11 | 1/(1-x) | 15 | 1.111e+14 | -0.1111 |
-| 12 | arctan(x) | 3 | 19676.6667 | 1.4711 |
-| 13 | sin(x) | 10 | -16.8119 | -0.5440 |
-| 14 | cos(x) | 18 | -0.8391 | -0.8391 |
-| 15 | e^x | 5 | 644.3333 | 22026.4658 |
+| 11 | 1/(1-x) | 15 | 1.111e+15 | -0.1111 |
+| 12 | arctan(x) | 3 | -323.3333 | 1.4711 |
+| 13 | sin(x) | 10 | 1448.2716 | -0.5440 |
+| 14 | cos(x) | 18 | -34.4386 | -0.8391 |
+| 15 | e^x | 5 | 1477.6667 | 22026.4658 |
 | 16 | ln(1+x) | 13 | 6.941e+11 | 2.3979 |
-| 17 | 1/(1-x) | 20 | 1.111e+19 | -0.1111 |
-| 18 | arctan(x) | 8 | -6.591e+13 | 1.4711 |
-| 19 | sin(x) | 15 | -0.5429 | -0.5440 |
-| 20 | cos(x) | 3 | 367.6667 | -0.8391 |
+| 17 | 1/(1-x) | 20 | 1.111e+20 | -0.1111 |
+| 18 | arctan(x) | 8 | -1.409e+6 | 1.4711 |
+| 19 | sin(x) | 15 | -215.7512 | -0.5440 |
+| 20 | cos(x) | 3 | -49.0000 | -0.8391 |
 
 
 ## Limites
@@ -177,22 +177,22 @@ Entrees exclues du rapport pour cette raison : Champ vectoriel, Collisions elast
 | 2 | Harmonique | 95 | 5.13635 | diverge |
 | 3 | Bale | 35 | 1.61677 | 0.02817 |
 | 4 | Alternee | 70 | 0.68606 | 0.00709 |
-| 5 | Leibniz | 10 | -0.19192 | 0.97732 |
+| 5 | Leibniz | 10 | 0.76046 | 0.02494 |
 | 6 | Geometrique | 45 | 1.00000 | 1.00000 |
 | 7 | Harmonique | 80 | 4.96548 | diverge |
 | 8 | Bale | 20 | 1.59616 | 0.04877 |
 | 9 | Alternee | 55 | 0.70216 | 0.00901 |
-| 10 | Leibniz | 90 | -0.21185 | 0.99725 |
+| 10 | Leibniz | 90 | 0.78262 | 0.00278 |
 | 11 | Geometrique | 30 | 1.00000 | 1.00000 |
 | 12 | Harmonique | 65 | 4.75928 | diverge |
 | 13 | Bale | 5 | 1.46361 | 0.18132 |
 | 14 | Alternee | 40 | 0.68080 | 0.01234 |
-| 15 | Leibniz | 75 | -0.21789 | 1.00329 |
+| 15 | Leibniz | 75 | 0.78873 | 0.00333 |
 | 16 | Geometrique | 15 | 0.99997 | 1.00003 |
 | 17 | Harmonique | 50 | 4.49921 | diverge |
 | 18 | Bale | 85 | 1.63324 | 0.01170 |
 | 19 | Alternee | 25 | 0.71275 | 0.01960 |
-| 20 | Leibniz | 60 | -0.21050 | 0.99590 |
+| 20 | Leibniz | 60 | 0.78123 | 0.00417 |
 
 
 ## Gravite
@@ -327,54 +327,54 @@ Entrees exclues du rapport pour cette raison : Champ vectoriel, Collisions elast
 
 ## Champs magnetiques
 
-| # | Nombre de fils | Courant | Champ d un fil a 8 cm | Superposition | Champ total selectionne |
+| # | Nombre de fils | Courant | Champ d un fil a 8 cm | Fils superposes | Champ au point fixe |
 | --- | --- | --- | --- | --- | --- |
-| 1 | 4 | 0.6 A | 1.50 uT | 4 fils | non selectionne |
-| 2 | 6 | 1.6 A | 4.00 uT | 6 fils | non selectionne |
-| 3 | 2 | 2.5 A | 6.25 uT | 2 fils | non selectionne |
-| 4 | 4 | 0.9 A | 2.25 uT | 4 fils | non selectionne |
-| 5 | 1 | 1.8 A | 4.50 uT | 1 fils | non selectionne |
-| 6 | 3 | 2.8 A | 7.00 uT | 3 fils | non selectionne |
-| 7 | 5 | 1.2 A | 3.00 uT | 5 fils | non selectionne |
-| 8 | 2 | 2.1 A | 5.25 uT | 2 fils | non selectionne |
-| 9 | 4 | 0.5 A | 1.25 uT | 4 fils | non selectionne |
-| 10 | 5 | 1.5 A | 3.75 uT | 5 fils | non selectionne |
-| 11 | 2 | 2.4 A | 6.00 uT | 2 fils | non selectionne |
-| 12 | 4 | 0.8 A | 2.00 uT | 4 fils | non selectionne |
-| 13 | 6 | 1.7 A | 4.25 uT | 6 fils | non selectionne |
-| 14 | 3 | 2.7 A | 6.75 uT | 3 fils | non selectionne |
-| 15 | 5 | 1.1 A | 2.75 uT | 5 fils | non selectionne |
-| 16 | 1 | 2.0 A | 5.00 uT | 1 fils | non selectionne |
-| 17 | 3 | 2.9 A | 7.25 uT | 3 fils | non selectionne |
-| 18 | 5 | 1.4 A | 3.50 uT | 5 fils | non selectionne |
-| 19 | 2 | 2.3 A | 5.75 uT | 2 fils | non selectionne |
-| 20 | 4 | 0.7 A | 1.75 uT | 4 fils | non selectionne |
+| 1 | 4 | 0.6 A | 1.50 uT | 4 fils | 6.00 uT |
+| 2 | 6 | 1.6 A | 4.00 uT | 6 fils | 24.00 uT |
+| 3 | 2 | 2.5 A | 6.25 uT | 2 fils | 12.50 uT |
+| 4 | 4 | 0.9 A | 2.25 uT | 4 fils | 9.00 uT |
+| 5 | 1 | 1.8 A | 4.50 uT | 1 fils | 4.50 uT |
+| 6 | 3 | 2.8 A | 7.00 uT | 3 fils | 21.00 uT |
+| 7 | 5 | 1.2 A | 3.00 uT | 5 fils | 15.00 uT |
+| 8 | 2 | 2.1 A | 5.25 uT | 2 fils | 10.50 uT |
+| 9 | 4 | 0.5 A | 1.25 uT | 4 fils | 5.00 uT |
+| 10 | 5 | 1.5 A | 3.75 uT | 5 fils | 18.75 uT |
+| 11 | 2 | 2.4 A | 6.00 uT | 2 fils | 12.00 uT |
+| 12 | 4 | 0.8 A | 2.00 uT | 4 fils | 8.00 uT |
+| 13 | 6 | 1.7 A | 4.25 uT | 6 fils | 25.50 uT |
+| 14 | 3 | 2.7 A | 6.75 uT | 3 fils | 20.25 uT |
+| 15 | 5 | 1.1 A | 2.75 uT | 5 fils | 13.75 uT |
+| 16 | 1 | 2.0 A | 5.00 uT | 1 fils | 5.00 uT |
+| 17 | 3 | 2.9 A | 7.25 uT | 3 fils | 21.75 uT |
+| 18 | 5 | 1.4 A | 3.50 uT | 5 fils | 17.50 uT |
+| 19 | 2 | 2.3 A | 5.75 uT | 2 fils | 11.50 uT |
+| 20 | 4 | 0.7 A | 1.75 uT | 4 fils | 7.00 uT |
 
 
 ## Champs electriques
 
-| # | Configuration | Charges + | Charges - | Champ total au centre | Champ total selectionne |
+| # | Configuration | Charges + | Charges - | Champ total au centre | Champ au point fixe |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Dipole | 1 | 1 | 1.600e+6 N/C | non selectionne |
-| 2 | Deux positives | 2 | 0 | 0.00 N/C | non selectionne |
-| 3 | Quadrupole | 2 | 2 | 0.00 N/C | non selectionne |
-| 4 | Charge seule | 1 | 0 | 3.200e+6 N/C | non selectionne |
-| 5 | Dipole | 1 | 1 | 1.600e+6 N/C | non selectionne |
-| 6 | Deux positives | 2 | 0 | 0.00 N/C | non selectionne |
-| 7 | Quadrupole | 2 | 2 | 0.00 N/C | non selectionne |
-| 8 | Charge seule | 1 | 0 | 3.200e+6 N/C | non selectionne |
-| 9 | Dipole | 1 | 1 | 1.600e+6 N/C | non selectionne |
-| 10 | Deux positives | 2 | 0 | 0.00 N/C | non selectionne |
-| 11 | Quadrupole | 2 | 2 | 0.00 N/C | non selectionne |
-| 12 | Charge seule | 1 | 0 | 3.200e+6 N/C | non selectionne |
-| 13 | Dipole | 1 | 1 | 1.600e+6 N/C | non selectionne |
-| 14 | Deux positives | 2 | 0 | 0.00 N/C | non selectionne |
-| 15 | Quadrupole | 2 | 2 | 0.00 N/C | non selectionne |
-| 16 | Charge seule | 1 | 0 | 3.200e+6 N/C | non selectionne |
-| 17 | Dipole | 1 | 1 | 1.600e+6 N/C | non selectionne |
-| 18 | Deux positives | 2 | 0 | 0.00 N/C | non selectionne |
-| 19 | Quadrupole | 2 | 2 | 0.00 N/C | non selectionne |
-| 20 | Charge seule | 1 | 0 | 3.200e+6 N/C | non selectionne |
+| 1 | Dipole | 1 | 1 | 1.600e+6 N/C | 1.600e+6 N/C |
+| 2 | Deux positives | 2 | 0 | 0.00 N/C | 0.00 N/C |
+| 3 | Quadrupole | 2 | 2 | 0.00 N/C | 0.00 N/C |
+| 4 | Charge seule | 1 | 0 | 3.200e+6 N/C | 3.200e+6 N/C |
+| 5 | Dipole | 1 | 1 | 1.600e+6 N/C | 1.600e+6 N/C |
+| 6 | Deux positives | 2 | 0 | 0.00 N/C | 0.00 N/C |
+| 7 | Quadrupole | 2 | 2 | 0.00 N/C | 0.00 N/C |
+| 8 | Charge seule | 1 | 0 | 3.200e+6 N/C | 3.200e+6 N/C |
+| 9 | Dipole | 1 | 1 | 1.600e+6 N/C | 1.600e+6 N/C |
+| 10 | Deux positives | 2 | 0 | 0.00 N/C | 0.00 N/C |
+| 11 | Quadrupole | 2 | 2 | 0.00 N/C | 0.00 N/C |
+| 12 | Charge seule | 1 | 0 | 3.200e+6 N/C | 3.200e+6 N/C |
+| 13 | Dipole | 1 | 1 | 1.600e+6 N/C | 1.600e+6 N/C |
+| 14 | Deux positives | 2 | 0 | 0.00 N/C | 0.00 N/C |
+| 15 | Quadrupole | 2 | 2 | 0.00 N/C | 0.00 N/C |
+| 16 | Charge seule | 1 | 0 | 3.200e+6 N/C | 3.200e+6 N/C |
+| 17 | Dipole | 1 | 1 | 1.600e+6 N/C | 1.600e+6 N/C |
+| 18 | Deux positives | 2 | 0 | 0.00 N/C | 0.00 N/C |
+| 19 | Quadrupole | 2 | 2 | 0.00 N/C | 0.00 N/C |
+| 20 | Charge seule | 1 | 0 | 3.200e+6 N/C | 3.200e+6 N/C |
 
 
 ## Optique et refraction
@@ -537,52 +537,52 @@ Entrees exclues du rapport pour cette raison : Champ vectoriel, Collisions elast
 
 | # | Taille | Cas | Comparaisons | Echanges/deplacements |
 | --- | --- | --- | --- | --- |
-| 1 | 18 | aleatoire | 58 | 58 |
-| 2 | 10 | meilleur | 15 | 15 |
-| 3 | 15 | pire | 31 | 31 |
-| 4 | 20 | aleatoire | 67 | 67 |
-| 5 | 11 | meilleur | 17 | 17 |
-| 6 | 16 | pire | 32 | 32 |
-| 7 | 7 | aleatoire | 9 | 9 |
-| 8 | 13 | meilleur | 22 | 22 |
-| 9 | 18 | pire | 41 | 41 |
-| 10 | 9 | aleatoire | 21 | 21 |
-| 11 | 14 | meilleur | 25 | 25 |
-| 12 | 19 | pire | 45 | 45 |
-| 13 | 11 | aleatoire | 28 | 28 |
-| 14 | 16 | meilleur | 32 | 32 |
-| 15 | 7 | pire | 11 | 11 |
-| 16 | 12 | aleatoire | 30 | 30 |
-| 17 | 17 | meilleur | 33 | 33 |
-| 18 | 8 | pire | 12 | 12 |
-| 19 | 14 | aleatoire | 36 | 36 |
-| 20 | 19 | meilleur | 37 | 37 |
+| 1 | 18 | aleatoire | 58 | 152 |
+| 2 | 10 | meilleur | 19 | 68 |
+| 3 | 15 | pire | 28 | 118 |
+| 4 | 20 | aleatoire | 67 | 176 |
+| 5 | 11 | meilleur | 22 | 78 |
+| 6 | 16 | pire | 32 | 128 |
+| 7 | 7 | aleatoire | 11 | 40 |
+| 8 | 13 | meilleur | 27 | 98 |
+| 9 | 18 | pire | 35 | 152 |
+| 10 | 9 | aleatoire | 19 | 58 |
+| 11 | 14 | meilleur | 29 | 108 |
+| 12 | 19 | pire | 37 | 164 |
+| 13 | 11 | aleatoire | 28 | 78 |
+| 14 | 16 | meilleur | 32 | 128 |
+| 15 | 7 | pire | 9 | 40 |
+| 16 | 12 | aleatoire | 32 | 88 |
+| 17 | 17 | meilleur | 37 | 140 |
+| 18 | 8 | pire | 12 | 48 |
+| 19 | 14 | aleatoire | 38 | 108 |
+| 20 | 19 | meilleur | 45 | 164 |
 
 
 ## Tri rapide
 
 | # | Taille | Cas | Comparaisons | Echanges/deplacements |
 | --- | --- | --- | --- | --- |
-| 1 | 7 | aleatoire | 21 | 27 |
-| 2 | 12 | meilleur | 66 | 77 |
-| 3 | 17 | pire | 136 | 80 |
-| 4 | 8 | aleatoire | 18 | 14 |
-| 5 | 13 | meilleur | 78 | 90 |
-| 6 | 19 | pire | 171 | 99 |
-| 7 | 10 | aleatoire | 25 | 18 |
-| 8 | 15 | meilleur | 105 | 119 |
-| 9 | 6 | pire | 15 | 11 |
-| 10 | 11 | aleatoire | 31 | 26 |
-| 11 | 17 | meilleur | 136 | 152 |
-| 12 | 8 | pire | 28 | 19 |
-| 13 | 13 | aleatoire | 38 | 22 |
-| 14 | 18 | meilleur | 153 | 170 |
-| 15 | 9 | pire | 36 | 24 |
-| 16 | 14 | aleatoire | 55 | 61 |
-| 17 | 20 | meilleur | 190 | 209 |
-| 18 | 11 | pire | 55 | 35 |
-| 19 | 16 | aleatoire | 58 | 52 |
-| 20 | 7 | meilleur | 21 | 27 |
+| 1 | 7 | aleatoire | 21 | 0 |
+| 2 | 12 | meilleur | 66 | 0 |
+| 3 | 17 | pire | 136 | 8 |
+| 4 | 8 | aleatoire | 18 | 4 |
+| 5 | 13 | meilleur | 78 | 0 |
+| 6 | 19 | pire | 171 | 9 |
+| 7 | 10 | aleatoire | 25 | 6 |
+| 8 | 15 | meilleur | 105 | 0 |
+| 9 | 6 | pire | 15 | 3 |
+| 10 | 11 | aleatoire | 31 | 11 |
+| 11 | 17 | meilleur | 136 | 0 |
+| 12 | 8 | pire | 28 | 4 |
+| 13 | 13 | aleatoire | 38 | 11 |
+| 14 | 18 | meilleur | 153 | 0 |
+| 15 | 9 | pire | 36 | 4 |
+| 16 | 14 | aleatoire | 55 | 6 |
+| 17 | 20 | meilleur | 190 | 0 |
+| 18 | 11 | pire | 55 | 5 |
+| 19 | 16 | aleatoire | 58 | 13 |
+| 20 | 7 | meilleur | 21 | 0 |
 
 
 ## ArrayList

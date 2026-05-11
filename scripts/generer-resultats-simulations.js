@@ -26,6 +26,12 @@ function fmt(value, digits = 2) {
   return value.toFixed(digits);
 }
 
+function assert(condition, message) {
+  if (!condition) {
+    throw new Error(message);
+  }
+}
+
 function row(values) {
   return `| ${values.join(' | ')} |`;
 }
@@ -77,12 +83,12 @@ function riemann(fn, a, b, n, method) {
 }
 
 const taylorFunctions = [
-  { name: 'sin(x)', fn: Math.sin, approx: (x, n) => Array.from({ length: n }, (_, k) => ((-1) ** k * x ** (2 * k + 1)) / factorielle(2 * k + 1)).reduce((a, b) => a + b, 0) },
-  { name: 'cos(x)', fn: Math.cos, approx: (x, n) => Array.from({ length: n }, (_, k) => ((-1) ** k * x ** (2 * k)) / factorielle(2 * k)).reduce((a, b) => a + b, 0) },
-  { name: 'e^x', fn: Math.exp, approx: (x, n) => Array.from({ length: n }, (_, k) => x ** k / factorielle(k)).reduce((a, b) => a + b, 0) },
-  { name: 'ln(1+x)', fn: (x) => Math.log(1 + x), approx: (x, n) => Array.from({ length: n }, (_, k) => ((-1) ** (k + 2) * x ** (k + 1)) / (k + 1)).reduce((a, b) => a + b, 0) },
-  { name: '1/(1-x)', fn: (x) => 1 / (1 - x), approx: (x, n) => Array.from({ length: n }, (_, k) => x ** k).reduce((a, b) => a + b, 0) },
-  { name: 'arctan(x)', fn: Math.atan, approx: (x, n) => Array.from({ length: n }, (_, k) => ((-1) ** k * x ** (2 * k + 1)) / (2 * k + 1)).reduce((a, b) => a + b, 0) },
+  { name: 'sin(x)', fn: Math.sin, approx: (x, n) => Array.from({ length: Math.floor((n - 1) / 2) + 1 }, (_, k) => ((-1) ** k * x ** (2 * k + 1)) / factorielle(2 * k + 1)).reduce((a, b) => a + b, 0) },
+  { name: 'cos(x)', fn: Math.cos, approx: (x, n) => Array.from({ length: Math.floor(n / 2) + 1 }, (_, k) => ((-1) ** k * x ** (2 * k)) / factorielle(2 * k)).reduce((a, b) => a + b, 0) },
+  { name: 'e^x', fn: Math.exp, approx: (x, n) => Array.from({ length: n + 1 }, (_, k) => x ** k / factorielle(k)).reduce((a, b) => a + b, 0) },
+  { name: 'ln(1+x)', fn: (x) => Math.log(1 + x), approx: (x, n) => Array.from({ length: n }, (_, k) => ((-1) ** k * x ** (k + 1)) / (k + 1)).reduce((a, b) => a + b, 0) },
+  { name: '1/(1-x)', fn: (x) => 1 / (1 - x), approx: (x, n) => Array.from({ length: n + 1 }, (_, k) => x ** k).reduce((a, b) => a + b, 0) },
+  { name: 'arctan(x)', fn: Math.atan, approx: (x, n) => Array.from({ length: Math.floor((n - 1) / 2) + 1 }, (_, k) => ((-1) ** k * x ** (2 * k + 1)) / (2 * k + 1)).reduce((a, b) => a + b, 0) },
 ];
 
 const limitFunctions = [
@@ -118,10 +124,12 @@ const series = [
   { name: 'Harmonique', converge: false, limit: Infinity, term: (n) => 1 / n },
   { name: 'Bale', converge: true, limit: Math.PI ** 2 / 6, term: (n) => 1 / (n * n) },
   { name: 'Alternee', converge: true, limit: Math.log(2), term: (n) => (-1) ** (n + 1) / n },
-  { name: 'Leibniz', converge: true, limit: Math.PI / 4, term: (n) => (-1) ** n / (2 * n + 1) },
+  { name: 'Leibniz', converge: true, limit: Math.PI / 4, sum: (n) => Array.from({ length: n }, (_, k) => ((-1) ** k) / (2 * k + 1)).reduce((a, b) => a + b, 0) },
 ];
 
 function sumSeries(s, n) {
+  if (s.sum) return s.sum(n);
+
   let sum = 0;
   for (let i = 1; i <= n; i += 1) sum += s.term(i);
   return sum;
@@ -184,9 +192,45 @@ function sortStats(type, values) {
   } else if (type === 'insertion') {
     for (let i = 1; i < a.length; i += 1) { const key = a[i]; let j = i - 1; while (j >= 0) { comparisons += 1; if (a[j] <= key) break; a[j + 1] = a[j]; swaps += 1; j -= 1; } a[j + 1] = key; }
   } else if (type === 'fusion') {
-    function mergeSort(arr) { if (arr.length <= 1) return arr; const mid = Math.floor(arr.length / 2); const l = mergeSort(arr.slice(0, mid)); const r = mergeSort(arr.slice(mid)); const out = []; while (l.length && r.length) { comparisons += 1; out.push(l[0] <= r[0] ? l.shift() : r.shift()); swaps += 1; } return out.concat(l, r); } mergeSort(a);
+    const aux = [...a];
+    function merge(lo, mid, hi) {
+      for (let k = lo; k <= hi; k += 1) {
+        aux[k] = a[k];
+        swaps += 1;
+      }
+
+      let i = lo;
+      let j = mid + 1;
+      for (let k = lo; k <= hi; k += 1) {
+        if (i > mid) {
+          a[k] = aux[j];
+          j += 1;
+        } else if (j > hi) {
+          a[k] = aux[i];
+          i += 1;
+        } else {
+          comparisons += 1;
+          if (aux[j] < aux[i]) {
+            a[k] = aux[j];
+            j += 1;
+          } else {
+            a[k] = aux[i];
+            i += 1;
+          }
+        }
+        swaps += 1;
+      }
+    }
+    function mergeSort(lo, hi) {
+      if (hi <= lo) return;
+      const mid = Math.floor((lo + hi) / 2);
+      mergeSort(lo, mid);
+      mergeSort(mid + 1, hi);
+      merge(lo, mid, hi);
+    }
+    mergeSort(0, a.length - 1);
   } else {
-    function quick(lo, hi) { if (lo >= hi) return; const pivot = a[hi]; let i = lo; for (let j = lo; j < hi; j += 1) { comparisons += 1; if (a[j] <= pivot) { [a[i], a[j]] = [a[j], a[i]]; swaps += 1; i += 1; } } [a[i], a[hi]] = [a[hi], a[i]]; swaps += 1; quick(lo, i - 1); quick(i + 1, hi); } quick(0, a.length - 1);
+    function quick(lo, hi) { if (lo >= hi) return; const pivot = a[hi]; let i = lo; for (let j = lo; j < hi; j += 1) { comparisons += 1; if (a[j] <= pivot) { if (i !== j) { [a[i], a[j]] = [a[j], a[i]]; swaps += 1; } i += 1; } } if (i !== hi) { [a[i], a[hi]] = [a[hi], a[i]]; swaps += 1; } quick(lo, i - 1); quick(i + 1, hi); } quick(0, a.length - 1);
   }
   return { comparisons, swaps };
 }
@@ -291,14 +335,15 @@ function generateRows() {
     return [i + 1, `${fmt(omega, 1)} rad/s`, `${fmt(radiusCm, 0)} cm`, `${fmt(mass, 1)} kg`, `${fmt(mass * omega * omega * r, 2)} N`, `${fmt(omega * r, 2)} m/s`, `${fmt((2 * Math.PI) / omega, 2)} s`, `${fmt(omega * omega * r, 2)} m/s2`];
   })));
 
-  sections.push(makeSection('Champs magnetiques', ['#', 'Nombre de fils', 'Courant', 'Champ d un fil a 8 cm', 'Superposition', 'Champ total selectionne'], Array.from({ length: RUNS }, (_, i) => {
+  sections.push(makeSection('Champs magnetiques', ['#', 'Nombre de fils', 'Courant', 'Champ d un fil a 8 cm', 'Fils superposes', 'Champ au point fixe'], Array.from({ length: RUNS }, (_, i) => {
     const wires = Math.round(sample(i + 1, 1, 6, 1, 1));
     const current = sample(i + 1, 0.5, 3, 0.1, 4);
     const ref = (MU0 * current) / (2 * Math.PI * 0.08) * 1e6;
-    return [i + 1, wires, `${fmt(current, 1)} A`, `${fmt(ref, 2)} uT`, `${wires} fils`, 'non selectionne'];
+    const selected = ref * wires;
+    return [i + 1, wires, `${fmt(current, 1)} A`, `${fmt(ref, 2)} uT`, `${wires} fils`, `${fmt(selected, 2)} uT`];
   })));
 
-  sections.push(makeSection('Champs electriques', ['#', 'Configuration', 'Charges +', 'Charges -', 'Champ total au centre', 'Champ total selectionne'], Array.from({ length: RUNS }, (_, i) => {
+  sections.push(makeSection('Champs electriques', ['#', 'Configuration', 'Charges +', 'Charges -', 'Champ total au centre', 'Champ au point fixe'], Array.from({ length: RUNS }, (_, i) => {
     const configs = [
       { name: 'Dipole', pos: 1, neg: 1, center: 1.6e6 },
       { name: 'Deux positives', pos: 2, neg: 0, center: 0 },
@@ -306,7 +351,7 @@ function generateRows() {
       { name: 'Charge seule', pos: 1, neg: 0, center: 3.2e6 },
     ];
     const c = configs[i % configs.length];
-    return [i + 1, c.name, c.pos, c.neg, `${fmt(c.center, 2)} N/C`, 'non selectionne'];
+    return [i + 1, c.name, c.pos, c.neg, `${fmt(c.center, 2)} N/C`, `${fmt(c.center, 2)} N/C`];
   })));
 
   sections.push(makeSection('Optique et refraction', ['#', 'n1', 'n2', 'Angle incident', 'Angle refracte', 'Angle critique', 'Etat', 'Angle reflechi', 'Deviation', 'Direction'], Array.from({ length: RUNS }, (_, i) => {
@@ -371,6 +416,23 @@ function generateRows() {
   return sections;
 }
 
+function runAssertions() {
+  assert(fmt(8.882e-16).includes('e-16'), 'La notation scientifique doit conserver le signe negatif de l exposant.');
+
+  const exp = taylorFunctions.find((f) => f.name === 'e^x');
+  assert(Math.abs(exp.approx(10, 1) - 11) < 1e-9, 'Taylor e^x ordre 1 en x=10 doit valoir 11.');
+
+  const leibniz = series.find((s) => s.name === 'Leibniz');
+  const leibniz10 = sumSeries(leibniz, 10);
+  assert(leibniz10 > 0.72 && leibniz10 < 0.85, 'La serie de Leibniz doit rester positive et proche de pi/4.');
+
+  const fusion = sortStats('fusion', Array.from({ length: 18 }, (_, i) => 18 - i));
+  assert(fusion.swaps > fusion.comparisons, 'Tri fusion doit compter les deplacements separement des comparaisons.');
+
+  const rapide = sortStats('rapide', Array.from({ length: 12 }, (_, i) => i + 1));
+  assert(rapide.swaps <= rapide.comparisons, 'Tri rapide doit compter uniquement les vrais echanges.');
+}
+
 const header = `# Resultats des simulations - 20 executions par simulation
 
 Fichier genere automatiquement par \`node scripts/generer-resultats-simulations.js\`.
@@ -379,12 +441,13 @@ Les tableaux ci-dessous reprennent les valeurs affichees dans les cartes de stat
 
 Notes de lecture :
 - Les simulations animees sont calculees a l'etat initial apres changement des controles.
-- Les simulations qui demandent une selection manuelle d'un point indiquent \`non selectionne\` lorsque la carte de l'application affiche aussi une valeur vide avant selection.
+- Les champs magnetiques et electriques utilisent un point fixe de reference pour rendre les valeurs comparables dans ce rapport automatique.
 - Les entrees du catalogue marquees comme verrouillees, en preparation ou "Bientot" ne sont pas incluses, car elles n'ont pas de statistiques de simulation exploitables.
 - Pour les calculs qui dependent de la taille du graphe, le script utilise une taille representative de ${GRAPH.width} x ${GRAPH.height}.
 
 Entrees exclues du rapport pour cette raison : Champ vectoriel, Collisions elastiques, les cartes "Bientot" de mathematiques et physique, Pile - LIFO, File - FIFO, Liste chainee, Tableaux, Chaines et caracteres, Transtypage, Multithreading, Collisions de hachage et Heritage.
 `;
 
+runAssertions();
 fs.writeFileSync(OUT, `${header}\n${generateRows().join('\n')}\n`, 'utf8');
 console.log(`Resultats ecrits dans ${OUT}`);

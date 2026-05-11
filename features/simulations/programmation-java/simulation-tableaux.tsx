@@ -440,7 +440,7 @@ export function SimulationTableaux() {
               </View>
             </View>
 
-            <View style={[styles.barreLaterale, { width: largeurPanneau }]}>
+            <View style={[styles.barreLaterale, estLarge ? styles.barreLateraleAligneeAnimation : null, { width: largeurPanneau }]}>
               <View style={styles.panneau}>
                 <TexteTheme lightColor={themeActif.mutedInk} style={styles.titrePanneau}>
                   Réglages
@@ -540,6 +540,9 @@ function creerStyles() {
     },
     barreLaterale: {
       gap: 16,
+    },
+    barreLateraleAligneeAnimation: {
+      marginTop: 104,
     },
     blocCurseur: {
       gap: 12,

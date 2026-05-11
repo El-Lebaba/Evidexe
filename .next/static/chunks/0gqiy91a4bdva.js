@@ -1,5 +1,0 @@
-__turbopack_load_page_chunks__("/achievements", [
-  "static/chunks/145gfs6yrvp00.js",
-  "static/chunks/0214io~1q9-uh.js",
-  "static/chunks/turbopack-0vvhu8pgcccit.js"
-])
