@@ -232,6 +232,7 @@ const succesProgressionDefaut = [
 
 let donneesMemoire: DonneesApplication | null = null;
 let chargementDonneesMemoire: Promise<DonneesApplication> | null = null;
+const ecouteursParametres = new Set<() => void>();
 
 function maintenantIso() {
   return new Date().toISOString();
@@ -505,6 +506,10 @@ function compterCoursTerminesParMatiere(donneesUtilisateur: DonneesUtilisateur, 
 }
 
 function emettreChangementParametres() {
+  ecouteursParametres.forEach((ecouteur) => {
+    ecouteur();
+  });
+
   if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
     window.dispatchEvent(new Event('evidex_settings_changed'));
   }
@@ -934,6 +939,14 @@ export const donneesLocales = {
 
   obtenirParametres() {
     return { ...obtenirDonneesUtilisateurActif().settings };
+  },
+
+  ajouterEcouteurParametres(ecouteur: () => void) {
+    ecouteursParametres.add(ecouteur);
+
+    return () => {
+      ecouteursParametres.delete(ecouteur);
+    };
   },
 
   enregistrerParametres(parametres: ParametresApplication) {
