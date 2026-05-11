@@ -7,7 +7,7 @@
     "prestart": "npm run verifier-node",
     "start": "npx expo start -c --host lan",
     "prestart:tunnel": "npm run verifier-node",
-    "start:tunnel": "npx expo start -c --tunnel",
+    "start:tunnel": "npx expo start --tunnel",
     "prestartlocal": "npm run verifier-node",
     "startlocal": "npx expo start -c",
     "reinitialiser-projet": "node ./scripts/reinitialiser-projet.js",

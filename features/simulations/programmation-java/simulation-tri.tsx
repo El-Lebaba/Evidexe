@@ -17,7 +17,6 @@ import { VueTheme } from '@/components/vue-theme';
 import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
 import {
   EnteteEcranSimulation,
-  ESPACE_CONTENU_ENTETE_SIMULATION,
   HAUTEUR_TOTALE_ENTETE_SIMULATION,
 } from '@/features/simulations/core/entete-ecran-simulation';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
@@ -811,7 +810,7 @@ export function EcranSimulationTri({ type }: ProprietesEcranSimulationTri) {
               </View>
             </View>
 
-            <View style={[styles.barreLaterale, { width: largeurPanneau }]}>
+            <View style={[styles.barreLaterale, { width: largeurPanneau, top: estLarge ? 105 : 10}]}>
               <View style={styles.panneau}>
                 <CurseurTri
                   desactive={lectureActive}
@@ -1032,9 +1031,9 @@ function creerStyles() {
     contenu: {
       alignItems: 'center',
       flexGrow: 1,
-      paddingBottom: 28,
+      paddingBottom: 58,
       paddingHorizontal: 12,
-      paddingTop: HAUTEUR_TOTALE_ENTETE_SIMULATION + ESPACE_CONTENU_ENTETE_SIMULATION,
+      paddingTop: HAUTEUR_TOTALE_ENTETE_SIMULATION + 12,
     },
     description: {
       color: themeActif.mutedInk,
@@ -1115,7 +1114,6 @@ function creerStyles() {
       gap: 18,
       padding: 16,
       width: '100%',
-      top: 105,
     },
     titrePanneau: {
       color: themeActif.mutedInk,

@@ -19,7 +19,6 @@ import { VueTheme } from '@/components/vue-theme';
 import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
 import {
   EnteteEcranSimulation,
-  ESPACE_CONTENU_ENTETE_SIMULATION,
   HAUTEUR_TOTALE_ENTETE_SIMULATION,
 } from '@/features/simulations/core/entete-ecran-simulation';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
@@ -770,7 +769,7 @@ function creerStyles() {
       flexGrow: 1,
       paddingBottom: 28,
       paddingHorizontal: 12,
-      paddingTop: HAUTEUR_TOTALE_ENTETE_SIMULATION + ESPACE_CONTENU_ENTETE_SIMULATION,
+      paddingTop: HAUTEUR_TOTALE_ENTETE_SIMULATION + 12,
     },
     corpsNoeud: {
       alignItems: 'center',

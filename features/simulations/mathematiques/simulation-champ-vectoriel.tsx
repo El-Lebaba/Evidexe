@@ -42,11 +42,11 @@ type Particle = {
 let themeActif = obtenirThemesSimulationEcransInitial().champVectoriel;
 let SIMULATION_PAGE_BACKGROUND = themeActif.background === '#121A17' ? themeActif.background : '#EAE3D2';
 const DOMAIN: Domain = { xMax: 4, xMin: -4, yMax: 4, yMin: -4 };
-const PARTICLE_COUNT = Platform.OS === 'web' ? 25 : 3;
-const FIELD_STEPS = Platform.OS === 'web' ? 18 : 3;
-const GRID_LINES_COUNT = Platform.OS === 'web' ? 9 : 3;
-const PARTICLE_INTERVAL_MS = Platform.OS === 'web' ? 40 : 250;
-const PARTICLE_STEP = Platform.OS === 'web' ? 0.06 : 0.18;
+const PARTICLE_COUNT = Platform.OS === 'web' ? 25 : 10;
+const FIELD_STEPS = Platform.OS === 'web' ? 18 : 7;
+const GRID_LINES_COUNT = Platform.OS === 'web' ? 9 : 5;
+const PARTICLE_INTERVAL_MS = Platform.OS === 'web' ? 40 : 100;
+const PARTICLE_STEP = Platform.OS === 'web' ? 0.06 : 0.1;
 const RENDER_PARTICLE_GLOW = Platform.OS === 'web';
 
 

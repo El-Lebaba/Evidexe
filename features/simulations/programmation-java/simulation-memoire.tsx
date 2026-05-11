@@ -19,7 +19,6 @@ import { VueTheme } from '@/components/vue-theme';
 import { obtenirThemesSimulationEcrans, obtenirThemesSimulationEcransInitial } from '@/constantes/theme';
 import {
   EnteteEcranSimulation,
-  ESPACE_CONTENU_ENTETE_SIMULATION,
   HAUTEUR_TOTALE_ENTETE_SIMULATION,
 } from '@/features/simulations/core/entete-ecran-simulation';
 import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
@@ -261,11 +260,13 @@ function CarteStatistique({ etiquette, valeur }: { etiquette: string; valeur: st
 
 function BoutonOption({
   children,
+  exemple = false,
   icone,
   onPress,
   selectionne = false,
 }: {
   children: string;
+  exemple?: boolean;
   icone?: keyof typeof MaterialCommunityIcons.glyphMap;
   onPress: () => void;
   selectionne?: boolean;
@@ -275,6 +276,7 @@ function BoutonOption({
       onPress={onPress}
       style={({ hovered, pressed }) => [
         styles.boutonOption,
+        exemple ? styles.boutonOptionExemple : null,
         selectionne ? styles.boutonOptionSelectionne : null,
         pressed || hovered ? styles.boutonOptionAppuye : null,
       ]}>
@@ -286,6 +288,7 @@ function BoutonOption({
         />
       ) : null}
       <TexteTheme
+        numberOfLines={1}
         lightColor={selectionne ? themeActif.activeInk : themeActif.ink}
         style={[styles.texteBoutonOption, selectionne ? styles.texteBoutonOptionSelectionne : null]}>
         {children}
@@ -566,9 +569,9 @@ export function SimulationMemoire() {
             style={[
               styles.zoneTravail,
               estTelephone ? styles.zoneTravailMobile : null,
-              { flexDirection: estLarge ? 'row' : 'column', width: largeurZoneTravail },
+              { flexDirection: estLarge ? 'row' : estTelephone ? 'column-reverse' : 'column', width: largeurZoneTravail },
             ]}>
-            <View style={[styles.colonneSimulation, { width: largeurSimulation }]}>
+            <View style={[styles.colonneSimulation, estTelephone ? styles.colonneSimulationMobile : null, { width: largeurSimulation }]}>
               <View style={styles.blocTitre}>
                 <TexteTheme lightColor={themeActif.mutedInk} style={styles.surtitre}>
                   Simulation Java
@@ -624,6 +627,7 @@ export function SimulationMemoire() {
             <View
               style={[
                 styles.barreLaterale,
+                estTelephone ? styles.barreLateraleMobile : null,
                 estLarge ? styles.barreLateraleAligneeAnimation : null,
                 { width: largeurPanneau },
               ]}>
@@ -656,7 +660,7 @@ export function SimulationMemoire() {
                 </TexteTheme>
                 <View style={styles.grilleExemples}>
                   {EXEMPLES_VALEURS.map((exemple) => (
-                    <BoutonOption key={exemple} onPress={() => appliquerExemple(exemple)}>
+                    <BoutonOption exemple key={exemple} onPress={() => appliquerExemple(exemple)}>
                       {String(exemple)}
                     </BoutonOption>
                   ))}
@@ -726,6 +730,9 @@ function creerStyles() {
     barreLaterale: {
       gap: 16,
     },
+    barreLateraleMobile: {
+      gap: 10,
+    },
     barreLateraleAligneeAnimation: {
       marginTop: 125,
     },
@@ -754,6 +761,12 @@ function creerStyles() {
       minHeight: 44,
       paddingHorizontal: 11,
       paddingVertical: 10,
+    },
+    boutonOptionExemple: {
+      flexBasis: '30%',
+      flexGrow: 1,
+      minWidth: 68,
+      paddingHorizontal: 8,
     },
     boutonOptionAppuye: {
       transform: [{ translateY: 1 }],
@@ -830,6 +843,9 @@ function creerStyles() {
     colonneSimulation: {
       gap: 16,
     },
+    colonneSimulationMobile: {
+      gap: 12,
+    },
     conteneur: {
       backgroundColor: couleurArrierePlan,
       flex: 1,
@@ -839,11 +855,12 @@ function creerStyles() {
       flexGrow: 1,
       paddingBottom: 28,
       paddingHorizontal: 12,
-      paddingTop: HAUTEUR_TOTALE_ENTETE_SIMULATION + ESPACE_CONTENU_ENTETE_SIMULATION,
+      paddingTop: HAUTEUR_TOTALE_ENTETE_SIMULATION + 12,
     },
     contenuMobile: {
       paddingBottom: 22,
       paddingHorizontal: 10,
+      paddingTop: HAUTEUR_TOTALE_ENTETE_SIMULATION + 12,
     },
     description: {
       color: themeActif.mutedInk,
