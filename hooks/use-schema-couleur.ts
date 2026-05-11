@@ -17,17 +17,20 @@ export function useSchemaCouleur() {
     }
 
     rafraichirSchemaCouleur();
+    const retirerEcouteurParametres = donneesLocales.ajouterEcouteurParametres(rafraichirSchemaCouleur);
 
     if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
       window.addEventListener('evidex_settings_changed', rafraichirSchemaCouleur);
       return () => {
         isMounted = false;
+        retirerEcouteurParametres();
         window.removeEventListener('evidex_settings_changed', rafraichirSchemaCouleur);
       };
     }
 
     return () => {
       isMounted = false;
+      retirerEcouteurParametres();
     };
   }, []);
 

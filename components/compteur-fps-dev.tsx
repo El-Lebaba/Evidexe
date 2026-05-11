@@ -27,17 +27,20 @@ export function CompteurFpsDev() {
     }
 
     refreshEnabled();
+    const retirerEcouteurParametres = donneesLocales.ajouterEcouteurParametres(refreshEnabled);
 
     if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
       window.addEventListener('evidex_settings_changed', refreshEnabled);
       return () => {
         isMounted = false;
+        retirerEcouteurParametres();
         window.removeEventListener('evidex_settings_changed', refreshEnabled);
       };
     }
 
     return () => {
       isMounted = false;
+      retirerEcouteurParametres();
     };
   }, []);
   useEffect(() => {
