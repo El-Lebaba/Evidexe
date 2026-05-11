@@ -132,10 +132,7 @@ export function EcranCours() {
           <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <View style={styles.topBar}>
               <Pressable
-                onPress={() => {
-                  router.dismissAll();
-                  router.push('/(tabs)/accueil' as Href);
-                }}
+                onPress={() => router.replace('/(tabs)/accueil' as Href)}
                 style={[
                   styles.backButton,
                   { backgroundColor: themeApplication.soft, borderColor: themeApplication.border },
