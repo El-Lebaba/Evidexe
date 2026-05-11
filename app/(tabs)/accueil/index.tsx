@@ -1398,8 +1398,8 @@ const styles = StyleSheet.create({
   },
   profilePreviewCard: {
     alignSelf: 'center',
-    backgroundColor: 'rgba(255,255,255,0.72)',
-    borderColor: 'rgba(32,36,43,0.08)',
+    backgroundColor: 'rgba(73,81,77,0.34)',
+    borderColor: 'rgba(255,255,255,0.18)',
     borderRadius: 30,
     borderWidth: 1,
     marginTop: 34,
