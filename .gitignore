@@ -5,6 +5,7 @@ node_modules/
 
 # Expo
 .expo/
+.expo-start.*
 dist/
 web-build/
 expo-env.d.ts
@@ -41,4 +42,12 @@ app-example
 # generated native folders
 /ios
 /android
-package-lock.json
+
+# generated web/build artifacts
+/.next/
+
+# local workspaces and scratch files
+.idea/
+.vscode/
+/temp/
+/temp1/

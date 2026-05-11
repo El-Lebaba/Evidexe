@@ -1,7 +1,7 @@
-import { SimulationMathematiques9 } from '@/features/simulations/mathematiques/simulation-mathematiques-9';
+import { EcranSimulationLigne } from '@/features/simulations/core/ecran-simulation-ligne';
 
 export default function EcranMathematiques9() {
-  return <SimulationMathematiques9 />;
+  return <EcranSimulationLigne titre="Bientot" domaine="mathematiques" />;
 }
 
 
