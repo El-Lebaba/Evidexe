@@ -92,19 +92,21 @@ export default function PagePersonnalisationProfil() {
 
     const asset = result.assets[0];
     const largestSide = Math.max(asset.width ?? 0, asset.height ?? 0);
-    const resizeActions: ImageManipulator.Action[] = largestSide > 1000
-      ? [{ resize: { width: 1000, height: 1000 } }]
+    const avatarSize = 512;
+    const resizeActions: ImageManipulator.Action[] = largestSide > avatarSize
+      ? [{ resize: { width: avatarSize, height: avatarSize } }]
       : [];
     const processed = await ImageManipulator.manipulateAsync(
       asset.uri,
       resizeActions,
       {
-        compress: 0.88,
+        base64: true,
+        compress: 0.78,
         format: ImageManipulator.SaveFormat.JPEG,
       },
     );
 
-    setDraftAvatarUri(processed.uri);
+    setDraftAvatarUri(processed.base64 ? `data:image/jpeg;base64,${processed.base64}` : processed.uri);
   }
 
   function supprimerAvatar() {
@@ -123,7 +125,7 @@ export default function PagePersonnalisationProfil() {
     setUser(savedUser);
     setDraftName(savedUser.name ?? 'Utilisateur');
     setDraftAvatarUri(savedUser.avatarUri);
-    setSaveMessage('Info saved.');
+    setSaveMessage('Infos enregistrees.');
   }
 
   return (
@@ -154,8 +156,8 @@ export default function PagePersonnalisationProfil() {
                 <MaterialIcons name="arrow-back" size={22} color={themeActif.text} />
               </Pressable>
               <View style={styles.titleBlock}>
-                <Text style={[styles.title, { color: themeActif.text }]}>Profile customization</Text>
-                <Text style={[styles.subtitle, { color: themeActif.muted }]}>Username and profile picture</Text>
+                <Text style={[styles.title, { color: themeActif.text }]}>Personnalisation du profil</Text>
+                <Text style={[styles.subtitle, { color: themeActif.muted }]}>Pseudo et photo de profil</Text>
               </View>
             </View>
 
@@ -173,7 +175,7 @@ export default function PagePersonnalisationProfil() {
                   onPress={choisirAvatar}
                   style={[styles.secondaryButton, { backgroundColor: themeActif.background, borderColor: `${themeActif.blue}70` }]}>
                   <MaterialIcons name="photo-camera" size={18} color={themeActif.blue} />
-                  <Text style={[styles.secondaryButtonText, { color: themeActif.text }]}>Choose picture</Text>
+                  <Text style={[styles.secondaryButtonText, { color: themeActif.text }]}>Choisir une photo</Text>
                 </Pressable>
                 <Pressable
                   disabled={!draftAvatarUri}
@@ -184,20 +186,20 @@ export default function PagePersonnalisationProfil() {
                     !draftAvatarUri && styles.disabledButton,
                   ]}>
                   <MaterialIcons name="delete-outline" size={18} color={themeActif.red} />
-                  <Text style={[styles.secondaryButtonText, { color: themeActif.text }]}>Remove</Text>
+                  <Text style={[styles.secondaryButtonText, { color: themeActif.text }]}>Supprimer</Text>
                 </Pressable>
               </View>
             </View>
 
             <View style={styles.fieldBlock}>
-              <Text style={[styles.inputLabel, { color: themeActif.muted }]}>Username</Text>
+              <Text style={[styles.inputLabel, { color: themeActif.muted }]}>Pseudo</Text>
               <TextInput
                 value={draftName}
                 onChangeText={(text) => {
                   setDraftName(text);
                   setSaveMessage('');
                 }}
-                placeholder="Username"
+                placeholder="Pseudo"
                 placeholderTextColor={themeActif.muted}
                 maxLength={32}
                 style={[
@@ -215,7 +217,7 @@ export default function PagePersonnalisationProfil() {
               onPress={enregistrerProfil}
               style={[styles.saveButton, { backgroundColor: themeActif.green }]}>
               <MaterialIcons name="save" size={20} color={themeActif.hero} />
-              <Text style={[styles.saveButtonText, { color: themeActif.hero }]}>Save Info</Text>
+              <Text style={[styles.saveButtonText, { color: themeActif.hero }]}>Enregistrer</Text>
             </Pressable>
 
             {saveMessage ? (

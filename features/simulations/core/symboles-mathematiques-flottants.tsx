@@ -105,8 +105,7 @@ export function SymbolesMathematiquesFlottants({ isActive = true, showGlow = tru
 
   return (
     <View
-      pointerEvents="none"
-      style={[styles.container, { backgroundColor: themeActif.background }, style]}>
+      style={[styles.container, styles.pointerEventsNone, { backgroundColor: themeActif.background }, style]}>
       {showGlow ? <View style={[styles.glow, { backgroundColor: glowColor }]} /> : null}
 
       {grainesSymboles.map((item, index) => {
@@ -177,5 +176,8 @@ const styles = StyleSheet.create({
     color: palette.text,
     fontWeight: '700',
     position: 'absolute',
+  },
+  pointerEventsNone: {
+    pointerEvents: 'none' as any,
   },
 });

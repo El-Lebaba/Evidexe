@@ -30,7 +30,7 @@ export default function DispositionOnglets() {
         name="profil/personnalisation"
         options={{
           href: null,
-          title: 'Profile customization',
+          title: 'Personnalisation du profil',
         }}
       />
       <Tabs.Screen

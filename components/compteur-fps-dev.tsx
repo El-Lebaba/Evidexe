@@ -78,7 +78,7 @@ export function CompteurFpsDev() {
     return null;
   }
   return (
-    <View pointerEvents="none" style={styles.container}>
+    <View style={[styles.container, styles.pointerEventsNone]}>
       <Text style={[styles.text, statusStyle]}>{fps || '--'} FPS</Text>
     </View>
   );
@@ -102,6 +102,9 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: 0,
     lineHeight: 14,
+  },
+  pointerEventsNone: {
+    pointerEvents: 'none' as any,
   },
   good: {
     color: '#7CCFBF',

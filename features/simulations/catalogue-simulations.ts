@@ -11,7 +11,7 @@ export type EntreeSimulation = {
   title: string;
 };
 
-function creerEntreesbientôt(
+function creerEntreesBientot(
   section: SectionSimulation,
   prefixe: string,
   debut: number,
@@ -99,22 +99,22 @@ export const CATALOGUE_SIMULATIONS: Record<SectionSimulation, EntreeSimulation[]
       title: 'Séries',
     },
     {
-      description: 'Nouvelle simulation en préparation.',
-      href: '/(tabs)/mathematiques/mathematiques-9',
-      icon: 'progress-question',
+      description: 'Visualise la courbe normale et calcule une probabilite entre deux bornes.',
+      href: '/(tabs)/mathematiques/loi-normale-standard',
+      icon: 'chart-bell-curve',
       statut: 'pret',
-      tags: ['a-venir'],
-      title: 'Bientôt',
+      tags: ['statistiques', 'probabilites', 'distribution'],
+      title: 'Loi normale standard',
     },
     {
-      description: 'Autre simulation à venir bientôt.',
-      href: '/(tabs)/mathematiques/mathematiques-10',
-      icon: 'progress-question',
+      description: 'Compare la loi t avec la normale et explore les intervalles de confiance.',
+      href: '/(tabs)/mathematiques/loi-student',
+      icon: 'chart-bell-curve-cumulative',
       statut: 'pret',
-      tags: ['a-venir'],
-      title: 'Bientôt',
+      tags: ['statistiques', 'probabilites', 'distribution'],
+      title: 'Loi de Student',
     },
-    ...creerEntreesbientôt('mathematiques', 'mathematiques', 11, 10),
+    ...creerEntreesBientot('mathematiques', 'mathematiques', 11, 10),
   ],
   physique: [
     {
@@ -206,7 +206,7 @@ export const CATALOGUE_SIMULATIONS: Record<SectionSimulation, EntreeSimulation[]
       tags: ['mecanique', 'energie'],
       title: 'Collisions élastiques',
     },
-    ...creerEntreesbientôt('physique', 'physique', 12, 9),
+    ...creerEntreesBientot('physique', 'physique', 12, 9),
   ],
   'programmation-java': [
     {

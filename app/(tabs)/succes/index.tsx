@@ -69,7 +69,7 @@ export default function PageSucces() {
           hitSlop={8}
           onPress={() => setSettingsOpen(true)}
           style={[styles.utilityButton, STYLE_BOUTON_CLIQUABLE_WEB, { backgroundColor: themeActif.surface, borderColor: `${themeActif.border}25` }]}>
-          <View pointerEvents="none" style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
+          <View style={[styles.menuIconWrapper, STYLE_VISUEL_NON_CLIQUABLE_WEB]}>
             <View style={[styles.menuIconBar, { backgroundColor: themeActif.text }]} />
             <View style={[styles.menuIconBar, { backgroundColor: themeActif.text }]} />
             <View style={[styles.menuIconBar, { backgroundColor: themeActif.text }]} />
