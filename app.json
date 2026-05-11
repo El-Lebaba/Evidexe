@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "evidex",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
@@ -33,6 +33,11 @@
     "plugins": [
       "expo-web-browser",
       "expo-sqlite"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "4601fc45-377d-4dd0-9d18-46c4afa935c2"
+      }
+    }
   }
 }
