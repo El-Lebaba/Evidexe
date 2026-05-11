@@ -135,6 +135,105 @@ function sumSeries(s, n) {
   return sum;
 }
 
+const vectorFields = [
+  { name: 'Rotation', curl: '2', divergence: '0', p: (_x, y) => -y, q: (x) => x },
+  { name: 'Gradient', curl: '0', divergence: '2', p: (x) => x, q: (_x, y) => y },
+  { name: 'Selle', curl: '0', divergence: '0', p: (x) => x, q: (_x, y) => -y },
+  { name: 'Tourbillon', curl: 'variable', divergence: '0', p: (x, y) => -y / (x * x + y * y + 0.5), q: (x, y) => x / (x * x + y * y + 0.5) },
+  { name: 'Dipole', curl: 'variable', divergence: 'variable', p: (x, y) => (x * x - y * y) / (Math.pow(x * x + y * y, 2) + 0.5), q: (x, y) => (2 * x * y) / (Math.pow(x * x + y * y, 2) + 0.5) },
+];
+
+function vectorMagnitude(field, x, y) {
+  const vx = field.p(x, y);
+  const vy = field.q(x, y);
+  return Math.sqrt(vx * vx + vy * vy);
+}
+
+function erf(x) {
+  const t = 1 / (1 + 0.3275911 * Math.abs(x));
+  const poly = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429))));
+  const result = 1 - poly * Math.exp(-x * x);
+  return x >= 0 ? result : -result;
+}
+
+function normalCDF(x, mu = 0, sigma = 1) {
+  return 0.5 * (1 + erf((x - mu) / (sigma * Math.sqrt(2))));
+}
+
+function gamma(zInitial) {
+  if (zInitial < 0.5) return Math.PI / (Math.sin(Math.PI * zInitial) * gamma(1 - zInitial));
+  let z = zInitial - 1;
+  const coefficients = [
+    0.9999999999998099,
+    676.5203681218851,
+    -1259.1392167224028,
+    771.3234287776531,
+    -176.6150291621406,
+    12.507343278686905,
+    -0.13857109526572012,
+    9.984369578019572e-6,
+    1.5056327351493116e-7,
+  ];
+  let x = coefficients[0];
+  for (let i = 1; i < 9; i += 1) x += coefficients[i] / (z + i);
+  const t = z + 7.5;
+  return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+}
+
+function beta(a, b) {
+  return gamma(a) * gamma(b) / gamma(a + b);
+}
+
+function betaIncompleteRegularisee(x, a, b) {
+  const xBorne = clamp(x, 0, 1);
+  const steps = 240;
+  let sum = 0;
+  for (let i = 0; i < steps; i += 1) {
+    const t = ((i + 0.5) / steps) * xBorne;
+    sum += Math.pow(Math.max(t, 1e-10), a - 1) * Math.pow(Math.max(1 - t, 1e-10), b - 1);
+  }
+  return (sum * xBorne) / steps / beta(a, b);
+}
+
+function tCDF(t, nu) {
+  const x = nu / (nu + t * t);
+  const ib = betaIncompleteRegularisee(x, nu / 2, 0.5);
+  return t < 0 ? 0.5 * ib : 1 - 0.5 * ib;
+}
+
+const tCriticalValues = {
+  1: { 90: 6.314, 95: 12.706, 99: 63.657 },
+  2: { 90: 2.92, 95: 4.303, 99: 9.925 },
+  3: { 90: 2.353, 95: 3.182, 99: 5.841 },
+  5: { 90: 2.015, 95: 2.571, 99: 4.032 },
+  10: { 90: 1.812, 95: 2.228, 99: 3.169 },
+  20: { 90: 1.725, 95: 2.086, 99: 2.845 },
+  30: { 90: 1.697, 95: 2.042, 99: 2.75 },
+};
+
+function valeurCritiqueT(nu, alpha) {
+  const confiance = Math.round((1 - alpha) * 100);
+  const key = confiance <= 92 ? 90 : confiance >= 98 ? 99 : 95;
+  const rows = Object.keys(tCriticalValues).map(Number).sort((a, b) => a - b);
+  if (nu <= rows[0]) return tCriticalValues[rows[0]][key];
+  for (let i = 0; i < rows.length - 1; i += 1) {
+    const left = rows[i];
+    const right = rows[i + 1];
+    if (nu >= left && nu <= right) {
+      const ratio = (nu - left) / (right - left);
+      return tCriticalValues[left][key] + (tCriticalValues[right][key] - tCriticalValues[left][key]) * ratio;
+    }
+  }
+  return tCriticalValues[30][key];
+}
+
+function simulateLinearStructure(initialSize, limit, operation) {
+  let size = initialSize;
+  if (operation === 'ajout' && size < limit) size += 1;
+  if (operation === 'retrait' && size > 0) size -= 1;
+  return size;
+}
+
 function gravityState(m1, m2, d) {
   const force = (G * m1 * m2) / (d * d);
   const desc = force > 1e20 ? 'Force astronomique' : force > 1e10 ? 'Force tres forte' : force > 1 ? 'Force mesurable' : 'Force faible';
@@ -287,11 +386,37 @@ function generateRows() {
     return [i + 1, f.name, fmt(y0, 2), fmt(f.fn(0, y0), 4), density];
   })));
 
+  sections.push(makeSection('Champ vectoriel', ['#', 'Champ', 'x', 'y', 'Norme F', 'Rotation', 'Divergence', 'Particules'], Array.from({ length: RUNS }, (_, i) => {
+    const field = vectorFields[i % vectorFields.length];
+    const x = sample(i + 1, -3, 3, 0.1, 2);
+    const y = sample(i + 1, -3, 3, 0.1, 5);
+    return [i + 1, field.name, fmt(x, 1), fmt(y, 1), fmt(vectorMagnitude(field, x, y), 4), field.curl === '0' ? 'nul' : field.curl, field.divergence === '0' ? 'nul' : field.divergence, i % 3 === 0 ? 'inactif' : 'actif'];
+  })));
+
   sections.push(makeSection('Series', ['#', 'Serie', 'n', 'S(n)', 'Ecart avec limite'], Array.from({ length: RUNS }, (_, i) => {
     const s = series[i % series.length];
     const n = Math.round(sample(i + 1, 5, 100, 5, 7));
     const sum = sumSeries(s, n);
     return [i + 1, s.name, n, fmt(sum, 5), s.converge ? fmt(Math.abs(s.limit - sum), 5) : 'diverge'];
+  })));
+
+  sections.push(makeSection('Loi normale standard', ['#', 'mu', 'sigma', 'a', 'b', 'P(a <= X <= b)', 'Variance'], Array.from({ length: RUNS }, (_, i) => {
+    const mu = sample(i + 1, -3, 3, 0.1, 2);
+    const sigma = sample(i + 1, 0.3, 3, 0.1, 5);
+    const lowOffset = sample(i + 1, -2.5, -0.1, 0.1, 7);
+    const highOffset = sample(i + 1, 0.1, 2.5, 0.1, 9);
+    const a = mu + lowOffset * sigma;
+    const b = mu + highOffset * sigma;
+    const p = normalCDF(b, mu, sigma) - normalCDF(a, mu, sigma);
+    return [i + 1, fmt(mu, 1), fmt(sigma, 1), fmt(a, 2), fmt(b, 2), `${fmt(p * 100, 2)}%`, fmt(sigma * sigma, 2)];
+  })));
+
+  sections.push(makeSection('Loi de Student', ['#', 'nu', 'alpha', 't critique', 'P centrale estimee', 'Variance', 'Kurtosis'], Array.from({ length: RUNS }, (_, i) => {
+    const nu = Math.round(sample(i + 1, 1, 30, 1, 3));
+    const alpha = sample(i + 1, 0.01, 0.2, 0.01, 6);
+    const crit = valeurCritiqueT(nu, alpha);
+    const p = tCDF(crit, nu) - tCDF(-crit, nu);
+    return [i + 1, nu, fmt(alpha, 2), `+/- ${fmt(crit, 3)}`, `${fmt(p * 100, 2)}%`, nu > 2 ? fmt(nu / (nu - 2), 3) : 'infini', nu > 4 ? fmt(6 / (nu - 4), 3) : 'infini'];
   })));
 
   sections.push(makeSection('Gravite', ['#', 'm1 kg', 'm2 kg', 'distance m', 'Force', 'a1', 'a2', 'Etat'], Array.from({ length: RUNS }, (_, i) => {
@@ -413,6 +538,56 @@ function generateRows() {
     return [i + 1, size, capacity, `${fmt((size / capacity) * 100, 1)}%`, next, operation];
   })));
 
+  sections.push(makeSection('Pile - LIFO', ['#', 'Taille initiale', 'Operation', 'Taille apres', 'Sommet concerne', 'Complexite'], Array.from({ length: RUNS }, (_, i) => {
+    const initial = Math.round(sample(i + 1, 0, 10, 1, 2));
+    const operations = ['push', 'pop', 'peek'];
+    const operation = operations[i % operations.length];
+    const next = simulateLinearStructure(initial, 10, operation === 'push' ? 'ajout' : operation === 'pop' ? 'retrait' : 'lecture');
+    return [i + 1, initial, operation, next, next > 0 ? `index ${next - 1}` : 'pile vide', 'O(1)'];
+  })));
+
+  sections.push(makeSection('File - FIFO', ['#', 'Taille initiale', 'Operation', 'Taille apres', 'Position concernee', 'Complexite'], Array.from({ length: RUNS }, (_, i) => {
+    const initial = Math.round(sample(i + 1, 0, 12, 1, 4));
+    const operations = ['offer', 'poll', 'peek'];
+    const operation = operations[i % operations.length];
+    const next = simulateLinearStructure(initial, 12, operation === 'offer' ? 'ajout' : operation === 'poll' ? 'retrait' : 'lecture');
+    return [i + 1, initial, operation, next, operation === 'offer' ? 'arriere' : next > 0 || initial > 0 ? 'avant' : 'file vide', 'O(1)'];
+  })));
+
+  sections.push(makeSection('Liste chainee', ['#', 'Noeuds initiaux', 'Operation', 'Index', 'Noeuds apres', 'Pointeurs modifies', 'Complexite'], Array.from({ length: RUNS }, (_, i) => {
+    const initial = Math.round(sample(i + 1, 0, 12, 1, 1));
+    const operations = ['insertFirst', 'insertAt', 'removeAt', 'find'];
+    const operation = operations[i % operations.length];
+    const index = operation === 'insertFirst' || initial === 0 ? 0 : Math.round(sample(i + 1, 0, Math.max(0, initial - 1), 1, 5));
+    const after = operation.startsWith('insert') ? Math.min(initial + 1, 12) : operation === 'removeAt' ? Math.max(0, initial - 1) : initial;
+    const pointers = operation === 'find' || initial === 0 ? 0 : operation === 'insertFirst' ? 1 : 2;
+    return [i + 1, initial, operation, index, after, pointers, index <= 1 ? 'O(1)' : 'O(n)'];
+  })));
+
+  sections.push(makeSection('Tableaux', ['#', 'Taille', 'Index', 'Operation', 'Valeur lue/ecrite', 'Cases decalees', 'Complexite'], Array.from({ length: RUNS }, (_, i) => {
+    const size = Math.round(sample(i + 1, 4, 20, 1, 3));
+    const index = Math.round(sample(i + 1, 0, size - 1, 1, 5));
+    const operations = ['lecture', 'ecriture', 'insertion visuelle', 'suppression visuelle'];
+    const operation = operations[i % operations.length];
+    const shifts = operation.includes('insertion') || operation.includes('suppression') ? size - index - 1 : 0;
+    return [i + 1, size, index, operation, (index * 7 + i) % 99, shifts, shifts === 0 ? 'O(1)' : 'O(n)'];
+  })));
+
+  sections.push(makeSection('Chaines et caracteres', ['#', 'Texte', 'Index', 'Caractere', 'Sous-chaine', 'Longueur'], Array.from({ length: RUNS }, (_, i) => {
+    const texts = ['Evidexe', 'JavaString', 'Simulation', 'Apprendre', 'Algorithme'];
+    const text = texts[i % texts.length];
+    const index = Math.round(sample(i + 1, 0, text.length - 1, 1, 2));
+    const end = clamp(index + Math.round(sample(i + 1, 1, 4, 1, 6)), index + 1, text.length);
+    return [i + 1, text, index, text[index], text.slice(index, end), text.length];
+  })));
+
+  sections.push(makeSection('Multithreading', ['#', 'Threads', 'Iterations/thread', 'Operations totales', 'Risque partage', 'Synchronisation', 'Etat final'], Array.from({ length: RUNS }, (_, i) => {
+    const threads = Math.round(sample(i + 1, 2, 8, 1, 1));
+    const iterations = Math.round(sample(i + 1, 10, 200, 10, 4));
+    const sync = i % 2 === 0;
+    return [i + 1, threads, iterations, threads * iterations, sync ? 'controle' : 'condition de course possible', sync ? 'synchronized' : 'aucune', sync ? 'deterministe' : 'non deterministe'];
+  })));
+
   return sections;
 }
 
@@ -445,7 +620,7 @@ Notes de lecture :
 - Les entrees du catalogue marquees comme verrouillees, en preparation ou "Bientot" ne sont pas incluses, car elles n'ont pas de statistiques de simulation exploitables.
 - Pour les calculs qui dependent de la taille du graphe, le script utilise une taille representative de ${GRAPH.width} x ${GRAPH.height}.
 
-Entrees exclues du rapport pour cette raison : Champ vectoriel, Collisions elastiques, les cartes "Bientot" de mathematiques et physique, Pile - LIFO, File - FIFO, Liste chainee, Tableaux, Chaines et caracteres, Transtypage, Multithreading, Collisions de hachage et Heritage.
+Entrees exclues du rapport pour cette raison : Collisions elastiques, les cartes "Bientot" de mathematiques et physique, Transtypage, Collisions de hachage et Heritage.
 `;
 
 runAssertions();

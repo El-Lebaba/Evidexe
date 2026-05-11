@@ -86,7 +86,7 @@ export const CATALOGUE_SIMULATIONS: Record<SectionSimulation, EntreeSimulation[]
       description: 'Observe norme et direction en chaque point.',
       href: '/(tabs)/mathematiques/champ-vectoriel',
       icon: 'vector-arrange-above',
-      statut: 'ferme',
+      statut: 'pret',
       tags: ['geometrie', 'vecteurs', 'visualisation'],
       title: 'Champ vectoriel',
     },

@@ -10,7 +10,7 @@ Notes de lecture :
 - Les entrees du catalogue marquees comme verrouillees, en preparation ou "Bientot" ne sont pas incluses, car elles n'ont pas de statistiques de simulation exploitables.
 - Pour les calculs qui dependent de la taille du graphe, le script utilise une taille representative de 640 x 450.
 
-Entrees exclues du rapport pour cette raison : Champ vectoriel, Collisions elastiques, les cartes "Bientot" de mathematiques et physique, Pile - LIFO, File - FIFO, Liste chainee, Tableaux, Chaines et caracteres, Transtypage, Multithreading, Collisions de hachage et Heritage.
+Entrees exclues du rapport pour cette raison : Collisions elastiques, les cartes "Bientot" de mathematiques et physique, Transtypage, Collisions de hachage et Heritage.
 
 
 ## Derivees
@@ -169,6 +169,32 @@ Entrees exclues du rapport pour cette raison : Champ vectoriel, Collisions elast
 | 20 | y' = y | 1.50 | 1.5000 | 10 |
 
 
+## Champ vectoriel
+
+| # | Champ | x | y | Norme F | Rotation | Divergence | Particules |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | Rotation | 1.3 | -1.7 | 2.1401 | 2 | nul | inactif |
+| 2 | Gradient | -2.5 | 0.6 | 2.5710 | nul | 2 | actif |
+| 3 | Selle | -0.3 | 2.8 | 2.8160 | nul | nul | actif |
+| 4 | Tourbillon | 2.0 | -1.0 | 0.4066 | variable | nul | inactif |
+| 5 | Dipole | -1.8 | 1.2 | 0.2089 | variable | variable | actif |
+| 6 | Rotation | 0.4 | -2.6 | 2.6306 | 2 | nul | actif |
+| 7 | Gradient | 2.6 | -0.3 | 2.6173 | nul | 2 | inactif |
+| 8 | Selle | -1.2 | 1.9 | 2.2472 | nul | nul | actif |
+| 9 | Tourbillon | 1.1 | -1.9 | 0.4127 | variable | nul | actif |
+| 10 | Dipole | -2.8 | 0.3 | 0.1251 | variable | variable | inactif |
+| 11 | Rotation | -0.5 | 2.6 | 2.6476 | 2 | nul | actif |
+| 12 | Gradient | 1.7 | -1.2 | 2.0809 | nul | 2 | actif |
+| 13 | Selle | -2.1 | 1.0 | 2.3259 | nul | nul | inactif |
+| 14 | Tourbillon | 0.2 | -2.8 | 0.3350 | variable | nul | actif |
+| 15 | Dipole | 2.4 | -0.6 | 0.1612 | variable | variable | actif |
+| 16 | Rotation | -1.4 | 1.7 | 2.2023 | 2 | nul | inactif |
+| 17 | Gradient | 0.8 | -2.2 | 2.3409 | nul | 2 | actif |
+| 18 | Selle | -3.0 | 0.1 | 3.0017 | nul | nul | actif |
+| 19 | Tourbillon | -0.8 | 2.3 | 0.3787 | variable | nul | inactif |
+| 20 | Dipole | 1.5 | -1.5 | 0.2169 | variable | variable | actif |
+
+
 ## Series
 
 | # | Serie | n | S(n) | Ecart avec limite |
@@ -193,6 +219,58 @@ Entrees exclues du rapport pour cette raison : Champ vectoriel, Collisions elast
 | 18 | Bale | 85 | 1.63324 | 0.01170 |
 | 19 | Alternee | 25 | 0.71275 | 0.01960 |
 | 20 | Leibniz | 60 | 0.78123 | 0.00417 |
+
+
+## Loi normale standard
+
+| # | mu | sigma | a | b | P(a <= X <= b) | Variance |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 1.3 | 0.9 | 0.31 | 3.37 | 85.36% | 0.81 |
+| 2 | -2.5 | 1.9 | -2.88 | -0.98 | 36.74% | 3.61 |
+| 3 | -0.3 | 2.9 | -5.52 | 4.63 | 91.95% | 8.41 |
+| 4 | 2.0 | 1.2 | 0.92 | 2.12 | 35.58% | 1.44 |
+| 5 | -1.8 | 2.2 | -7.08 | 0.40 | 83.31% | 4.84 |
+| 6 | 0.4 | 0.5 | -0.35 | 1.35 | 90.45% | 0.25 |
+| 7 | 2.6 | 1.5 | 1.70 | 3.20 | 38.12% | 2.25 |
+| 8 | -1.2 | 2.5 | -6.45 | 2.05 | 88.53% | 6.25 |
+| 9 | 1.1 | 0.8 | 0.14 | 2.86 | 87.10% | 0.64 |
+| 10 | -2.8 | 1.8 | -3.34 | -1.54 | 37.59% | 3.24 |
+| 11 | -0.5 | 2.8 | -5.82 | 3.98 | 91.65% | 7.84 |
+| 12 | 1.7 | 1.1 | 0.60 | 4.45 | 83.51% | 1.21 |
+| 13 | -2.1 | 2.1 | -7.35 | -0.21 | 80.97% | 4.41 |
+| 14 | 0.2 | 0.4 | -0.44 | 0.92 | 90.93% | 0.16 |
+| 15 | 2.4 | 1.4 | 1.42 | 2.82 | 37.59% | 1.96 |
+| 16 | -1.4 | 2.4 | -6.68 | 1.48 | 87.10% | 5.76 |
+| 17 | 0.8 | 0.7 | -0.11 | 2.27 | 88.53% | 0.49 |
+| 18 | -3.0 | 1.7 | -3.68 | -1.98 | 38.12% | 2.89 |
+| 19 | -0.8 | 2.7 | -6.20 | 3.25 | 91.04% | 7.29 |
+| 20 | 1.5 | 1.0 | 0.40 | 3.90 | 85.61% | 1.00 |
+
+
+## Loi de Student
+
+| # | nu | alpha | t critique | P centrale estimee | Variance | Kurtosis |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 27 | 0.08 | +/- 1.705 | 90.04% | 1.080 | 0.261 |
+| 2 | 8 | 0.16 | +/- 1.893 | 90.50% | 1.333 | 1.500 |
+| 3 | 19 | 0.03 | +/- 2.100 | 95.07% | 1.118 | 0.400 |
+| 4 | 30 | 0.11 | +/- 1.697 | 90.00% | 1.071 | 0.231 |
+| 5 | 12 | 0.18 | +/- 1.795 | 90.21% | 1.200 | 0.750 |
+| 6 | 22 | 0.06 | +/- 2.077 | 95.03% | 1.100 | 0.333 |
+| 7 | 4 | 0.13 | +/- 2.184 | 90.57% | 2.000 | infini |
+| 8 | 15 | 0.20 | +/- 1.768 | 90.27% | 1.154 | 0.545 |
+| 9 | 26 | 0.08 | +/- 1.708 | 90.05% | 1.083 | 0.273 |
+| 10 | 7 | 0.15 | +/- 1.934 | 90.56% | 1.400 | 2.000 |
+| 11 | 18 | 0.03 | +/- 2.114 | 95.13% | 1.125 | 0.429 |
+| 12 | 29 | 0.10 | +/- 1.700 | 90.02% | 1.074 | 0.240 |
+| 13 | 10 | 0.17 | +/- 1.812 | 89.99% | 1.250 | 1.000 |
+| 14 | 21 | 0.05 | +/- 2.082 | 95.02% | 1.105 | 0.353 |
+| 15 | 3 | 0.12 | +/- 2.353 | 90.00% | 3.000 | infini |
+| 16 | 14 | 0.19 | +/- 1.777 | 90.27% | 1.167 | 0.600 |
+| 17 | 24 | 0.07 | +/- 2.068 | 95.05% | 1.091 | 0.300 |
+| 18 | 6 | 0.14 | +/- 1.974 | 90.42% | 1.500 | 3.000 |
+| 19 | 17 | 0.02 | +/- 2.942 | 99.09% | 1.133 | 0.462 |
+| 20 | 28 | 0.09 | +/- 1.703 | 90.03% | 1.077 | 0.250 |
 
 
 ## Gravite
@@ -609,4 +687,160 @@ Entrees exclues du rapport pour cette raison : Champ vectoriel, Collisions elast
 | 18 | 0 | 8 | 0.0% | capacite disponible | insert(index) |
 | 19 | 12 | 16 | 75.0% | capacite disponible | remove(index) |
 | 20 | 24 | 32 | 75.0% | capacite disponible | get(index) |
+
+
+## Pile - LIFO
+
+| # | Taille initiale | Operation | Taille apres | Sommet concerne | Complexite |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 7 | push | 8 | index 7 | O(1) |
+| 2 | 1 | pop | 0 | pile vide | O(1) |
+| 3 | 5 | peek | 5 | index 4 | O(1) |
+| 4 | 8 | push | 9 | index 8 | O(1) |
+| 5 | 2 | pop | 1 | index 0 | O(1) |
+| 6 | 6 | peek | 6 | index 5 | O(1) |
+| 7 | 9 | push | 10 | index 9 | O(1) |
+| 8 | 3 | pop | 2 | index 1 | O(1) |
+| 9 | 7 | peek | 7 | index 6 | O(1) |
+| 10 | 0 | push | 1 | index 0 | O(1) |
+| 11 | 4 | pop | 3 | index 2 | O(1) |
+| 12 | 8 | peek | 8 | index 7 | O(1) |
+| 13 | 2 | push | 3 | index 2 | O(1) |
+| 14 | 5 | pop | 4 | index 3 | O(1) |
+| 15 | 9 | peek | 9 | index 8 | O(1) |
+| 16 | 3 | push | 4 | index 3 | O(1) |
+| 17 | 6 | pop | 5 | index 4 | O(1) |
+| 18 | 0 | peek | 0 | pile vide | O(1) |
+| 19 | 4 | push | 5 | index 4 | O(1) |
+| 20 | 7 | pop | 6 | index 5 | O(1) |
+
+
+## File - FIFO
+
+| # | Taille initiale | Operation | Taille apres | Position concernee | Complexite |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 1 | offer | 2 | arriere | O(1) |
+| 2 | 5 | poll | 4 | avant | O(1) |
+| 3 | 10 | peek | 10 | avant | O(1) |
+| 4 | 2 | offer | 3 | arriere | O(1) |
+| 5 | 6 | poll | 5 | avant | O(1) |
+| 6 | 11 | peek | 11 | avant | O(1) |
+| 7 | 3 | offer | 4 | arriere | O(1) |
+| 8 | 8 | poll | 7 | avant | O(1) |
+| 9 | 0 | peek | 0 | file vide | O(1) |
+| 10 | 5 | offer | 6 | arriere | O(1) |
+| 11 | 9 | poll | 8 | avant | O(1) |
+| 12 | 1 | peek | 1 | avant | O(1) |
+| 13 | 6 | offer | 7 | arriere | O(1) |
+| 14 | 10 | poll | 9 | avant | O(1) |
+| 15 | 3 | peek | 3 | avant | O(1) |
+| 16 | 7 | offer | 8 | arriere | O(1) |
+| 17 | 12 | poll | 11 | avant | O(1) |
+| 18 | 4 | peek | 4 | avant | O(1) |
+| 19 | 9 | offer | 10 | arriere | O(1) |
+| 20 | 1 | poll | 0 | avant | O(1) |
+
+
+## Liste chainee
+
+| # | Noeuds initiaux | Operation | Index | Noeuds apres | Pointeurs modifies | Complexite |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 7 | insertFirst | 0 | 8 | 1 | O(1) |
+| 2 | 11 | insertAt | 6 | 12 | 2 | O(n) |
+| 3 | 3 | removeAt | 2 | 2 | 2 | O(n) |
+| 4 | 8 | find | 2 | 8 | 0 | O(n) |
+| 5 | 0 | insertFirst | 0 | 1 | 0 | O(1) |
+| 6 | 5 | insertAt | 0 | 6 | 2 | O(1) |
+| 7 | 9 | removeAt | 4 | 8 | 2 | O(n) |
+| 8 | 2 | find | 1 | 2 | 0 | O(1) |
+| 9 | 6 | insertFirst | 0 | 7 | 1 | O(1) |
+| 10 | 11 | insertAt | 6 | 12 | 2 | O(n) |
+| 11 | 3 | removeAt | 2 | 2 | 2 | O(n) |
+| 12 | 7 | find | 2 | 7 | 0 | O(n) |
+| 13 | 12 | insertFirst | 0 | 12 | 1 | O(1) |
+| 14 | 4 | insertAt | 0 | 5 | 2 | O(1) |
+| 15 | 9 | removeAt | 3 | 8 | 2 | O(n) |
+| 16 | 1 | find | 0 | 1 | 0 | O(1) |
+| 17 | 6 | insertFirst | 0 | 7 | 1 | O(1) |
+| 18 | 10 | insertAt | 5 | 11 | 2 | O(n) |
+| 19 | 2 | removeAt | 1 | 1 | 2 | O(1) |
+| 20 | 7 | find | 2 | 7 | 0 | O(n) |
+
+
+## Tableaux
+
+| # | Taille | Index | Operation | Valeur lue/ecrite | Cases decalees | Complexite |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 18 | 4 | lecture | 28 | 0 | O(1) |
+| 2 | 8 | 4 | ecriture | 29 | 0 | O(1) |
+| 3 | 14 | 13 | insertion visuelle | 93 | 0 | O(1) |
+| 4 | 20 | 6 | suppression visuelle | 45 | 13 | O(n) |
+| 5 | 10 | 6 | lecture | 46 | 0 | O(1) |
+| 6 | 16 | 1 | ecriture | 12 | 0 | O(1) |
+| 7 | 6 | 2 | insertion visuelle | 20 | 3 | O(n) |
+| 8 | 12 | 9 | suppression visuelle | 70 | 2 | O(n) |
+| 9 | 18 | 3 | lecture | 29 | 0 | O(1) |
+| 10 | 7 | 3 | ecriture | 30 | 0 | O(1) |
+| 11 | 13 | 11 | insertion visuelle | 87 | 1 | O(n) |
+| 12 | 19 | 5 | suppression visuelle | 46 | 13 | O(n) |
+| 13 | 9 | 5 | lecture | 47 | 0 | O(1) |
+| 14 | 15 | 0 | ecriture | 13 | 0 | O(1) |
+| 15 | 5 | 2 | insertion visuelle | 28 | 2 | O(n) |
+| 16 | 11 | 8 | suppression visuelle | 71 | 2 | O(n) |
+| 17 | 17 | 2 | lecture | 30 | 0 | O(1) |
+| 18 | 7 | 3 | ecriture | 38 | 0 | O(1) |
+| 19 | 13 | 11 | insertion visuelle | 95 | 1 | O(n) |
+| 20 | 19 | 5 | suppression visuelle | 54 | 13 | O(n) |
+
+
+## Chaines et caracteres
+
+| # | Texte | Index | Caractere | Sous-chaine | Longueur |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Evidexe | 4 | e | ex | 7 |
+| 2 | JavaString | 1 | a | ava | 10 |
+| 3 | Simulation | 4 | l | l | 10 |
+| 4 | Apprendre | 7 | r | re | 9 |
+| 5 | Algorithme | 2 | g | gori | 10 |
+| 6 | Evidexe | 3 | d | de | 7 |
+| 7 | JavaString | 8 | n | ng | 10 |
+| 8 | Simulation | 3 | u | ulat | 10 |
+| 9 | Apprendre | 5 | n | nd | 9 |
+| 10 | Algorithme | 0 | A | Alg | 10 |
+| 11 | Evidexe | 2 | i | i | 7 |
+| 12 | JavaString | 7 | i | in | 10 |
+| 13 | Simulation | 1 | i | imul | 10 |
+| 14 | Apprendre | 4 | e | en | 9 |
+| 15 | Algorithme | 8 | m | me | 10 |
+| 16 | Evidexe | 2 | i | idex | 7 |
+| 17 | JavaString | 6 | r | ri | 10 |
+| 18 | Simulation | 0 | S | Sim | 10 |
+| 19 | Apprendre | 3 | r | r | 9 |
+| 20 | Algorithme | 7 | h | hm | 10 |
+
+
+## Multithreading
+
+| # | Threads | Iterations/thread | Operations totales | Risque partage | Synchronisation | Etat final |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 5 | 20 | 100 | controle | synchronized | deterministe |
+| 2 | 8 | 90 | 720 | condition de course possible | aucune | non deterministe |
+| 3 | 4 | 160 | 640 | controle | synchronized | deterministe |
+| 4 | 6 | 40 | 240 | condition de course possible | aucune | non deterministe |
+| 5 | 2 | 110 | 220 | controle | synchronized | deterministe |
+| 6 | 4 | 180 | 720 | condition de course possible | aucune | non deterministe |
+| 7 | 7 | 60 | 420 | controle | synchronized | deterministe |
+| 8 | 3 | 130 | 390 | condition de course possible | aucune | non deterministe |
+| 9 | 5 | 10 | 50 | controle | synchronized | deterministe |
+| 10 | 7 | 80 | 560 | condition de course possible | aucune | non deterministe |
+| 11 | 3 | 150 | 450 | controle | synchronized | deterministe |
+| 12 | 6 | 30 | 180 | condition de course possible | aucune | non deterministe |
+| 13 | 8 | 100 | 800 | controle | synchronized | deterministe |
+| 14 | 4 | 180 | 720 | condition de course possible | aucune | non deterministe |
+| 15 | 6 | 50 | 300 | controle | synchronized | deterministe |
+| 16 | 3 | 130 | 390 | condition de course possible | aucune | non deterministe |
+| 17 | 5 | 200 | 1000 | controle | synchronized | deterministe |
+| 18 | 7 | 80 | 560 | condition de course possible | aucune | non deterministe |
+| 19 | 3 | 150 | 450 | controle | synchronized | deterministe |
+| 20 | 5 | 30 | 150 | condition de course possible | aucune | non deterministe |
 

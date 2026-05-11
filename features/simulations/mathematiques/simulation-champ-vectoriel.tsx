@@ -42,8 +42,12 @@ type Particle = {
 let themeActif = obtenirThemesSimulationEcransInitial().champVectoriel;
 let SIMULATION_PAGE_BACKGROUND = themeActif.background === '#121A17' ? themeActif.background : '#EAE3D2';
 const DOMAIN: Domain = { xMax: 4, xMin: -4, yMax: 4, yMin: -4 };
-const PARTICLE_COUNT = Platform.OS === 'web' ? 25 : 12;
-const FIELD_STEPS = Platform.OS === 'web' ? 18 : 11;
+const PARTICLE_COUNT = Platform.OS === 'web' ? 25 : 3;
+const FIELD_STEPS = Platform.OS === 'web' ? 18 : 3;
+const GRID_LINES_COUNT = Platform.OS === 'web' ? 9 : 3;
+const PARTICLE_INTERVAL_MS = Platform.OS === 'web' ? 40 : 250;
+const PARTICLE_STEP = Platform.OS === 'web' ? 0.06 : 0.18;
+const RENDER_PARTICLE_GLOW = Platform.OS === 'web';
 
 
 const VECTOR_FIELDS: VectorFieldDefinition[] = [
@@ -142,8 +146,8 @@ function GraphiqueChampVectoriel({
       const vy = field.q(particle.x, particle.y);
       const magnitude = Math.sqrt(vx * vx + vy * vy) + 0.001;
       const nextParticle = {
-        x: particle.x + (vx / magnitude) * 0.06,
-        y: particle.y + (vy / magnitude) * 0.06,
+        x: particle.x + (vx / magnitude) * PARTICLE_STEP,
+        y: particle.y + (vy / magnitude) * PARTICLE_STEP,
       };
 
       if (
@@ -159,7 +163,7 @@ function GraphiqueChampVectoriel({
     });
 
     setFrame((current) => current + 1);
-  }, 40);
+  }, PARTICLE_INTERVAL_MS);
 
   const vectors = useMemo(() => {
     const items: {
@@ -220,17 +224,17 @@ function GraphiqueChampVectoriel({
   const particles = useMemo(
     () =>
       (particlesRef.current ?? []).map((particle, index) => ({
-        key: `particle-${frame}-${index}`,
+        key: `particle-${index}`,
         ...versPointEcran(particle.x, particle.y, graphWidth, graphHeight),
       })),
     [frame, graphHeight, graphWidth]
   );
   const horizontalGrid = useMemo(
-    () => Array.from({ length: 9 }, (_, index) => (index / 8) * graphHeight),
+    () => Array.from({ length: GRID_LINES_COUNT }, (_, index) => (index / (GRID_LINES_COUNT - 1)) * graphHeight),
     [graphHeight]
   );
   const verticalGrid = useMemo(
-    () => Array.from({ length: 9 }, (_, index) => (index / 8) * graphWidth),
+    () => Array.from({ length: GRID_LINES_COUNT }, (_, index) => (index / (GRID_LINES_COUNT - 1)) * graphWidth),
     [graphWidth]
   );
 
@@ -316,7 +320,7 @@ function GraphiqueChampVectoriel({
           />
         ))}
 
-        {showParticles
+        {showParticles && RENDER_PARTICLE_GLOW
           ? particles.map((particle) => (
               <Circle
                 key={`${particle.key}-glow`}
