@@ -322,7 +322,7 @@ export const CATALOGUE_SIMULATIONS: Record<SectionSimulation, EntreeSimulation[]
       groupe: 'fonctionnalites-java',
       href: '/(tabs)/programmation-java/multithreading',
       icon: 'source-branch-sync',
-      statut: 'bientôt',
+      statut: 'pret',
       tags: ['fonctionnalites-java'],
       title: 'Multithreading',
     },

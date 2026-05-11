@@ -20,6 +20,7 @@ import {
   ESPACE_CONTENU_ENTETE_SIMULATION,
   HAUTEUR_TOTALE_ENTETE_SIMULATION,
 } from '@/features/simulations/core/entete-ecran-simulation';
+import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
 export type TypeTri = 'bulles' | 'selection' | 'insertion' | 'fusion' | 'rapide';
@@ -42,8 +43,10 @@ type EtatTri = {
 type DefinitionTri = {
   etiquetteMeilleurCas: string;
   description: string;
+  exempleInfobulle: string;
   genererEtapes: (valeurs: number[]) => Generator<EtatTri>;
   id: TypeTri;
+  nuanceInfobulle: string;
   vitesseInitiale: number;
   etiquetteEspace: string;
   titre: string;
@@ -368,8 +371,10 @@ const DEFINITIONS_TRIS: Record<TypeTri, DefinitionTri> = {
   bulles: {
     etiquetteMeilleurCas: 'O(n)',
     description: 'Compare deux cases voisines et les échange si elles sont dans le mauvais ordre.',
+    exempleInfobulle: 'Dans le pire cas, les grandes valeurs remontent une position à la fois vers la fin du tableau.',
     genererEtapes: triBulles,
     id: 'bulles',
+    nuanceInfobulle: 'Le tri à bulles parcourt le tableau plusieurs fois. À chaque passage, il compare deux voisins et échange leur place si l’ordre est mauvais.',
     vitesseInitiale: 120,
     etiquetteEspace: 'O(1)',
     titre: 'Tri à bulles',
@@ -378,8 +383,10 @@ const DEFINITIONS_TRIS: Record<TypeTri, DefinitionTri> = {
   selection: {
     etiquetteMeilleurCas: 'O(n^2)',
     description: 'Cherche le minimum restant, puis le place au début de la partie non triée.',
+    exempleInfobulle: 'La simulation marque le minimum courant, puis montre son placement au début de la zone non triée.',
     genererEtapes: triSelection,
     id: 'selection',
+    nuanceInfobulle: 'Le tri par sélection cherche toujours la plus petite valeur restante. Même si le tableau est presque trié, il doit encore inspecter la partie non triée.',
     vitesseInitiale: 120,
     etiquetteEspace: 'O(1)',
     titre: 'Tri par sélection',
@@ -388,8 +395,10 @@ const DEFINITIONS_TRIS: Record<TypeTri, DefinitionTri> = {
   insertion: {
     etiquetteMeilleurCas: 'O(n)',
     description: 'Construit une partie triée de gauche à droite en insérant chaque valeur.',
+    exempleInfobulle: 'Si le tableau est déjà presque trié, il y a peu de déplacements et le tri devient très rapide.',
     genererEtapes: triInsertion,
     id: 'insertion',
+    nuanceInfobulle: 'Le tri par insertion construit une zone triée à gauche. Chaque nouvelle valeur recule jusqu’à sa bonne position.',
     vitesseInitiale: 120,
     etiquetteEspace: 'O(1)',
     titre: 'Tri par insertion',
@@ -398,8 +407,10 @@ const DEFINITIONS_TRIS: Record<TypeTri, DefinitionTri> = {
   fusion: {
     etiquetteMeilleurCas: 'O(n log n)',
     description: 'Divise le tableau, trie les morceaux, puis fusionne les parties ordonnées.',
+    exempleInfobulle: 'Les copies visibles représentent le tableau auxiliaire utilisé pour fusionner proprement les sous-tableaux.',
     genererEtapes: triFusion,
     id: 'fusion',
+    nuanceInfobulle: 'Le tri fusion divise le tableau en petits morceaux, puis fusionne des morceaux déjà ordonnés. Il garde un temps stable, mais utilise de la mémoire supplémentaire.',
     vitesseInitiale: 80,
     etiquetteEspace: 'O(n)',
     titre: 'Tri fusion',
@@ -408,8 +419,10 @@ const DEFINITIONS_TRIS: Record<TypeTri, DefinitionTri> = {
   rapide: {
     etiquetteMeilleurCas: 'O(n log n)',
     description: 'Choisit un pivot et partitionne les valeurs avant de trier chaque côté.',
+    exempleInfobulle: 'Le pivot sépare les petites valeurs des grandes; un mauvais pivot peut déséquilibrer le travail.',
     genererEtapes: triRapide,
     id: 'rapide',
+    nuanceInfobulle: 'Le tri rapide choisit un pivot, place les valeurs plus petites d’un côté et les plus grandes de l’autre, puis recommence sur chaque sous-partie.',
     vitesseInitiale: 80,
     etiquetteEspace: 'O(log n)',
     titre: 'Tri rapide',
@@ -905,6 +918,18 @@ export function EcranSimulationTri({ type }: ProprietesEcranSimulationTri) {
           </View>
         </Animated.ScrollView>
       </VueTheme>
+      <InfobulleDefinition
+        body={[
+          "Dans les cours Java, un tableau regroupe plusieurs valeurs du même type et chaque case possède un index. Un algorithme de tri utilise ces index pour comparer les cases, déplacer les valeurs et obtenir un ordre croissant.",
+          definitionTri.nuanceInfobulle,
+          "Les compteurs de la simulation montrent pourquoi le cas de départ change le coût : un tableau déjà ordonné, inversé ou aléatoire ne provoque pas les mêmes comparaisons ni les mêmes échanges.",
+        ]}
+        delayMs={5000}
+        exampleLabel="À observer"
+        exampleText={definitionTri.exempleInfobulle}
+        eyebrow="Définition"
+        title={`Qu'est-ce que ${definitionTri.titre.toLowerCase()} ?`}
+      />
     </SafeAreaView>
   );
 }

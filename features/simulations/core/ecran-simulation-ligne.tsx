@@ -12,6 +12,7 @@ import {
   ESPACE_CONTENU_ENTETE_SIMULATION,
   HAUTEUR_TOTALE_ENTETE_SIMULATION,
 } from '@/features/simulations/core/entete-ecran-simulation';
+import { InfobulleDefinition } from '@/features/simulations/core/infobulle-definition';
 import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
 type DomaineSimulation = 'mathematiques' | 'physique' | 'programmation-java';
@@ -229,7 +230,7 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
                 darkColor={couleurs.ink}
                 lightColor={couleurs.ink}
                 style={[styles.titrePrincipal, { color: couleurs.ink }]}>
-                Bientot disponible
+                Disponible
               </TexteTheme>
 
               <TexteTheme
@@ -275,6 +276,17 @@ export function EcranSimulationLigne({ titre, domaine }: ProprietesEcranSimulati
           </VueTheme>
         </Animated.ScrollView>
       </VueTheme>
+      <InfobulleDefinition
+        body={[
+          `Cette fiche sert de point d’entrée pour ${titre}. Elle garde la même structure que les autres simulations : une zone visuelle, des contrôles et un résumé du concept.`,
+          "Quand un cours correspondant existe dans l’application, l’objectif est de transformer sa théorie en manipulation concrète : observer les valeurs, modifier les paramètres et relier le résultat au vocabulaire du cours.",
+        ]}
+        delayMs={5000}
+        exampleLabel="But"
+        exampleText={`Utiliser la simulation ${titre} pour passer d’une définition de cours à une observation interactive.`}
+        eyebrow="Définition"
+        title={`À propos de ${titre}`}
+      />
     </SafeAreaView>
   );
 }

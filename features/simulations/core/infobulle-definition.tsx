@@ -32,7 +32,6 @@ export function InfobulleDefinition({
   exampleText,
   eyebrow,
   title,
-  delayMs = 5000,
 }: DefinitionPopoverProps) {
   const modeSombre = useSchemaCouleur() === 'dark';
   themeActif = obtenirThemesSimulationEcrans(modeSombre).infobulleDefinition;
@@ -40,7 +39,6 @@ export function InfobulleDefinition({
   const isFocused = useIsFocused();
   const [visible, setVisible] = useState(false);
   const [fabVisible, setFabVisible] = useState(false);
-  const [hintDismissed, setHintDismissed] = useState(false);
   const { width } = useWindowDimensions();
 
   const progress = useRef(new Animated.Value(0)).current;
@@ -61,25 +59,23 @@ export function InfobulleDefinition({
   }, [progress, visible]);
 
   useEffect(() => {
-    if (!isFocused || hintDismissed) {
+    if (!isFocused) {
+      setFabVisible(false);
+      fabEntrance.setValue(0);
       return;
     }
 
-    const timeoutId = setTimeout(() => {
-      setFabVisible(true);
-      Animated.timing(fabEntrance, {
-        duration: 320,
-        easing: Easing.out(Easing.cubic),
-        toValue: 1,
-        useNativeDriver: true,
-      }).start();
-    }, delayMs);
-
-    return () => clearTimeout(timeoutId);
-  }, [delayMs, fabEntrance, hintDismissed, isFocused]);
+    setFabVisible(true);
+    Animated.timing(fabEntrance, {
+      duration: 260,
+      easing: Easing.out(Easing.cubic),
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  }, [fabEntrance, isFocused]);
 
   useEffect(() => {
-    if (!isFocused || !fabVisible || hintDismissed || visible) {
+    if (!isFocused || !fabVisible || visible) {
       fabShake.stopAnimation();
       fabShake.setValue(0);
       return;
@@ -127,10 +123,9 @@ export function InfobulleDefinition({
       shakeLoop.stop();
       fabShake.setValue(0);
     };
-  }, [fabShake, fabVisible, hintDismissed, isFocused, visible]);
+  }, [fabShake, fabVisible, isFocused, visible]);
 
   const openDefinition = () => {
-    setHintDismissed(true);
     setVisible(true);
   };
 
@@ -209,13 +204,15 @@ export function InfobulleDefinition({
   return (
     <>
       {fabVisible && !visible ? (
-        <Animated.View style={[styles.fabWrap, fabPromptStyle]}>
-          <Pressable onPress={openDefinition} style={styles.fab}>
-            <TexteTheme lightColor={themeActif.ink} style={styles.fabText}>
-              ?
-            </TexteTheme>
-          </Pressable>
-        </Animated.View>
+        <View pointerEvents="box-none" style={styles.fabOverlay}>
+          <Animated.View style={[styles.fabWrap, fabPromptStyle]}>
+            <Pressable onPress={openDefinition} style={styles.fab}>
+              <TexteTheme lightColor={themeActif.ink} style={styles.fabText}>
+                ?
+              </TexteTheme>
+            </Pressable>
+          </Animated.View>
+        </View>
       ) : null}
 
       <Modal animationType="none" onRequestClose={() => setVisible(false)} transparent visible={visible}>
@@ -264,10 +261,16 @@ let styles = creerStyles();
 
 function creerStyles() {
   return StyleSheet.create({
+  fabOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    elevation: 30,
+    zIndex: 30,
+  },
   fabWrap: {
     bottom: 20,
     position: 'absolute',
     right: 20,
+    zIndex: 31,
   },
   fab: {
     alignItems: 'center',
@@ -275,7 +278,7 @@ function creerStyles() {
     borderColor: themeActif.border,
     borderRadius: 999,
     borderWidth: 1,
-    elevation: 4,
+    elevation: 31,
     height: 58,
     justifyContent: 'center',
     shadowColor: themeActif.ink,
