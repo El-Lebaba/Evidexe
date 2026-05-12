@@ -5,6 +5,38 @@
  * la progression locale et l'interface qui liste les matières. L'idée reste
  * simple: on choisit une matière, on affiche ses cours, puis les cartes vont
  * ouvrir l'écran de lecture avec le bon identifiant.
+ *
+ * mathematiques: [
+ *   {
+ *     matiere: 'Calcul différentiel',
+ *     livre: 'James Stewart, Calcul différientiel, 3e édition, Modulo, Montréal, 2024, 443 p.',
+ *   },
+ *   {
+ *     matiere: 'Intégrales',
+ *     livre: 'Stewart, James. Calcul intégral. 3e édition. Montréal (Québec) Canada: Modulo, 2024.',
+ *   },
+ *   {
+ *     matiere: 'Maths discrètes',
+ *     livre: 'Mathématiques discètes, édition révisée, Kenneth Rosen',
+ *   },
+ *   {
+ *     matiere: 'Probabilités et statistiques',
+ *     livre: 'Titre : Statistique et probabilité en sciences, Auteurs : Chantal Trudel et André Ménard, Éditeur : FIDES, ISBN :	9782897481001 (2897481005)',
+ *   },
+ * ]
+ *
+ * physique: [
+ *   {
+ *     matiere: 'Mécanique',
+ *     livre: 'SÉGUIN, Marc, Physique xxi, Mécanique, ERPI, 2010, (1ère ou 2e édition)',
+ *   },
+ *   {
+ *     matiere: 'Électricité et magnétisme',
+ *     livre: 'Séguin, M. (2010). Physique xxi tome B, Électricité et magnétisme. ERPI.',
+ *   }
+ * ]
+ *
+ *
  */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -45,42 +77,6 @@ const themeActif = {
   soft: '#F3F1E7',
 };
 
-const MEDIAGRAPHIE_COURS: Record<MatiereCours, { matiere: string; livre: string }[]> = {
-  java: [
-    {
-      matiere: 'Programmation Java',
-      livre: 'Introduction à la programmation en Java',
-    },
-  ],
-  mathematiques: [
-    {
-      matiere: 'Dérivées',
-      livre: 'Calcul différentiel',
-    },
-    {
-      matiere: 'Intégrales',
-      livre: 'Calcul intégral',
-    },
-    {
-      matiere: 'Maths discrètes',
-      livre: 'Mathématiques discrètes',
-    },
-    {
-      matiere: 'Probabilités et statistiques',
-      livre: 'Probabilités et statistique',
-    },
-  ],
-  physique: [
-    {
-      matiere: 'Mécanique',
-      livre: 'Physique 1 - Mécanique',
-    },
-    {
-      matiere: 'Électricité et magnétisme',
-      livre: 'Physique 2 - Électricité et magnétisme',
-    },
-  ],
-};
 
 export function EcranCours() {
   const params = useLocalSearchParams<{ subject?: string }>();
@@ -137,7 +133,6 @@ export function EcranCours() {
       [courseSummaries],
   );
   const totalSlides = useMemo(() => courses.reduce((total, CoursLocal) => total + CoursLocal.totalSlides, 0), [courses]);
-  const bibliographieActive = MEDIAGRAPHIE_COURS[activeSubject];
 
   useEffect(() => {
     subjectMotion.setValue(0);
@@ -281,24 +276,6 @@ export function EcranCours() {
                 })}
               </View>
             </Animated.View>
-
-            <Animated.View style={[styles.bibliographieSection, { opacity: subjectMotion, transform: [{ translateY: subjectTranslate }] }]}>
-              <TexteTheme lightColor={themeApplication.muted} darkColor={themeApplication.muted} style={styles.sectionLabel}>
-                Médiagraphie
-              </TexteTheme>
-              <View style={[styles.bibliographieCard, { backgroundColor: themeApplication.soft, borderColor: themeApplication.border }]}>
-                {bibliographieActive.map((reference) => (
-                  <View key={`${activeSubject}-${reference.matiere}`} style={styles.bibliographieRow}>
-                    <TexteTheme lightColor={themeApplication.text} darkColor={themeApplication.text} style={styles.bibliographieMatiere}>
-                      {reference.matiere}
-                    </TexteTheme>
-                    <TexteTheme lightColor={themeApplication.muted} darkColor={themeApplication.muted} style={styles.bibliographieLivre}>
-                      {reference.livre}
-                    </TexteTheme>
-                  </View>
-                ))}
-              </View>
-            </Animated.View>
           </ScrollView>
         </VueTheme>
       </SafeAreaView>
@@ -434,28 +411,6 @@ const styles = StyleSheet.create({
   },
   courseSection: {
     gap: 16,
-  },
-  bibliographieSection: {
-    gap: 12,
-  },
-  bibliographieCard: {
-    borderRadius: 14,
-    borderWidth: 1,
-    gap: 10,
-    padding: 16,
-  },
-  bibliographieRow: {
-    gap: 3,
-  },
-  bibliographieMatiere: {
-    fontSize: 13,
-    fontWeight: '900',
-    lineHeight: 18,
-  },
-  bibliographieLivre: {
-    fontSize: 13,
-    fontWeight: '700',
-    lineHeight: 18,
   },
   sectionLabel: {
     fontSize: 13,
