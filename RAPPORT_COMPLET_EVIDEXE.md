@@ -1,271 +1,277 @@
 # Evidexe - Application d'apprentissage interactive
 
 Projet final - Programmation  
-Tony Khabbaz & Aris Hadjeb  
+Tony Khabbaz & Aris Hadjeb
 
 ## 1. Introduction
 
-Evidex est une application educative interactive qui vise a rendre plus concrets des concepts souvent abstraits en mathematiques, en physique et en programmation Java. L'application ne remplace pas le cours theorique: elle sert plutot de support d'experimentation ou l'utilisateur peut consulter des cours, lancer des simulations, suivre sa progression et accumuler de l'XP lorsqu'il complete des activites.
+Evidexe est une application éducative interactive faite avec Expo, React Native et TypeScript. L'idée du projet est de rendre certains concepts de mathématiques, de physique et de programmation Java plus faciles à comprendre avec des cours courts, des quiz, des simulations et un suivi de progression.
 
-Le projet est construit avec Expo, React Native et TypeScript. Son architecture est organisee autour de routes, de composants reutilisables, de donnees de cours, d'une couche de stockage locale et de modules de simulation.
+Le but n'est pas de remplacer un vrai cours. L'application sert plutôt de support pour réviser et expérimenter. Quand une notion est difficile à imaginer seulement avec du texte ou une formule, une simulation peut aider à voir ce qui change quand on modifie les paramètres.
 
-## 2. Problematique
+## 2. Problématique
 
-Plusieurs notions en mathematiques, en physique et en programmation sont difficiles a comprendre lorsqu'elles sont presentees uniquement sous forme de formules, d'equations ou de syntaxe. Une derivee est souvent apprise comme une formule alors qu'elle represente aussi une pente instantanee. Une integrale est souvent traitee comme une operation de calcul alors qu'elle peut etre visualisee comme une aire accumulee. En physique, les forces, les trajectoires et l'energie deviennent plus faciles a comprendre lorsqu'on observe leur effet sur un objet. En programmation Java, les variables, conditions, boucles, tableaux et methodes sont plus clairs lorsqu'on les relie a une logique d'execution.
+Plusieurs notions vues au cégep deviennent vite abstraites. Par exemple, une dérivée est souvent apprise comme une règle de calcul, mais elle représente aussi une pente instantanée. Une intégrale peut être vue comme une aire accumulée. En physique, les forces, les trajectoires, les champs et l'énergie sont plus clairs quand on peut les visualiser. En Java, les tableaux, les boucles, les structures de données et certains algorithmes sont plus faciles à comprendre quand on voit les étapes.
 
-Evidex repond a ce probleme en proposant un environnement ou l'etudiant peut naviguer entre cours, simulations et suivi de progression. L'application rend visibles les relations entre les parametres, les resultats et les concepts etudies.
+Evidexe répond à ce problème en regroupant trois choses dans la même application:
+
+- des cours organisés par matière;
+- des quiz pour valider la compréhension;
+- des simulations pour manipuler les paramètres et observer les résultats.
 
 ## 3. Objectifs du projet
 
-Les objectifs principaux sont:
+Les objectifs principaux étaient:
 
-- proposer une application educative simple a utiliser sur mobile et sur web avec Expo;
-- organiser le contenu en trois domaines: mathematiques, physique et Java;
-- offrir des simulations interactives ou animees pour illustrer certains concepts;
-- integrer des cours courts avec diapositives, exemples et quiz;
-- sauvegarder la progression locale de l'utilisateur;
-- ajouter un systeme de profil avec XP, niveau, cours recents et parametres;
-- construire une base technique extensible pour ajouter de nouvelles simulations.
+- créer une application utilisable avec Expo sur web et mobile;
+- organiser le contenu en mathématiques, physique et Java;
+- offrir des cours courts avec diapositives et quiz;
+- ajouter un catalogue de simulations interactives;
+- sauvegarder la progression localement;
+- gérer un profil avec XP, niveau, cours récents, succès, cartes mémoire et paramètres;
+- garder une structure assez claire pour pouvoir ajouter d'autres contenus plus tard.
 
-## 4. Fonctionnalites realisees
+## 4. Fonctionnalités réalisées
 
-L'application contient un ecran d'introduction anime, puis un ecran d'accueil central. Depuis l'accueil, l'utilisateur peut acceder aux cours, aux simulations et au profil.
+L'application commence par un écran d'introduction, puis arrive sur l'accueil. À partir de là, l'utilisateur peut ouvrir les cours, les simulations, le profil, les succès et les paramètres.
 
-Le module de cours est organise par matiere. Les cours actuellement presents dans le code sont:
+### 4.1 Cours
 
-- mathematiques: derivees, integrales et limites;
-- physique: cinematique, forces et energie;
-- Java: variables, types de donnees, transtypage, chaines de caracteres, operateurs, classe `Math`, conditions, `else if`, `switch`, boucles `while`, boucles `for`, tableaux, methodes, classes et objets, logique booleenne.
+Les cours sont dans `data/cours.tsx`. Le code actuel contient trois matières et 50 cours au total:
 
-Chaque cours contient des diapositives de theorie, parfois du code d'exemple, puis un quiz. La progression est sauvegardee par utilisateur actif. Un cours n'est considere complet qu'apres avoir atteint la fin et valide l'exercice final.
+- **Mathématiques**: 20 cours sur les dérivées, les intégrales, les limites, les statistiques, les probabilités et les mathématiques discrètes;
+- **Physique**: 15 cours sur les vecteurs, la cinématique, le MRUA, les projectiles, les lois de Newton, l'énergie, la quantité de mouvement, l'électrostatique, les champs, les circuits, les condensateurs, le magnétisme et le courant alternatif;
+- **Java**: 15 cours sur les variables, les types, le transtypage, les chaînes, les opérateurs, la classe `Math`, les conditions, les boucles, les tableaux, les méthodes, les classes et la logique booléenne.
 
-Le module de simulations contient un catalogue separe des cours. Les simulations deja disponibles sont:
+Chaque cours contient des diapositives et un quiz final. La progression est enregistrée avec l'utilisateur actif. Un cours atteint vraiment 100 % seulement quand l'exercice final est terminé. Sinon, la dernière diapositive de théorie peut monter jusqu'à 99 %, ce qui évite de compter un cours comme terminé trop tôt.
 
-- mathematiques: derivees, integrales, serie de Taylor, limites, Fourier, champ de pentes, champ vectoriel, series, loi normale standard et loi de Student;
-- physique: gravite, pendule, mouvement projectile, ressort et loi de Hooke, mouvement circulaire, champs magnetiques, champs electriques, optique et refraction, mecanique orbitale et frottement;
-- programmation Java: tri a bulles, tri par selection, tri par insertion, tri fusion, tri rapide, pile, file, liste chainee, ArrayList, tableaux, chaines de caracteres et multithreading.
+### 4.2 Simulations
 
-Certaines simulations sont encore indiquees comme a venir dans le catalogue, par exemple les collisions elastiques, le transtypage, les collisions de hachage, l'heritage et plusieurs cartes generiques "Bientot". Elles doivent donc etre presentees comme limites actuelles, pas comme fonctionnalites terminees.
+Le catalogue des simulations est dans `features/simulations/catalogue-simulations.ts`. Les simulations réellement prêtes dans le catalogue sont:
 
-Le profil utilisateur permet de consulter les cours recents, les cours actifs, les cours termines, l'XP, le niveau et les parametres. Les parametres incluent le mode sombre, la langue et les notifications. L'application gere aussi plusieurs utilisateurs locaux par nom.
+- **Mathématiques**: dérivées, intégrales, série de Taylor, limites, Fourier, champ de pentes, champ vectoriel, séries, loi normale standard et loi de Student;
+- **Physique**: gravité, pendule, mouvement projectile, ressort et loi de Hooke, mouvement circulaire, champs magnétiques, champs électriques, optique et réfraction, mécanique orbitale et frottement;
+- **Java**: tri à bulles, tri par sélection, tri par insertion, tri fusion, tri rapide, pile, file, liste chaînée, ArrayList, tableaux, chaînes et caractères, mémoire et multithreading.
+
+Certaines entrées ne doivent pas être présentées comme terminées. Les collisions élastiques, les collisions de hachage et l'héritage sont marqués comme `bientôt`. Il y a aussi des cartes génériques "Bientôt" générées pour les sections mathématiques et physique. Dans le code, ces cartes génériques ont encore le statut `pret`, mais elles pointent vers des routes absentes. Je les considère donc comme du contenu prévu ou à corriger, pas comme des simulations fonctionnelles.
+
+### 4.3 Profil, progression et paramètres
+
+Le profil permet de voir:
+
+- l'utilisateur actif;
+- l'XP et le niveau;
+- les cours récents;
+- les cours terminés;
+- les succès;
+- les cartes mémoire;
+- la personnalisation du pseudo et de la photo de profil;
+- les paramètres visibles dans l'interface, surtout le mode sombre et le compteur FPS.
+
+La couche de données peut gérer plusieurs utilisateurs locaux par nom. Dans l'interface actuelle, on travaille surtout avec l'utilisateur actif, et on peut modifier son pseudo et sa photo. Les données sont sauvegardées localement, pas dans un backend distant.
 
 ## 5. Architecture et technologies
 
-Le projet repose sur Expo Router pour la navigation. Les fichiers dans `app/` representent les routes principales: introduction, onglets internes, accueil, profil, cours, mathematiques, physique, programmation Java et simulations.
+Le projet utilise Expo Router pour la navigation. Les routes principales sont dans `app/`. Les composants réutilisables sont dans `components/`. Les écrans et logiques plus spécialisés sont dans `features/`. Les cours sont dans `data/`, et la progression locale est dans `db/`.
 
-Les composants reutilisables sont places dans `components/`, par exemple les panneaux du profil, la barre superieure, les cartes de cours et les composants thematiques. Les fonctionnalites plus complexes sont regroupees dans `features/`, notamment les simulations et les ecrans de section.
+Technologies utilisées:
 
-Les donnees de cours sont centralisees dans `data/cours.tsx`. Ce fichier contient les cours, les diapositives et les quiz. Le catalogue des simulations est separe dans `features/simulations/catalogue-simulations.ts`, ce qui permet de distinguer les cours theorique-pratiques des simulations libres.
+- React Native pour l'interface;
+- Expo et Expo Router pour lancer l'application et gérer les routes;
+- TypeScript et TSX pour structurer le code;
+- React Native SVG pour plusieurs graphiques;
+- KaTeX et des composants de rendu de formules pour certaines expressions mathématiques;
+- une couche de stockage locale dans `db/donnees-principales.tsx` et `db/stockage-application.ts`;
+- Node.js, npm et WebStorm comme outils de développement.
 
-La couche de persistance est dans `db/donnees-principales.tsx`. Meme si une dependance SQLite est presente dans `package.json`, le code actuel n'utilise pas une base SQLite reelle. La sauvegarde fonctionne avec `localStorage` lorsque l'application tourne sur web, avec un fallback en memoire si `localStorage` n'est pas disponible. Il est donc plus exact de parler de stockage local applicatif plutot que de base de donnees SQLite operationnelle.
+La sauvegarde locale passe par une couche commune appelée `stockage-application`. Sur web, `stockage-application.web.ts` utilise IndexedDB avec un petit magasin clé-valeur. Sur Android et les plateformes natives, `stockage-application.ts` utilise `expo-sqlite` avec une table `kv`. Le code garde aussi un fallback en mémoire seulement quand IndexedDB n'est pas disponible, par exemple dans certains contextes web ou serveur.
 
-Technologies utilisees reellement:
+## 6. Contenu pédagogique intégré
 
-- React Native pour l'interface mobile;
-- Expo et Expo Router pour le lancement, la navigation et le routage;
-- TypeScript/TSX pour structurer le code;
-- React Native Animated pour plusieurs animations;
-- React Native SVG et rendu mathematique pour certaines visualisations et formules;
-- stockage local via une couche `donneesLocales` maison;
-- WebStorm, Git, npm et Node.js comme outils de developpement.
+### 6.1 Mathématiques
 
-Node.js n'est pas un backend actif du projet. Il sert principalement a executer les outils de developpement, installer les dependances et lancer Expo.
+La partie mathématiques ne se limite pas seulement aux dérivées, intégrales et limites. Dans les cours, on retrouve aussi des statistiques, des probabilités et des notions de mathématiques discrètes. Les simulations couvrent surtout l'analyse et les statistiques.
 
-## 6. Contenu academique integre
+Notions présentes:
 
-### 6.1 Mathematiques
-
-Le contenu mathematique actuel couvre les derivees, les integrales et les limites dans les cours. Les simulations couvrent davantage de sujets: derivees, integrales, serie de Taylor, limites, Fourier, champ de pentes, champ vectoriel, series, loi normale standard et loi de Student.
-
-Les notions abordees incluent:
-
-- pente instantanee et tangente;
-- aire sous une courbe;
-- sommes de Riemann;
-- comportement local et limites;
-- approximation par series;
-- representation de champs et de directions.
+- fonctions, limites, dérivées et intégrales;
+- sommes de Riemann et approximation;
+- séries et série de Taylor;
+- champs de pentes et champs vectoriels;
+- loi normale et loi de Student;
+- probabilités, inférence et logique mathématique dans les cours.
 
 ### 6.2 Physique
 
-Les cours de physique presents dans le code portent sur la cinematique, les forces et l'energie. Les simulations disponibles ajoutent des experiences visuelles sur la gravite, le pendule, le mouvement projectile, la loi de Hooke, le mouvement circulaire, les champs magnetiques, les champs electriques, l'optique, les orbites et les frottements.
+La physique couvre surtout la mécanique et l'électricité. Les cours vont plus loin que seulement cinématique, forces et énergie. Il y a aussi des contenus sur les charges, les champs électriques, les circuits et le magnétisme.
 
-Les notions abordees incluent:
+Notions présentes:
 
-- position, vitesse et acceleration;
-- relation entre force, masse et acceleration;
-- energie cinetique, potentielle et conservation;
-- attraction gravitationnelle;
-- oscillations et periode;
-- trajectoires et mouvements circulaires.
-- champs electriques et magnetiques;
-- reflexion, refraction et loi de Snell;
-- orbites, perihelie, aphelie et periode orbitale;
-- frottement statique, frottement cinetique et force nette.
+- vecteurs, position, vitesse et accélération;
+- MRUA, chute libre, projectiles et mouvement circulaire;
+- lois de Newton, force nette et frottement;
+- travail, énergie, puissance et quantité de mouvement;
+- gravité, pendule, ressort et orbites;
+- champs électriques, champs magnétiques, optique et circuits.
 
 ### 6.3 Programmation Java
 
-Le module Java contient des cours structures, des exercices et plusieurs simulations disponibles. Le catalogue couvre les tris, les structures de donnees de base, les chaines de caracteres et une visualisation du multithreading, tandis que certaines notions avancees comme le transtypage, les collisions de hachage et l'heritage restent a venir.
+Le module Java contient des cours de base et des simulations plus visuelles. Il touche autant la syntaxe que les structures de données.
 
-Les cours Java couvrent:
+Notions présentes:
 
-- variables et types;
-- transtypage;
-- chaines de caracteres;
-- operateurs;
-- conditions `if`, `else if` et `switch`;
-- boucles `while` et `for`;
-- tableaux;
-- methodes;
-- classes et objets;
-- logique booleenne.
+- variables, types, transtypage et opérateurs;
+- conditions et boucles;
+- tableaux, chaînes, méthodes, classes et objets;
+- tris classiques;
+- pile, file, liste chaînée et ArrayList;
+- mémoire et multithreading;
+- collisions de hachage et héritage prévus plus tard.
 
-## 7. Innovation
+## 7. Ce que le projet apporte
 
-L'innovation principale du projet vient de l'association entre contenu academique, visualisation et suivi de progression. L'utilisateur n'est pas seulement en train de lire un texte: il peut explorer des cours, observer des animations, ouvrir des simulations et voir sa progression evoluer.
+L'intérêt principal du projet est de mélanger cours, progression et visualisation dans une seule application. Ce n'est pas seulement une liste de textes à lire. L'utilisateur peut aussi ouvrir une simulation, changer des valeurs et voir comment les résultats réagissent.
 
-Le projet se distingue aussi par son approche modulaire. Les cours et les simulations sont separes, ce qui permet d'ajouter du contenu progressivement sans devoir modifier toute l'application. Le catalogue de simulations indique clairement ce qui est disponible, ce qui est ferme et ce qui est a venir.
+La séparation entre les cours et les simulations rend aussi le projet plus simple à agrandir. Un nouveau cours peut être ajouté dans `data/cours.tsx`, tandis qu'une nouvelle simulation peut être ajoutée dans `features/simulations/` et reliée au catalogue.
 
-## 8. Difficultes rencontrees
+## 8. Difficultés rencontrées
 
-La premiere difficulte a ete l'organisation d'un projet avec plusieurs domaines differents. Les mathematiques, la physique et Java n'ont pas les memes besoins: certains sujets se presentent mieux sous forme de cours, d'autres sous forme de simulation. Il a donc fallu separer les cours, les simulations et la navigation pour garder une structure claire.
+Une difficulté importante a été l'organisation du projet. Comme il y a trois domaines différents, il fallait éviter que les fichiers deviennent mélangés. Les routes, les cours, le profil et les simulations ont donc été séparés.
 
-Une autre difficulte a ete la gestion de la progression. Il ne suffisait pas d'afficher des cours: il fallait enregistrer l'utilisateur actif, memoriser les cours ouverts, calculer le pourcentage de progression, distinguer un cours simplement consulte d'un cours reellement termine et attribuer l'XP une seule fois.
+La progression a aussi demandé plus de logique que prévu. Il ne suffisait pas d'afficher un cours. Il fallait enregistrer le bon utilisateur, garder les cours récents, calculer le pourcentage, donner l'XP une seule fois et ne pas compter un cours comme terminé avant le quiz final.
 
-L'adaptation mobile/web a aussi pose des contraintes. L'application utilise React Native et Expo, mais certaines parties comme `localStorage`, les evenements `window` ou les comportements de defilement sont plus proches du web. Il a fallu prevoir des conditions pour eviter les erreurs lorsque certaines APIs ne sont pas disponibles.
+L'adaptation web/mobile a aussi créé des contraintes. La même logique de progression doit fonctionner avec IndexedDB sur web et SQLite sur Android/native. Il fallait donc créer une couche de stockage commune pour éviter que le reste de l'application dépende directement d'une seule technologie.
 
-La qualite visuelle a demande beaucoup d'ajustements. L'accueil contient des animations, des cartes, des bulles decoratives et un carrousel. Il fallait eviter les chevauchements, garder des tailles lisibles sur petit ecran et maintenir une interface coherente avec le profil et les sections.
+Une autre difficulté a été de garder le rapport aligné avec le code. Le catalogue contient beaucoup d'entrées et certaines sont prêtes, alors que d'autres sont seulement prévues. Dans un rapport, c'est facile de trop généraliser. J'ai donc séparé les simulations disponibles des simulations à venir.
 
-Enfin, le projet contient deja plusieurs simulations et de nombreuses entrees a venir. La difficulte a ete de presenter clairement l'etat reel du projet: certains modules sont fonctionnels, d'autres sont en preparation. Cette distinction est importante pour que le rapport reste coherent avec le code.
+## 9. Échéancier détaillé
 
-## 9. Echeancier detaille
-
-| Periode | Travail prevu | Travail realise |
+| Période | Travail prévu | Travail réalisé |
 | --- | --- | --- |
-| Semaine 1 | Definition du sujet et des objectifs | Choix d'une application educative interactive autour des maths, de la physique et de Java |
-| Semaine 2 | Mise en place du projet | Creation du projet Expo/React Native, configuration TypeScript, structure initiale des routes |
-| Semaine 3 | Navigation et ecrans principaux | Ajout de l'ecran d'introduction, de l'accueil, du profil et des sections principales |
-| Semaine 4 | Donnees de cours | Creation des cours par matiere, des diapositives, des quiz et du systeme de resume de cours |
-| Semaine 5 | Progression utilisateur | Ajout de la couche `donneesLocales`, sauvegarde locale, utilisateurs, XP, niveaux, cours recents et accomplissements |
-| Semaine 6 | Simulations mathematiques | Ajout des simulations de derivees, integrales, limites, Taylor, Fourier, champs et series |
-| Semaine 7 | Simulations physiques | Ajout des simulations de gravite, pendule, projectile, ressort, mouvement circulaire, champs, optique, orbites et frottement |
-| Semaine 8 | Interface et experience utilisateur | Amelioration de l'accueil, cartes, animations, profil, mode sombre et responsive design |
-| Semaine 9 | Stabilisation | Correction d'incoherences, distinction entre contenu disponible et contenu a venir, verification du catalogue |
-| Semaine 10 | Rapport et presentation | Mise a jour du rapport, ajout des difficultes, echeancier, UML, perspectives et conclusion |
+| Semaine 1 | Définir le sujet | Choix d'une application éducative sur les maths, la physique et Java |
+| Semaine 2 | Créer le projet | Mise en place avec Expo, React Native et TypeScript |
+| Semaine 3 | Faire la navigation | Ajout de l'intro, l'accueil, les sections et le profil |
+| Semaine 4 | Ajouter les cours | Création des cours, diapositives et quiz dans `data/cours.tsx` |
+| Semaine 5 | Gérer la progression | Ajout du profil actif, du support d'utilisateurs locaux, des cours récents, de l'XP, des niveaux et des succès |
+| Semaine 6 | Ajouter des simulations de maths | Dérivées, intégrales, limites, Taylor, Fourier, champs, séries et statistiques |
+| Semaine 7 | Ajouter des simulations de physique | Gravité, pendule, projectile, ressort, mouvement circulaire, champs, optique, orbites et frottement |
+| Semaine 8 | Ajouter les simulations Java | Tris, structures de données, chaînes, mémoire et multithreading |
+| Semaine 9 | Stabiliser l'interface | Ajustements visuels, profil, paramètres, responsive et catalogue |
+| Semaine 10 | Préparer la remise | Mise à jour du rapport, vérification des diagrammes et distinction entre prêt et bientôt |
 
 ## 10. UML et flux de l'application
 
-Les diagrammes suivants sont ecrits en Mermaid. Ils peuvent etre rendus dans WebStorm, VS Code avec une extension Mermaid, Mermaid Live Editor ou Mermaid Editor.
+Les diagrammes suivants sont écrits en Mermaid. Ils représentent la structure actuelle du code, pas seulement une idée générale du projet.
 
 ### 10.1 Parcours utilisateur global
 
 ```mermaid
 flowchart TD
-  U[Utilisateur] --> Intro[Ecran intro]
-  Intro -->|Appuie sur le logo| Accueil[EcranAccueil]
+  U[Utilisateur] --> Intro[app/index.tsx - écran d'introduction]
+  Intro --> Accueil[/(tabs)/accueil]
 
-  Accueil -->|Explorer| CartesAccueil[Cartes principales]
-  Accueil -->|Ouvrir cours| ChoixCours[Choisir matiere de cours]
-  Accueil -->|Ouvrir simulations| ChoixSimulations[Choisir section de simulations]
-  Accueil -->|Ouvrir profil| Profil[EcranProfil]
+  Accueil --> Cours[/(tabs)/cours]
+  Accueil --> Simulations[/(tabs)/simulations]
+  Accueil --> Profil[/(tabs)/profil]
+  Accueil --> Succes[/(tabs)/succes]
 
-  ChoixCours -->|Math| CoursMath[Cours mathematiques]
-  ChoixCours -->|Physique| CoursPhysique[Cours physique]
-  ChoixCours -->|Java| CoursJava[Cours Java]
+  Cours --> ChoixMatiere[Choix d'une matière]
+  ChoixMatiere --> CoursMath[Cours mathématiques]
+  ChoixMatiere --> CoursPhysique[Cours physique]
+  ChoixMatiere --> CoursJava[Cours Java]
 
-  CoursMath --> DetailCours[EcranLectureCours]
-  CoursPhysique --> DetailCours
-  CoursJava --> DetailCours
+  CoursMath --> LectureCours[/(tabs)/cours/sujet/courseId]
+  CoursPhysique --> LectureCours
+  CoursJava --> LectureCours
 
-  DetailCours -->|Lire slide suivante| DetailCours
-  DetailCours -->|Revenir slide precedente| DetailCours
-  DetailCours -->|Faire quiz final| Quiz[Quiz]
-  Quiz -->|Bonne reponse| SauvegardeProgression[mettreAJourProgressionCours 100%]
-  Quiz -->|Mauvaise reponse| DetailCours
-  SauvegardeProgression -->|Ajouter XP si nouveau| Profil
+  LectureCours --> DiapoSuivante[Diapositive suivante]
+  DiapoSuivante --> LectureCours
+  LectureCours --> QuizFinal[Quiz final]
+  QuizFinal --> Progression[donneesLocales.enregistrerProgressionCours]
+  Progression --> Profil
 
-  ChoixSimulations -->|Math| IndexSimMath[EcranIndexSection mathematiques]
-  ChoixSimulations -->|Physique| IndexSimPhysique[EcranIndexSection physique]
-  ChoixSimulations -->|Java| IndexSimJava[EcranIndexSection programmation Java]
+  Simulations --> IndexMath[/(tabs)/mathematiques]
+  Simulations --> IndexPhysique[/(tabs)/physique]
+  Simulations --> IndexJava[/(tabs)/programmation-java]
 
-  IndexSimMath --> SimMathPret[Simulation mathematiques prete]
-  IndexSimMath --> SimMathBientot[Carte mathematiques Bientot]
-  IndexSimPhysique --> SimPhysiquePret[Simulation physique prete]
-  IndexSimPhysique --> SimPhysiqueBientot[Carte physique Bientot]
-  IndexSimJava --> SimJavaPret[Simulation Java prete]
-  IndexSimJava --> SimJavaBientot[Simulation Java a venir]
+  IndexMath --> SimulationMath[Simulation math prête]
+  IndexPhysique --> SimulationPhysique[Simulation physique prête]
+  IndexJava --> SimulationJava[Simulation Java prête]
 
-  SimMathPret --> EcranSimulation[Ecran de simulation]
-  SimPhysiquePret --> EcranSimulation
-  SimJavaPret --> EcranSimulation
-  SimMathBientot --> EcranAttente[Ecran a venir]
-  SimPhysiqueBientot --> EcranAttente
-  SimJavaBientot --> EcranAttente
+  IndexPhysique --> Collisions[Collisions élastiques - bientôt]
+  IndexJava --> Hachage[Collisions de hachage - bientôt]
+  IndexJava --> Heritage[Héritage - bientôt]
 
-  EcranSimulation -->|Modifier controles| Recalcul[Recalculer et redessiner]
-  Recalcul --> EcranSimulation
-  EcranSimulation -->|Definitions| InfobulleDefinition[Popover definitions]
-  EcranSimulation -->|Retour section| ChoixSimulations
-  EcranSimulation -->|Logo accueil| Accueil
-  EcranSimulation -->|Profil| Profil
+  SimulationMath --> EcranSimulation[Composant de simulation]
+  SimulationPhysique --> EcranSimulation
+  SimulationJava --> EcranSimulation
+  Collisions --> EcranLigne[EcranSimulationLigne]
+  Hachage --> EcranLigne
+  Heritage --> EcranLigne
 
-  Profil -->|Voir cours recents| CoursRecents[Cours recents]
-  Profil -->|Voir cartes memoire| CartesMemoire[Cartes memoire]
-  Profil -->|Voir XP| NiveauXP[Niveau et XP]
-  Profil -->|Parametres| Parametres[Parametres]
-  Parametres -->|Mode sombre| Profil
-  Parametres -->|Langue| Profil
-  Parametres -->|Notifications| Profil
-  Parametres -->|Reset data| Reinitialisation[reinitialiserDonneesUtilisateurActif]
-  Reinitialisation --> Profil
+  EcranSimulation --> Controles[Sliders, boutons ou champs]
+  Controles --> Etats[useState et calculs internes]
+  Etats --> Rendu[Graphique SVG ou interface visuelle]
+  Rendu --> EcranSimulation
+
+  Profil --> Parametres[Paramètres]
+  Profil --> Personnalisation[/(tabs)/profil/personnalisation]
+  Profil --> CartesMemoire[Cartes mémoire]
+  Profil --> ProgressionProfil[Cours récents et complétions]
+  Profil --> Niveau[Niveau et XP]
+  Parametres --> ModeSombre[Mode sombre]
+  Parametres --> CompteurFPS[Compteur FPS]
+  Personnalisation --> PseudoPhoto[Pseudo et photo]
 ```
 
 ### 10.2 Catalogue des simulations
 
 ```mermaid
 flowchart LR
-  Simulations[Simulations] --> Mathematiques[Mathematiques]
-  Simulations --> Physique[Physique]
-  Simulations --> Java[Java]
+  Catalogue[CATALOGUE_SIMULATIONS] --> Math[mathematiques]
+  Catalogue --> Physique[physique]
+  Catalogue --> Java[programmation-java]
 
-  Mathematiques --> M1[Derivees]
-  Mathematiques --> M2[Integrales]
-  Mathematiques --> M3[Serie de Taylor]
-  Mathematiques --> M4[Limites]
-  Mathematiques --> M5[Fourier]
-  Mathematiques --> M6[Champ de pentes]
-  Mathematiques --> M7[Champ vectoriel]
-  Mathematiques --> M8[Series]
-  Mathematiques --> M9[Loi normale standard]
-  Mathematiques --> M10[Loi de Student]
+  Math --> M1[Dérivées - prêt]
+  Math --> M2[Intégrales - prêt]
+  Math --> M3[Série de Taylor - prêt]
+  Math --> M4[Limites - prêt]
+  Math --> M5[Fourier - prêt]
+  Math --> M6[Champ de pentes - prêt]
+  Math --> M7[Champ vectoriel - prêt]
+  Math --> M8[Séries - prêt]
+  Math --> M9[Loi normale standard - prêt]
+  Math --> M10[Loi de Student - prêt]
+  Math --> MB[Cartes génériques Bientôt - routes non présentes]
 
-  Physique --> P1[Gravite]
-  Physique --> P2[Pendule]
-  Physique --> P3[Mouvement projectile]
-  Physique --> P4[Ressort et loi de Hooke]
-  Physique --> P5[Mouvement circulaire]
-  Physique --> P6[Champs magnetiques]
-  Physique --> P7[Champs electriques]
-  Physique --> P8[Optique et refraction]
-  Physique --> P9[Mecanique orbitale]
-  Physique --> P10[Frottement]
-  Physique --> P11[Collisions elastiques]
+  Physique --> P1[Gravité - prêt]
+  Physique --> P2[Pendule - prêt]
+  Physique --> P3[Mouvement projectile - prêt]
+  Physique --> P4[Ressort et Hooke - prêt]
+  Physique --> P5[Mouvement circulaire - prêt]
+  Physique --> P6[Champs magnétiques - prêt]
+  Physique --> P7[Champs électriques - prêt]
+  Physique --> P8[Optique et réfraction - prêt]
+  Physique --> P9[Mécanique orbitale - prêt]
+  Physique --> P10[Frottement - prêt]
+  Physique --> P11[Collisions élastiques - bientôt]
+  Physique --> PB[Cartes génériques Bientôt - routes non présentes]
 
-  Java --> J1[Tri a bulles]
-  Java --> J2[Tri par selection]
-  Java --> J3[Tri par insertion]
-  Java --> J4[Tri fusion]
-  Java --> J5[Tri rapide]
-  Java --> J6[Pile - LIFO]
-  Java --> J7[File - FIFO]
-  Java --> J8[Liste chainee]
-  Java --> J9[ArrayList]
-  Java --> J10[Tableaux]
-  Java --> J11[Chaines et caracteres]
-  Java --> J12[Transtypage]
-  Java --> J13[Multithreading]
-  Java --> J14[Collisions de hachage]
-  Java --> J15[Heritage]
+  Java --> J1[Tri à bulles - prêt]
+  Java --> J2[Tri par sélection - prêt]
+  Java --> J3[Tri par insertion - prêt]
+  Java --> J4[Tri fusion - prêt]
+  Java --> J5[Tri rapide - prêt]
+  Java --> J6[Pile - prêt]
+  Java --> J7[File - prêt]
+  Java --> J8[Liste chaînée - prêt]
+  Java --> J9[ArrayList - prêt]
+  Java --> J10[Tableaux - prêt]
+  Java --> J11[Chaînes et caractères - prêt]
+  Java --> J12[Mémoire - prêt]
+  Java --> J13[Multithreading - prêt]
+  Java --> J14[Collisions de hachage - bientôt]
+  Java --> J15[Héritage - bientôt]
 ```
 
 ### 10.3 Flux commun d'une simulation
@@ -274,150 +280,127 @@ flowchart LR
 sequenceDiagram
   participant U as Utilisateur
   participant R as Expo Router
-  participant S as EcranSimulation
-  participant H as EnteteEcranSimulation
-  participant C as Controle
-  participant G as Graphique
-  participant F as Fonctions internes
+  participant C as Catalogue
+  participant S as Simulation
+  participant E as Entête
+  participant X as Contrôles
+  participant G as Graphique ou interface
 
-  U->>R: Choisit une simulation
-  R->>S: Charge le composant TSX
-  S->>H: Affiche retour, logo, profil
-  S->>G: Dessine l'etat initial
-  U->>C: Glisse un slider ou appuie sur un bouton
-  C->>S: Met a jour useState
-  S->>F: Recalcule valeurs, points, chemins SVG, stats
-  F-->>S: Retourne donnees calculees
-  S->>G: Redessine le graphe
-  U->>H: Retour, accueil ou profil
-  H->>R: Navigation
+  U->>R: Ouvre une section de simulations
+  R->>C: Lit CATALOGUE_SIMULATIONS
+  C-->>U: Affiche les cartes
+  U->>R: Choisit une simulation prête
+  R->>S: Charge le composant TSX de la route
+  S->>E: Affiche retour, accueil et profil
+  S->>G: Affiche l'état initial
+  U->>X: Modifie un paramètre
+  X->>S: Met à jour l'état React
+  S->>S: Recalcule les valeurs
+  S->>G: Redessine le résultat
+  U->>E: Retour, accueil ou profil
+  E->>R: Navigation
 ```
 
-### Architecture logique
+### 10.4 Architecture logique
 
 ```mermaid
 flowchart TB
-  A[app/ routes Expo Router] --> B[Ecrans: accueil, profil, cours, simulations]
-  B --> C[components/ composants reutilisables]
-  B --> D[features/ logique de sections et simulations]
-  B --> E[data/cours.tsx]
-  B --> F[db/donnees-principales.tsx]
-  D --> G[catalogue-simulations.ts]
-  F --> H[localStorage ou memoire]
-  E --> I[Cours, slides, quiz]
+  App[app/ - routes Expo Router] --> Accueil[accueil, cours, profil, succès, simulations]
+  App --> RoutesSim[Routes par simulation]
+
+  Accueil --> Components[components/ - cartes, profil, thème, logo]
+  Accueil --> Features[features/ - cours, sections, simulations]
+  Accueil --> Data[data/cours.tsx]
+  Accueil --> DB[db/donnees-principales.tsx]
+
+  Features --> Catalogue[features/simulations/catalogue-simulations.ts]
+  Features --> Core[features/simulations/core]
+  Features --> SimMath[simulations/mathematiques]
+  Features --> SimPhysique[simulations/physique]
+  Features --> SimJava[simulations/programmation-java]
+
+  DB --> Stockage[stockage-application]
+  Stockage --> IndexedDB[IndexedDB sur web]
+  Stockage --> SQLite[expo-sqlite sur Android et native]
+  Stockage --> Memoire[stockage mémoire si IndexedDB indisponible]
+
+  Data --> CoursParMatiere[COURS_PAR_MATIERE]
+  Data --> Quiz[QUIZ_PAR_COURS]
 ```
 
 ## 11. Options utilisateur dans les simulations
 
-### 11.1 Simulations mathematiques
+### 11.1 Simulations mathématiques
 
-| Simulation | Options utilisateur principales | Resultat |
+| Simulation | Options principales | Résultat |
 | --- | --- | --- |
-| Derivees | choisir `x^2`, `x^3`, `sin(x)`, `e^x`, `ln(x)`, `cos(x)`; modifier `x0` avec boutons, slider ou saisie | recalcul de `f(x0)`, `f'(x0)`, point et tangente |
-| Integrales | choisir fonction; choisir methode gauche, droite, milieu ou trapeze; modifier bornes et nombre de rectangles | comparaison entre aire approchee, aire exacte et erreur |
-| Serie de Taylor | choisir fonction; modifier le nombre de termes | affichage du polynome d'approximation et de l'erreur |
-| Limites | choisir fonction; modifier la distance d'approche | affichage des points gauche/droite et de la valeur limite |
-| Fourier | choisir signal carre, dent de scie ou triangle; modifier le nombre d'harmoniques | affichage de l'onde approximee et des phasors |
-| Champ de pentes | choisir equation differentielle; modifier `y0` et la densite | affichage du champ et de la courbe solution |
-| Champ vectoriel | choisir un champ; activer/desactiver les particules | affichage des vecteurs, de la rotation, de la divergence et du flux anime |
-| Series | choisir serie; modifier le nombre de termes | affichage des termes et des sommes partielles |
-| Loi normale standard | modifier la moyenne, l'ecart-type et les bornes | calcul de la probabilite entre deux bornes et affichage de la courbe normale |
-| Loi de Student | modifier les degres de liberte et le niveau alpha | affichage de la valeur critique, de l'intervalle central et des proprietes de la loi |
+| Dérivées | Choisir une fonction et modifier `x0` | Affiche le point, la tangente, `f(x0)` et `f'(x0)` |
+| Intégrales | Choisir une fonction, une méthode et le nombre de rectangles | Compare l'aire approchée, l'aire exacte et l'erreur |
+| Série de Taylor | Choisir une fonction et le nombre de termes | Montre l'approximation et l'erreur |
+| Limites | Choisir une fonction et la distance d'approche | Affiche les valeurs à gauche et à droite |
+| Fourier | Choisir un signal et le nombre d'harmoniques | Affiche l'onde approximée et les phaseurs |
+| Champ de pentes | Choisir une équation différentielle et des conditions | Affiche le champ et une courbe solution |
+| Champ vectoriel | Choisir un champ et activer les particules | Affiche les vecteurs, la divergence, la rotation et le mouvement |
+| Séries | Choisir une série et le nombre de termes | Affiche les termes et les sommes partielles |
+| Loi normale standard | Modifier moyenne, écart-type et bornes | Calcule une probabilité sur la courbe normale |
+| Loi de Student | Modifier les degrés de liberté et alpha | Affiche la valeur critique et l'intervalle central |
 
 ### 11.2 Simulations physiques
 
-| Simulation | Options utilisateur principales | Resultat |
+| Simulation | Options principales | Résultat |
 | --- | --- | --- |
-| Gravite | modifier masse 1, masse 2 et distance | calcul de la force gravitationnelle et affichage visuel |
-| Pendule | modifier longueur, gravite, amortissement, angle initial; demarrer/arreter | calcul de la periode, position et trajectoire |
-| Mouvement projectile | modifier vitesse, angle, gravite; lancer; pause/reprise | affichage de la trajectoire et des statistiques de vol |
-| Ressort et loi de Hooke | modifier constante `k`, masse, amplitude, amortissement; pause; reset | affichage du ressort, de l'oscillation et de la projection de phase |
-| Mouvement circulaire | modifier rayon, vitesse et masse | calcul de l'acceleration et de la force centripete |
-| Champs magnetiques | modifier le nombre de fils, le courant, le sens et le point d'observation | affichage des lignes de champ, vecteurs et intensite locale |
-| Champs electriques | choisir une configuration de charges et un point d'observation | affichage des vecteurs de champ, lignes de champ et intensite resultante |
-| Optique et refraction | modifier les indices de refraction et l'angle incident | calcul des angles, de la reflexion totale et de la vitesse de la lumiere dans chaque milieu |
-| Mecanique orbitale | modifier perihelie, aphelie, masse de l'astre et vitesse temporelle | affichage de l'orbite, de la position et des statistiques orbitales |
-| Frottement | modifier masse, force appliquee, coefficients de frottement et gravite | calcul des forces, de l'etat du bloc et de l'acceleration |
+| Gravité | Modifier les masses et la distance | Calcule la force gravitationnelle |
+| Pendule | Modifier longueur, gravité, amortissement et angle | Anime le pendule et calcule la période |
+| Mouvement projectile | Modifier vitesse, angle et gravité | Affiche la trajectoire et les statistiques |
+| Ressort et loi de Hooke | Modifier `k`, masse, amplitude et amortissement | Affiche l'oscillation et la phase |
+| Mouvement circulaire | Modifier rayon, vitesse angulaire et masse | Calcule vitesse, période, accélération et force centripète |
+| Champs magnétiques | Modifier le nombre de fils, le courant, l'affichage du champ et le point d'observation | Affiche vecteurs, lignes de champ et intensité |
+| Champs électriques | Choisir une configuration de charges | Affiche le champ résultant et les lignes |
+| Optique et réfraction | Modifier indices et angle incident | Calcule réflexion, réfraction et angle critique |
+| Mécanique orbitale | Modifier masse de l'astre, excentricité, orientation et vitesse orbitale | Affiche orbite, périhélie, aphélie et statistiques orbitales |
+| Frottement | Modifier masse, force appliquée et coefficients de frottement | Calcule force nette, état du bloc et accélération |
 
 ### 11.3 Simulations Java
 
-| Simulation | Options utilisateur principales | Resultat |
+| Simulation | Options principales | Résultat |
 | --- | --- | --- |
-| Tri a bulles | choisir ou melanger un tableau; avancer les comparaisons et les echanges | visualisation pas a pas du tri par comparaisons adjacentes |
-| Tri par selection | choisir ou melanger un tableau; avancer les recherches du minimum et les placements | visualisation pas a pas du minimum selectionne et de la partie triee |
-| Tri par insertion | choisir ou melanger un tableau; avancer les insertions | visualisation de la partie triee et des deplacements |
-| Tri fusion | choisir ou melanger un tableau; avancer les divisions et fusions | visualisation recursive des copies et comparaisons |
-| Tri rapide | choisir ou melanger un tableau; avancer les partitions | visualisation du pivot, des partitions et des echanges |
-| Pile - LIFO | saisir une valeur; utiliser `push`, `pop`, `peek` | visualisation du sommet et des operations en `O(1)` |
-| File - FIFO | saisir une valeur; utiliser `offer`, `poll`, `peek` | visualisation de l'avant, de l'arriere et des operations en `O(1)` |
-| Liste chainee | ajouter, retirer ou parcourir des noeuds | visualisation des liens entre noeuds et des modifications de pointeurs |
-| ArrayList | modifier la taille et simuler des operations | visualisation de la capacite, de l'occupation et du redimensionnement |
-| Tableaux | choisir un index et une operation | visualisation des cases, des acces directs et des decalages |
-| Chaines et caracteres | modifier texte et index | visualisation des caracteres, sous-chaines et longueurs |
-| Multithreading | modifier threads, iterations et synchronisation | comparaison entre execution synchronisee et risque de condition de course |
+| Tris | Mélanger un tableau et avancer étape par étape | Visualise comparaisons, échanges, pivots ou fusions |
+| Pile | Utiliser `push`, `pop` et `peek` | Montre le sommet et le principe LIFO |
+| File | Utiliser `offer`, `poll` et `peek` | Montre l'avant, l'arrière et le principe FIFO |
+| Liste chaînée | Ajouter, retirer ou parcourir des noeuds | Montre les liens et les changements de pointeurs |
+| ArrayList | Modifier taille et opérations | Montre capacité, occupation et redimensionnement |
+| Tableaux | Choisir index et opérations | Montre accès direct, cases et décalages |
+| Chaînes et caractères | Modifier texte et index | Montre caractères, sous-chaînes et longueur |
+| Mémoire | Manipuler des valeurs et observer leur représentation | Montre des idées liées aux types, bits et mémoire |
+| Multithreading | Modifier threads, itérations et synchronisation | Compare une exécution synchronisée et une situation à risque |
 
+## 12. Fonctions et fichiers importants
 
-## 12. Fonctions internes importantes
+Cette section n'essaie pas de lister chaque fonction du projet. Elle garde surtout les morceaux qui aident à comprendre la structure.
 
-### 12.1 Core des simulations
+| Partie | Fichiers importants | Rôle |
+| --- | --- | --- |
+| Routes | `app/` | Contient les écrans et les chemins Expo Router |
+| Cours | `data/cours.tsx`, `features/cours/ecran-cours.tsx` | Stocke les cours, les diapositives, les quiz et l'affichage |
+| Simulations | `features/simulations/` | Contient le catalogue, le core et les simulations par matière |
+| Profil | `app/(tabs)/profil`, `app/(tabs)/profil/personnalisation`, `components/profil`, `components/accueil` | Affiche progression, paramètres, succès, cartes mémoire, pseudo et photo de profil |
+| Stockage | `db/donnees-principales.tsx`, `db/stockage-application.ts`, `db/stockage-application.web.ts` | Gère utilisateurs locaux, cours, XP, succès et paramètres avec SQLite sur native et IndexedDB sur web |
+| Thème | `constantes/theme.ts`, `hooks/use-schema-couleur.ts` | Gère l'apparence claire/sombre |
 
-| Fichier | Fonctions/composants |
-| --- | --- |
-| `infobulle-definition.tsx` | `InfobulleDefinition` |
-| `symboles-mathematiques-flottants.tsx` | `versPourcentage`, `SymbolesMathematiquesFlottants` |
-| `formater-formule.ts` | `versExposant`, `formaterFormulePourAffichage` |
-| `rendu-formule.tsx`, `.native.tsx`, `.web.tsx` | `ComposantRenduFormule`, `RenduFormule` |
-| `ecran-simulation-ligne.tsx` | `EcranSimulationLigne` |
-| `entete-ecran-simulation.tsx` | `obtenirHrefSection`, `EnteteEcranSimulation` |
-| `utiliser-intervalle-simulation.ts` | `utiliserIntervalleSimulation` |
+Exemples de fonctions importantes:
 
-### 12.2 Simulations mathematiques
-
-| Simulation | Fonctions/composants internes |
-| --- | --- |
-| Derivees | `borner`, `formaterNombre`, `obtenirPointEcran`, `echantillonnerFonction`, `creerDonneesChemin`, `TraceChemin`, `GraphiqueDerivee`, `CurseurX`, `SimulationDerivees` |
-| Integrales | `borner`, `obtenirPointEcran`, `echantillonnerFonction`, `creerDonneesChemin`, `TraceChemin`, `evaluerEchantillon`, `calculerApproximation`, `calculerAireReference`, `GraphiqueIntegrale`, `CurseurNumerique`, `SimulationIntegrales` |
-| Serie de Taylor | `factorielle`, `borner`, `formaterNombre`, `etiquettePuissance`, `formaterDenominateurLatex`, `etiquetteTermeSigne`, `termeSigneLatex`, `obtenirPointEcran`, `echantillonnerFonction`, `creerDonneesChemin`, `GraphiqueTaylor`, `CurseurTermes`, `SimulationSerieTaylor` |
-| Limites | `borner`, `formaterNombre`, `obtenirPointEcran`, `echantillonnerFonction`, `creerDonneesChemin`, `obtenirMarqueursApproche`, `GraphiqueLimite`, `CurseurApproche`, `SimulationLimites` |
-| Fourier | `borner`, `formaterNombre`, `approximationFourier`, `obtenirPointOnde`, `creerChemin`, `GraphiqueOndeFourier`, `GraphiquePhaseurs`, `CurseurHarmoniques`, `SimulationFourier` |
-| Champ de pentes | `borner`, `formaterNombre`, `obtenirPointEcran`, `creerChemin`, `construireCheminSolution`, `GraphiqueChampPentes`, `CurseurNumerique`, `SimulationChampDePentes` |
-| Champ vectoriel | `borner`, `particuleAleatoire`, `versPointEcran`, `formaterInvariant`, `GraphiqueChampVectoriel`, `SimulationChampVectoriel` |
-| Series | `borner`, `formaterValeur`, `creerCheminSvg`, `construireSommesPartielles`, `GraphiqueSommesPartielles`, `GraphiqueBarresTermes`, `CurseurNombreEntier`, `SimulationSeries` |
-| Lois statistiques | `gamma`, `betaIncompleteRegularisee`, `tPDF`, `tCDF`, `normalPDF`, `normalCDF`, `valeurCritiqueT`, `GraphiqueNormale`, `GraphiqueStudent`, `SimulationLoiNormaleStandard`, `SimulationLoiStudent` |
-
-### 12.3 Simulations physiques
-
-| Simulation | Fonctions/composants internes |
-| --- | --- |
-| Gravite | `borner`, `arrondirAuPas`, `obtenirPasAdaptatif`, `valeurDepuisPourcentageCurseur`, `pourcentageCurseurDepuisValeur`, `formaterValeurCompacte`, `decrireForce`, `CurseurNumerique`, `GraphiqueGravite`, `SimulationGravite` |
-| Gravite physique pure | `calculerForceGravitationnelle`, `formaterForceNewtons`, `formaterForceNewtonsLatex`, `formaterScientifiqueLatex`, `formaterNombreScientifique`, `formaterScientifiqueCompact`, `formaterRatioPoidsCorps`, `formaterRatioPoidsCorpsLatex` |
-| Pendule | `borner`, `arrondirAuPas`, `formaterNombre`, `polaireVersPoint`, `cheminArc`, `cheminTrace`, `CurseurNumerique`, `GraphiquePendule`, `SimulationPendule` |
-| Projectile | `borner`, `arrondirAuPas`, `formaterNombre`, `obtenirValeursProjectile`, `creerCheminTrajectoire`, `CurseurNumerique`, `GraphiqueProjectile`, `SimulationMouvementProjectile` |
-| Ressort et Hooke | `borner`, `arrondirAuPas`, `formaterNombre`, `formaterNombreMath`, `obtenirPhysiqueRessort`, `creerCheminRessort`, `CurseurNumerique`, `GraphiqueRessort`, `creerCheminProjection`, `GraphiqueProjectionPhase`, `SimulationRessortLoiHooke` |
-| Mouvement circulaire | `borner`, `arrondirAuPas`, `formaterNombre`, `formaterNombreMath`, `cheminPointeFleche`, `CurseurNumerique`, `GraphiqueMouvementCirculaire`, `SimulationMouvementCirculaire` |
-| Champs magnetiques | `borner`, `arrondirAuPas`, `formaterNombre`, `cheminPointeFleche`, `calculerFils`, `calculerVecteursChamp`, `calculerChampTotalAuPoint`, `GraphiqueChampsMagnetiques`, `SimulationChampsMagnetiques` |
-| Champs electriques | `borner`, `formaterNombre`, `cheminPointeFleche`, `calculerCharges`, `calculerChampElectriqueAuPoint`, `obtenirPositionMetres`, `calculerVecteursChamp`, `GraphiqueChampsElectriques`, `SimulationChampsElectriques` |
-| Optique et refraction | `borner`, `arrondirAuPas`, `formaterNombre`, `convertirDegresEnRadians`, `convertirRadiansEnDegres`, `calculerAngleCritique`, `verifierReflexionTotale`, `calculerAngleRefracte`, `calculerVitesseLumiere`, `calculerSnell`, `GraphiqueOptiqueRefraction`, `SimulationOptiqueRefraction` |
-| Mecanique orbitale | `borner`, `arrondirAuPas`, `formaterNombre`, `resoudreKepler`, `obtenirPointOrbital`, `calculerDemiGrandAxe`, `calculerPerihelie`, `calculerAphelie`, `calculerPeriodeOrbitale`, `calculerVitesseVisViva`, `calculerOrbite`, `GraphiqueMecaniqueOrbitale`, `SimulationMecaniqueOrbitale` |
-| Frottement | `borner`, `arrondirAuPas`, `formaterNombre`, `calculerForceNormale`, `calculerFrottementStatiqueMax`, `calculerFrottementCinetique`, `verifierBlocEnMouvement`, `calculerFrottementActuel`, `calculerForceNette`, `calculerAcceleration`, `GraphiqueFrottement`, `SimulationFrottement` |
-
-### 12.4 Simulations Java
-
-| Simulation | Fonctions/composants internes |
-| --- | --- |
-| Tris | `genererTableau`, generateurs de tri, `DEFINITIONS_TRIS`, `EtiquetteStat`, `EcranSimulationTri` |
-| Pile - LIFO | `normaliserValeur`, `CarteStatistique`, `BoutonOperation`, `ElementPile`, `SimulationPile` |
-| File - FIFO | `normaliserValeur`, `CarteStatistique`, `BoutonOperation`, `ElementFile`, `SimulationFile` |
-| Liste chainee | `normaliserValeur`, composants de noeuds et operations de liste, `SimulationListeChainee` |
-| ArrayList | gestion de taille/capacite, cartes statistiques et operations de liste dynamique, `SimulationArrayList` |
-| Tableaux | gestion des cases, index et operations visuelles, `SimulationTableaux` |
-| Chaines et caracteres | fonctions d'indexation et sous-chaines, `SimulationChainesCaracteres` |
-| Multithreading | gestion des threads, iterations et synchronisation, `SimulationMultithreading` |
+- `donneesLocales.enregistrerProgressionCours`: sauvegarde la progression d'un cours;
+- `donneesLocales.obtenirCoursRecents`: récupère les cours récemment ouverts;
+- `donneesLocales.enregistrerClicSimulation`: garde une trace des simulations ouvertes;
+- `obtenirQuizCours`: récupère le quiz d'un cours;
+- `EcranIndexSection`: affiche les cartes de simulation selon la section;
+- `EnteteEcranSimulation`: sert d'entête commun pour les simulations;
+- `utiliserIntervalleSimulation`: aide certaines animations à se mettre à jour régulièrement.
 
 ## Conclusion
 
-Evidex est une application educative interactive qui combine cours, simulations et suivi de progression pour faciliter la comprehension de notions abstraites. Le projet montre une base technique solide avec Expo, React Native, TypeScript, une navigation structuree, des donnees de cours organisees et une couche locale de progression utilisateur.
+Evidexe est une application éducative qui combine des cours, des quiz, des simulations et un profil de progression. Le projet est déjà assez complet pour réviser plusieurs notions de mathématiques, de physique et de Java, surtout grâce aux simulations prêtes et au suivi local.
 
-La version actuelle est deja fonctionnelle pour consulter des cours, explorer plusieurs simulations de mathematiques, de physique et de programmation Java, suivre son profil et sauvegarder localement l'avancement. Le rapport a ete ajuste pour mieux refleter le code reel: le projet utilise TypeScript, ne possede pas de backend Node.js, n'utilise pas encore SQLite comme stockage effectif et contient certaines simulations encore en preparation.
+Le projet n'est pas parfait et il reste du travail. Certaines entrées du catalogue sont encore à venir, et quelques cartes génériques "Bientôt" devraient être mieux séparées des vraies simulations prêtes. La persistance locale est déjà mieux structurée qu'au début, parce qu'elle utilise maintenant IndexedDB sur web et SQLite sur Android/native.
 
-La suite naturelle du projet serait de completer les simulations restantes, renforcer la persistance des donnees, ajouter des tests et developper des fonctionnalites collaboratives ou enseignantes. Avec ces ameliorations, Evidex pourrait devenir une application d'apprentissage plus complete, plus fiable et plus utile pour accompagner les etudiants dans la comprehension des concepts scientifiques et informatiques.
+Pour une prochaine version, les améliorations les plus utiles seraient de terminer les simulations marquées "bientôt", nettoyer les entrées génériques du catalogue, ajouter plus de tests et améliorer encore la cohérence visuelle. Malgré ça, la base actuelle montre bien l'objectif du projet: aider à comprendre des notions abstraites avec une application concrète et interactive.
