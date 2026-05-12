@@ -13,6 +13,7 @@ type ProprietesRenduFormule = {
   darkColor?: string;
   lightColor?: string;
   mathViewMobile?: boolean;
+  numberOfLines?: number;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 };
 
@@ -66,7 +67,8 @@ function creerDocumentMathJax(formule: string, couleur: string) {
         color: ${couleur};
         font-size: 18px;
         font-weight: 700;
-        max-width: 100%;
+        max-width: none;
+        white-space: nowrap;
         text-align: center;
       }
 
@@ -99,6 +101,7 @@ function ComposantRenduFormule({
   darkColor = '#FFFFFF',
   lightColor = '#243B53',
   mathViewMobile = false,
+  numberOfLines,
   size = 'md',
 }: ProprietesRenduFormule) {
   const modeSombre = useSchemaCouleur() === 'dark';
@@ -117,7 +120,8 @@ function ComposantRenduFormule({
         centered ? styles.centered : undefined,
         { color: couleurFormule },
         { fontSize: FONT_SIZE[size], lineHeight: FONT_SIZE[size] + 6 },
-      ]}>
+      ]}
+      numberOfLines={numberOfLines}>
       {displayFormula}
     </TexteTheme>
   );

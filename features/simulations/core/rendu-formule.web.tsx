@@ -10,6 +10,7 @@ type ProprietesRenduFormule = {
   darkColor?: string;
   lightColor?: string;
   mathViewMobile?: boolean;
+  numberOfLines?: number;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 };
 
