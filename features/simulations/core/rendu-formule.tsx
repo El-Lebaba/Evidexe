@@ -11,6 +11,7 @@ type ProprietesRenduFormule = {
   darkColor?: string;
   lightColor?: string;
   mathViewMobile?: boolean;
+  numberOfLines?: number;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 };
 
@@ -27,6 +28,7 @@ function ComposantRenduFormule({
   centered = false,
   darkColor = '#FFFFFF',
   lightColor = '#000000',
+  numberOfLines,
   size = 'md',
 }: ProprietesRenduFormule) {
   const displayFormula = useMemo(() => formaterFormulePourAffichage(fallback), [fallback]);
@@ -39,7 +41,8 @@ function ComposantRenduFormule({
         styles.fallback,
         centered ? styles.centered : undefined,
         { fontSize: FONT_SIZE[size], lineHeight: FONT_SIZE[size] + 6 },
-      ]}>
+      ]}
+      numberOfLines={numberOfLines}>
       {displayFormula}
     </TexteTheme>
   );

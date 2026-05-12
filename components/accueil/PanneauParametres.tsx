@@ -19,7 +19,6 @@ export type ParametresApplication = {
   darkMode: boolean;
   language: string;
   notifications: boolean;
-  fpsCounterEnabled: boolean;
 };
 
 type SettingsPanelProps = {
@@ -166,17 +165,6 @@ export default function PanneauParametres({
               value={localSettings.darkMode}
               onValueChange={(darkMode) =>
                 applySettings({ ...localSettings, darkMode })
-              }
-            />
-
-            <Text style={[styles.sectionTitle, { color: themeActif.muted }]}>DevTools</Text>
-            <ToggleRow
-              icon="speed"
-              label="Compteur FPS"
-              themeActif={themeActif}
-              value={localSettings.fpsCounterEnabled}
-              onValueChange={(fpsCounterEnabled) =>
-                applySettings({ ...localSettings, fpsCounterEnabled })
               }
             />
           </View>

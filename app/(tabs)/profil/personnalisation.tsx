@@ -34,7 +34,6 @@ export default function PagePersonnalisationProfil() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settings, setSettings] = useState<ParametresApplication>({
     darkMode: false,
-    fpsCounterEnabled: true,
     language: 'fr',
     notifications: true,
   });

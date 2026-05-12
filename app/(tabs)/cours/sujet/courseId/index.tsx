@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Href, router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import PanneauParametres from '@/components/accueil/PanneauParametres';
@@ -61,6 +61,15 @@ function preserverEspaces(value: string) {
   return value.replace(/\t/g, '    ').replace(/ /g, '\u00A0');
 }
 
+function obtenirStyleTexteMarque(index: number, markedAsCode: boolean) {
+  if (markedAsCode) {
+    return styles.inlineCode;
+  }
+
+  const stylesAccent = [styles.keywordTextOrange, styles.keywordTextBlue, styles.keywordTextGreen];
+  return [styles.keywordText, stylesAccent[index % stylesAccent.length]];
+}
+
 function renderHighlightedText(value: string) {
   const text = normalizeText(value);
   const markerPattern = /(`[^`]+`|\*\*[^*]+\*\*)/g;
@@ -77,7 +86,7 @@ function renderHighlightedText(value: string) {
       const content = markedAsCode ? part.slice(1, -1) : part.slice(2, -2);
 
       return (
-        <Text key={`marked-${index}`} style={markedAsCode ? styles.inlineCode : styles.keywordText}>
+        <Text key={`marked-${index}`} style={obtenirStyleTexteMarque(index, markedAsCode)}>
           {content}
         </Text>
       );
@@ -138,7 +147,6 @@ export default function EcranLectureCours() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settings, setSettings] = useState<ParametresApplication>({
     darkMode: false,
-    fpsCounterEnabled: true,
     language: 'fr',
     notifications: true,
   });
@@ -222,21 +230,21 @@ export default function EcranLectureCours() {
   const nextButtonLabel = isLastSlide ? 'Completer' : 'Suivant';
   const utiliseCarteFormule = subject === 'mathematiques' || subject === 'physique';
   const themeFormule = themeSombre ? {
-    badge: '#111827',
-    border: themeDynamique.border,
-    card: '#050505',
-    hint: '#D1D5DB',
-    icon: '#FFFFFF',
-    surface: '#000000',
-    text: '#FFFFFF',
+    badge: '#1D2B25',
+    border: '#5E786B',
+    card: '#17231F',
+    hint: '#B8C7BB',
+    icon: '#E7BD59',
+    surface: '#101815',
+    text: '#E8EEE7',
   } : {
-    badge: '#e7eae2',
-    border: themeDynamique.border,
-    card: '#d7a950',
-    hint: '#3B4A3D',
-    icon: '#000000',
-    surface: '#e7eae2',
-    text: '#000000',
+    badge: '#E8EDE2',
+    border: '#8FA385',
+    card: '#EEF2E8',
+    hint: '#586B5C',
+    icon: '#A56F43',
+    surface: '#F6F4EA',
+    text: '#243B53',
   };
   const contenuDiapoTraite = {
     lignesCode: slide.code ? cleanCodeText(slide.code).split('\n') : [],
@@ -401,20 +409,40 @@ export default function EcranLectureCours() {
                       {line.length === 0 ? (
                         <Text style={[styles.formulaBlankLine, { color: themeFormule.text }]}>{'\u00A0'}</Text>
                       ) : estLigneFormuleAutonome(line) ? (
-                        <RenduFormule
-                          darkColor={themeFormule.text}
-                          fallback={preserverEspaces(line)}
-                          lightColor={themeFormule.text}
-                          mathematiques={line}
-                          size="lg"
-                        />
+                        <ScrollView
+                          horizontal
+                          nestedScrollEnabled
+                          showsHorizontalScrollIndicator={false}
+                          style={styles.formulaLineScroller}
+                          contentContainerStyle={styles.formulaLineScrollerContent}>
+                          <RenduFormule
+                            darkColor={themeFormule.text}
+                            fallback={preserverEspaces(line)}
+                            lightColor={themeFormule.text}
+                            mathematiques={line}
+                            numberOfLines={1}
+                            size={line.length > 42 ? 'sm' : 'md'}
+                          />
+                        </ScrollView>
                       ) : (
-                        <TexteTheme
-                          lightColor={themeFormule.text}
-                          darkColor={themeFormule.text}
-                          style={[styles.formulaPlainText, { color: themeFormule.text }]}>
-                          {preserverEspaces(line)}
-                        </TexteTheme>
+                        <ScrollView
+                          horizontal
+                          nestedScrollEnabled
+                          showsHorizontalScrollIndicator={false}
+                          style={styles.formulaLineScroller}
+                          contentContainerStyle={styles.formulaLineScrollerContent}>
+                          <TexteTheme
+                            lightColor={themeFormule.text}
+                            darkColor={themeFormule.text}
+                            numberOfLines={1}
+                            style={[
+                              styles.formulaPlainText,
+                              line.length > 58 ? styles.formulaPlainTextCompact : null,
+                              { color: themeFormule.text },
+                            ]}>
+                            {preserverEspaces(line)}
+                          </TexteTheme>
+                        </ScrollView>
                       )}
                     </View>
                   ))}
@@ -609,6 +637,7 @@ const styles = StyleSheet.create({
     gap: 12,
     maxWidth: 980,
     padding: 16,
+    paddingTop: Platform.OS === 'android' ? 22 : 16,
     width: '100%',
   },
   iconButton: {
@@ -726,16 +755,26 @@ const styles = StyleSheet.create({
     lineHeight: 27,
   },
   keywordText: {
-    backgroundColor: 'rgba(216, 169, 74, 0.18)',
     borderRadius: 6,
-    color: themeActif.ink,
     fontWeight: '900',
     paddingHorizontal: 4,
   },
+  keywordTextOrange: {
+    backgroundColor: 'rgba(188, 133, 89, 0.16)',
+    color: '#76563F',
+  },
+  keywordTextBlue: {
+    backgroundColor: 'rgba(126, 166, 224, 0.15)',
+    color: '#395E7D',
+  },
+  keywordTextGreen: {
+    backgroundColor: 'rgba(124, 159, 112, 0.16)',
+    color: '#486846',
+  },
   inlineCode: {
-    backgroundColor: 'rgba(126, 166, 224, 0.18)',
+    backgroundColor: 'rgba(126, 166, 224, 0.14)',
     borderRadius: 6,
-    color: themeActif.ink,
+    color: '#395E7D',
     fontFamily: 'monospace',
     fontWeight: '900',
     paddingHorizontal: 4,
@@ -839,13 +878,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 26,
   },
+  formulaLineScroller: {
+    maxWidth: '100%',
+  },
+  formulaLineScrollerContent: {
+    alignItems: 'center',
+    minWidth: '100%',
+    paddingRight: 18,
+  },
   formulaPlainText: {
     color: '#FFFFFF',
     fontFamily: 'monospace',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
-    lineHeight: 26,
+    lineHeight: 24,
     textAlign: 'left',
+  },
+  formulaPlainTextCompact: {
+    fontSize: 12,
+    lineHeight: 22,
   },
   formulaBlankLine: {
     color: '#FFFFFF',

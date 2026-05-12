@@ -925,9 +925,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 24,
     justifyContent: 'center',
-    left: 10,
-    position: 'absolute',
-    top: 10,
     width: 24,
   },
   menuIconBar: {

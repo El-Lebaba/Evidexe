@@ -48,7 +48,6 @@ export function EcranCours() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settings, setSettings] = useState<ParametresApplication>({
     darkMode: false,
-    fpsCounterEnabled: true,
     language: 'fr',
     notifications: true,
   });
@@ -255,6 +254,7 @@ const styles = StyleSheet.create({
     maxWidth: 980,
     padding: 16,
     paddingBottom: 42,
+    paddingTop: Platform.OS === 'android' ? 24 : 16,
     width: '100%',
   },
   topBar: {
@@ -302,9 +302,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 24,
     justifyContent: 'center',
-    left: 9,
-    position: 'absolute',
-    top: 9,
     width: 24,
   },
   menuIconBar: {

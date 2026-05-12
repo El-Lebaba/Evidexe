@@ -66,7 +66,7 @@ Le profil permet de voir:
 - les succès;
 - les cartes mémoire;
 - la personnalisation du pseudo et de la photo de profil;
-- les paramètres visibles dans l'interface, surtout le mode sombre et le compteur FPS.
+- les paramètres visibles dans l'interface, surtout le mode sombre.
 
 La couche de données peut gérer plusieurs utilisateurs locaux par nom. Dans l'interface actuelle, on travaille surtout avec l'utilisateur actif, et on peut modifier son pseudo et sa photo. Les données sont sauvegardées localement, pas dans un backend distant.
 
@@ -220,7 +220,6 @@ flowchart TD
   Profil --> ProgressionProfil[Cours récents et complétions]
   Profil --> Niveau[Niveau et XP]
   Parametres --> ModeSombre[Mode sombre]
-  Parametres --> CompteurFPS[Compteur FPS]
   Personnalisation --> PseudoPhoto[Pseudo et photo]
 ```
 

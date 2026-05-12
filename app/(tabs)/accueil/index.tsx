@@ -167,7 +167,6 @@ export default function EcranAccueil() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settings, setSettings] = useState<ParametresApplication>({
     darkMode: false,
-    fpsCounterEnabled: true,
     language: 'fr',
     notifications: true,
   });

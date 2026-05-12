@@ -42,7 +42,6 @@ export default function EvidexProfile() {
   const [user, setUser] = useState<InfosUtilisateur>({ xp: 0, level: 1 });
   const [settings, setSettings] = useState<ParametresApplication>({
     darkMode: false,
-    fpsCounterEnabled: true,
     language: 'fr',
     notifications: true,
   });

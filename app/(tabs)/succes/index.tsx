@@ -20,7 +20,6 @@ export default function PageSucces() {
   const [successes, setSuccesses] = useState<SuccesProgression[]>([]);
   const [settings, setSettings] = useState<ParametresApplication>({
     darkMode: false,
-    fpsCounterEnabled: true,
     language: 'fr',
     notifications: true,
   });

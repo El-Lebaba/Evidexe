@@ -51,7 +51,6 @@ export type ParametresApplication = {
   darkMode: boolean;
   language: string;
   notifications: boolean;
-  fpsCounterEnabled: boolean;
 };
 
 type UtilisateurStocke = {
@@ -103,7 +102,6 @@ const parametresDefaut: ParametresApplication = {
   darkMode: false,
   language: 'fr',
   notifications: true,
-  fpsCounterEnabled: true,
 };
 
 const succesDefaut: Succes[] = [
@@ -296,6 +294,14 @@ function creerStatsSuccesDefaut() {
   };
 }
 
+function normaliserParametresApplication(parametres?: Partial<ParametresApplication>) {
+  return {
+    darkMode: parametres?.darkMode ?? parametresDefaut.darkMode,
+    language: parametres?.language ?? parametresDefaut.language,
+    notifications: parametres?.notifications ?? parametresDefaut.notifications,
+  };
+}
+
 function creerUtilisateur(nom: string): UtilisateurStocke {
   const nomAffiche = normaliserNomUtilisateur(nom);
   return {
@@ -315,7 +321,7 @@ function creerDonneesUtilisateur(): DonneesUtilisateur {
     cartesMemoire: carteMemoireDefaut(),
     achievements: carteSuccesDefaut(),
     achievementStats: creerStatsSuccesDefaut(),
-    settings: { ...parametresDefaut },
+    settings: normaliserParametresApplication(),
   };
 }
 
@@ -343,10 +349,7 @@ function completerDonneesUtilisateur(donnees?: Partial<DonneesUtilisateur>): Don
         ...(donnees?.achievementStats?.simulationClicksBySection ?? {}),
       },
     },
-    settings: {
-      ...parametresDefaut,
-      ...(donnees?.settings ?? {}),
-    },
+    settings: normaliserParametresApplication(donnees?.settings),
   };
 }
 
@@ -938,7 +941,7 @@ export const donneesLocales = {
   },
 
   obtenirParametres() {
-    return { ...obtenirDonneesUtilisateurActif().settings };
+    return normaliserParametresApplication(obtenirDonneesUtilisateurActif().settings);
   },
 
   ajouterEcouteurParametres(ecouteur: () => void) {
@@ -952,7 +955,7 @@ export const donneesLocales = {
   enregistrerParametres(parametres: ParametresApplication) {
     const donnees = lireDonneesApplication();
     const donneesUtilisateur = obtenirDonneesUtilisateurActif(donnees);
-    donneesUtilisateur.settings = { ...parametres };
+    donneesUtilisateur.settings = normaliserParametresApplication(parametres);
     ecrireDonneesApplication(donnees);
     emettreChangementParametres();
   },

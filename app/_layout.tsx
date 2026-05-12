@@ -3,7 +3,6 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { CompteurFpsDev } from '@/components/compteur-fps-dev';
 import { obtenirThemeApplication } from '@/constantes/theme';
 import { useSchemaCouleur } from '@/hooks/use-schema-couleur';
 
@@ -34,7 +33,6 @@ export default function RootLayout() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
-      <CompteurFpsDev />
       <StatusBar style={darkMode ? 'light' : 'dark'} />
     </ThemeProvider>
   );
