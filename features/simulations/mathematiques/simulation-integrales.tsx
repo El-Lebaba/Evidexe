@@ -1,3 +1,11 @@
+/**
+ * Simulation des intégrales.
+ *
+ * `FUNCTIONS` décrit les courbes et `METHODS` les façons d'approcher l'aire.
+ * La courbe est échantillonnée en points SVG, puis les rectangles ou trapèzes
+ * sont créés à partir des bornes choisies. La valeur affichée vient de la somme
+ * des morceaux, ce qui montre pourquoi plus de morceaux donne souvent mieux.
+ */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,

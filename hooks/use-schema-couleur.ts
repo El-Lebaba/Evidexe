@@ -1,3 +1,9 @@
+/**
+ * Lit le mode clair/sombre depuis les paramètres locaux.
+ *
+ * Le hook écoute aussi les changements de paramètres pour que les écrans se
+ * mettent à jour sans redémarrer l'application.
+ */
 import { useEffect, useState } from 'react';
 
 import { donneesLocales } from '@/db/donnees-principales';

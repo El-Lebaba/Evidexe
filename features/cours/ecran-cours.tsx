@@ -1,3 +1,11 @@
+/**
+ * Écran principal des cours.
+ *
+ * Ce fichier sert de pont entre les cours écrits dans `data/cours.tsx`,
+ * la progression locale et l'interface qui liste les matières. L'idée reste
+ * simple: on choisit une matière, on affiche ses cours, puis les cartes vont
+ * ouvrir l'écran de lecture avec le bon identifiant.
+ */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { Href, router, useLocalSearchParams } from 'expo-router';
@@ -35,6 +43,43 @@ const themeActif = {
   background: '#EAE3D2',
   border: '#243B53',
   soft: '#F3F1E7',
+};
+
+const MEDIAGRAPHIE_COURS: Record<MatiereCours, { matiere: string; livre: string }[]> = {
+  java: [
+    {
+      matiere: 'Programmation Java',
+      livre: 'Introduction à la programmation en Java',
+    },
+  ],
+  mathematiques: [
+    {
+      matiere: 'Dérivées',
+      livre: 'Calcul différentiel',
+    },
+    {
+      matiere: 'Intégrales',
+      livre: 'Calcul intégral',
+    },
+    {
+      matiere: 'Maths discrètes',
+      livre: 'Mathématiques discrètes',
+    },
+    {
+      matiere: 'Probabilités et statistiques',
+      livre: 'Probabilités et statistique',
+    },
+  ],
+  physique: [
+    {
+      matiere: 'Mécanique',
+      livre: 'Physique 1 - Mécanique',
+    },
+    {
+      matiere: 'Électricité et magnétisme',
+      livre: 'Physique 2 - Électricité et magnétisme',
+    },
+  ],
 };
 
 export function EcranCours() {
@@ -81,12 +126,18 @@ export function EcranCours() {
   );
 
   const courses = COURS_PAR_MATIERE[activeSubject];
-  // Summaries join catalog courses to local user progress so the CoursLocal tab and profile tab show the same state.
+  /**
+   * Les résumés joignent le catalogue avec la progression sauvegardée.
+   *
+   * La page des cours et le profil lisent donc les mêmes pourcentages au lieu
+   * d'avoir deux calculs séparés.
+   */
   const courseSummaryMap = useMemo(
       () => new Map(courseSummaries.map((summary) => [summary.id, summary])),
       [courseSummaries],
   );
   const totalSlides = useMemo(() => courses.reduce((total, CoursLocal) => total + CoursLocal.totalSlides, 0), [courses]);
+  const bibliographieActive = MEDIAGRAPHIE_COURS[activeSubject];
 
   useEffect(() => {
     subjectMotion.setValue(0);
@@ -230,6 +281,24 @@ export function EcranCours() {
                 })}
               </View>
             </Animated.View>
+
+            <Animated.View style={[styles.bibliographieSection, { opacity: subjectMotion, transform: [{ translateY: subjectTranslate }] }]}>
+              <TexteTheme lightColor={themeApplication.muted} darkColor={themeApplication.muted} style={styles.sectionLabel}>
+                Médiagraphie
+              </TexteTheme>
+              <View style={[styles.bibliographieCard, { backgroundColor: themeApplication.soft, borderColor: themeApplication.border }]}>
+                {bibliographieActive.map((reference) => (
+                  <View key={`${activeSubject}-${reference.matiere}`} style={styles.bibliographieRow}>
+                    <TexteTheme lightColor={themeApplication.text} darkColor={themeApplication.text} style={styles.bibliographieMatiere}>
+                      {reference.matiere}
+                    </TexteTheme>
+                    <TexteTheme lightColor={themeApplication.muted} darkColor={themeApplication.muted} style={styles.bibliographieLivre}>
+                      {reference.livre}
+                    </TexteTheme>
+                  </View>
+                ))}
+              </View>
+            </Animated.View>
           </ScrollView>
         </VueTheme>
       </SafeAreaView>
@@ -365,6 +434,28 @@ const styles = StyleSheet.create({
   },
   courseSection: {
     gap: 16,
+  },
+  bibliographieSection: {
+    gap: 12,
+  },
+  bibliographieCard: {
+    borderRadius: 14,
+    borderWidth: 1,
+    gap: 10,
+    padding: 16,
+  },
+  bibliographieRow: {
+    gap: 3,
+  },
+  bibliographieMatiere: {
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  bibliographieLivre: {
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 18,
   },
   sectionLabel: {
     fontSize: 13,

@@ -1,3 +1,11 @@
+/**
+ * Simulation de gravitation.
+ *
+ * Les deux masses et la distance sont des états React. À chaque changement, on
+ * recalcule F = Gm1m2/r² et les accélérations. Le SVG place les deux corps,
+ * dessine les lignes de champ et anime une phase pour donner l'impression que
+ * l'attraction agit entre les masses.
+ */
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {

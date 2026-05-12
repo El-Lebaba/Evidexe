@@ -1,3 +1,9 @@
+/**
+ * Carte d'un mini-cours.
+ *
+ * Elle affiche seulement un résumé: titre, matière, progression et état du
+ * quiz. La vraie modification de progression se fait dans l'écran de lecture.
+ */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Href, router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -33,7 +39,6 @@ const subjectIcons: Record<MatiereCours, keyof typeof MaterialCommunityIcons.gly
 
 export default function CarteCours({ CoursLocal, progressDetails, index, subject, themeApplication }: ProprietesCarteCours) {
   const accent = accentColors[index % accentColors.length];
-  // CoursLocal cards display saved tracking only; progress changes happen inside the reader/exercise flow.
   const hasStarted = progressDetails.progress > 0;
   const progress = progressDetails.progress;
   const exerciseStatus = progressDetails.exerciseCompleted ? 'exercice termine' : 'exercice a faire';

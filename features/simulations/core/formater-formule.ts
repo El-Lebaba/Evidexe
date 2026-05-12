@@ -1,3 +1,9 @@
+/**
+ * Petit formateur de secours pour les formules.
+ *
+ * Quand une formule ne passe pas par KaTeX ou MathJax, on transforme au moins
+ * quelques écritures LaTeX courantes en texte lisible.
+ */
 const CARTE_EXPOSANTS: Record<string, string> = {
   '0': '\u2070',
   '1': '\u00b9',

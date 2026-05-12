@@ -1,3 +1,10 @@
+/**
+ * Écran d'introduction.
+ *
+ * Il sert de transition vers l'accueil: logo, ambiance visuelle et animation
+ * de départ. La logique importante est surtout l'animation qui évite de lancer
+ * deux navigations si l'utilisateur appuie plusieurs fois.
+ */
 import { Href, router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';

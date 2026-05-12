@@ -1,3 +1,10 @@
+/**
+ * Infobulle de définition des simulations.
+ *
+ * Chaque simulation lui fournit son propre texte: titre, explication et
+ * exemple. Le bouton `?` ne va donc pas chercher l'information ailleurs; il
+ * montre directement le résumé écrit dans le fichier de la simulation.
+ */
 import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useRef, useState } from 'react';
 import {

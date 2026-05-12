@@ -1,3 +1,11 @@
+/**
+ * Simulation des champs magnétiques.
+ *
+ * Les fils sont représentés par un tableau d'objets avec position et courant.
+ * À chaque point de la grille, le code additionne les champs autour des fils
+ * selon B = μ0I/(2πr). Les flèches sont tangentielles autour du courant, ce qui
+ * donne l'effet de rotation du champ magnétique.
+ */
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Animated,

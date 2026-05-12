@@ -1,3 +1,10 @@
+/**
+ * Simulation du frottement.
+ *
+ * L'état calcule la normale N = mg, le maximum statique μsN et le frottement
+ * cinétique μkN. Si la force appliquée est trop petite, le bloc reste bloqué;
+ * sinon il bouge et le frottement opposé est dessiné en SVG avec une flèche.
+ */
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {

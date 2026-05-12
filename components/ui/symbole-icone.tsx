@@ -1,4 +1,9 @@
-// Fallback for using MaterialIcons on Android and web.
+/**
+ * Icône fallback Android/web.
+ *
+ * Quand les symboles iOS ne sont pas disponibles, on utilise MaterialIcons
+ * avec une petite table de correspondance.
+ */
 
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { SymbolWeight, SymbolViewProps } from 'expo-symbols';

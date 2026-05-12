@@ -1,3 +1,11 @@
+/**
+ * Simulation des dérivées.
+ *
+ * `FUNCTIONS` contient les fonctions disponibles avec leur dérivée. Le graphe
+ * est dessiné en transformant plusieurs points (x, y) en chemins SVG. Quand
+ * l'utilisateur déplace le point, on recalcule f(x), f'(x) et la tangente
+ * `y = f'(x0)(x - x0) + f(x0)` pour montrer la pente locale.
+ */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,

@@ -1,3 +1,10 @@
+/**
+ * Panneau des cartes mémoire.
+ *
+ * Les cartes restent locales à l'utilisateur actif. Le composant charge les
+ * sujets, permet de créer une série, renommer un sujet et naviguer recto/verso
+ * sans dépendre d'un serveur.
+ */
 import { useEffect, useMemo, useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {

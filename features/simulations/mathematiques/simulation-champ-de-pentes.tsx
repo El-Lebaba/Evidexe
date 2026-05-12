@@ -1,3 +1,11 @@
+/**
+ * Simulation de champ de pentes.
+ *
+ * `EQUATIONS` contient des fonctions y' = f(x, y). Pour chaque point d'une
+ * grille, le code calcule la pente, normalise un petit segment et le dessine en
+ * SVG. La courbe de solution part de y0, puis avance pas à pas pour montrer la
+ * trajectoire qui suit les petites pentes.
+ */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,

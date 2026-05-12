@@ -1,3 +1,11 @@
+/**
+ * Simulation Java de tableaux.
+ *
+ * `valeurs` représente les cases du tableau et `capacite` fixe sa taille. Les
+ * opérations lisent ou écrivent par index, puis les cases touchées sont mises
+ * en évidence. Les adresses affichées utilisent `0x1000 + index * 4` pour
+ * rappeler qu'un `int` prend 4 octets.
+ */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {

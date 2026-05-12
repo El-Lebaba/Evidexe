@@ -1,3 +1,9 @@
+/**
+ * Logo Evidexe réutilisable.
+ *
+ * Centraliser le logo évite de répéter le même `require` et les mêmes réglages
+ * d'image dans chaque écran.
+ */
 import { Image, type ImageProps } from 'react-native';
 
 import { useSchemaCouleur } from '@/hooks/use-schema-couleur';

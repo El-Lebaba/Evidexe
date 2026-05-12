@@ -1,3 +1,10 @@
+/**
+ * Page des succès.
+ *
+ * Elle relit les objectifs depuis `donneesLocales` et affiche la progression
+ * des rangs. Le calcul des succès reste dans la couche de données pour éviter
+ * que l'écran refasse les règles lui-même.
+ */
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useFocusEffect } from '@react-navigation/native';
 import { Href, router } from 'expo-router';

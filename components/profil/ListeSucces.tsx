@@ -1,3 +1,9 @@
+/**
+ * Liste visuelle des succès.
+ *
+ * Le composant reçoit déjà les succès calculés. Il s'occupe surtout de la
+ * présentation des rangs et de la progression.
+ */
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { StyleSheet, Text, View } from 'react-native';
 

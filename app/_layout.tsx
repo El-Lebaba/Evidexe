@@ -1,3 +1,9 @@
+/**
+ * Racine de navigation de l'application.
+ *
+ * Expo Router charge d'abord ce fichier. Il applique le thème clair/sombre
+ * global, puis déclare l'écran d'introduction et les onglets principaux.
+ */
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';

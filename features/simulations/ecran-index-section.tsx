@@ -1,3 +1,10 @@
+/**
+ * Page d'index des simulations par matière.
+ *
+ * Le même écran sert aux mathématiques, à la physique et à Java. Il prend le
+ * catalogue, applique les filtres/recherches et ouvre la route de simulation
+ * choisie.
+ */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import { Href, router } from 'expo-router';

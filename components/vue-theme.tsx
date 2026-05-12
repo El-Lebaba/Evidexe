@@ -1,3 +1,9 @@
+/**
+ * Vue qui suit le thème.
+ *
+ * Elle applique une couleur de fond selon le thème actif, avec possibilité de
+ * forcer une couleur claire ou sombre.
+ */
 import { View, type ViewProps } from 'react-native';
 
 import { useCouleurTheme } from '@/hooks/use-couleur-theme';

@@ -1,3 +1,9 @@
+/**
+ * Barre supérieure de l'accueil/profil.
+ *
+ * Elle regroupe l'avatar, le menu utilisateur et le lien vers la
+ * personnalisation. La logique reste locale au composant.
+ */
 import React, { useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Href, Link, router } from 'expo-router';

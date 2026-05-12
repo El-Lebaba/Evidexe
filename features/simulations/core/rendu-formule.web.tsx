@@ -1,3 +1,9 @@
+/**
+ * Rendu de formule sur le web.
+ *
+ * Le web peut utiliser KaTeX directement dans le DOM, donc on génère le HTML
+ * de la formule et on charge la feuille de style KaTeX une seule fois.
+ */
 import katex from 'katex';
 import { memo, useEffect, useMemo } from 'react';
 

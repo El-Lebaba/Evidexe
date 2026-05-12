@@ -1,3 +1,9 @@
+/**
+ * Panneau résumé des succès.
+ *
+ * Il affiche les objectifs principaux dans le profil sans refaire le calcul
+ * des succès, qui reste dans `donneesLocales`.
+ */
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Href, router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';

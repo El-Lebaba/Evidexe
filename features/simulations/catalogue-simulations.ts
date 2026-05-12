@@ -1,3 +1,10 @@
+/**
+ * Catalogue des simulations.
+ *
+ * Les pages d'index lisent cette liste pour savoir quelles cartes afficher,
+ * avec quel lien, quelle icône et quels filtres. Une simulation marquée
+ * `pret` doit avoir une vraie route utilisable.
+ */
 export type SectionSimulation = 'mathematiques' | 'physique' | 'programmation-java';
 
 export type EntreeSimulation = {

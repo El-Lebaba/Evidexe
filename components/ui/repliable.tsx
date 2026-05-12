@@ -1,3 +1,9 @@
+/**
+ * Bloc repliable.
+ *
+ * C'est un petit composant utilitaire pour cacher/montrer un contenu sans
+ * refaire la même logique d'état dans plusieurs écrans.
+ */
 import { PropsWithChildren, useState } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 

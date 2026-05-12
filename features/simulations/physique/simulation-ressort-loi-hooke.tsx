@@ -1,3 +1,10 @@
+/**
+ * Simulation ressort et loi de Hooke.
+ *
+ * Le ressort suit l'idée F = -kx avec un amortissement. Le déplacement calculé
+ * place la masse et sert aussi à construire un chemin SVG en zigzag pour le
+ * ressort. Une deuxième vue compare ce mouvement à une projection circulaire.
+ */
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {

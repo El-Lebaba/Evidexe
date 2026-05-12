@@ -1,3 +1,10 @@
+/**
+ * Page de personnalisation du profil.
+ *
+ * Elle modifie le nom affiché et l'image de profil. L'image est compressée
+ * avant sauvegarde pour éviter de mettre une photo trop lourde dans le stockage
+ * local.
+ */
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
@@ -69,6 +76,12 @@ export default function PagePersonnalisationProfil() {
     setSettings(nextSettings);
   }
 
+  /**
+   * Choisit une image et la réduit avant de la garder.
+   *
+   * Le stockage local n'est pas fait pour des images énormes, donc on limite
+   * la taille et la qualité avant d'enregistrer l'URI.
+   */
   async function choisirAvatar() {
     setSaveMessage('');
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();

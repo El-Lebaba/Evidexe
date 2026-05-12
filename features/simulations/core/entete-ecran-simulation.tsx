@@ -1,3 +1,9 @@
+/**
+ * En-tête commun des simulations.
+ *
+ * Il garde le retour vers la bonne section, le logo, le titre et l'accès aux
+ * paramètres. Les simulations peuvent donc se concentrer sur leur logique.
+ */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Href, router } from 'expo-router';
 import { useState } from 'react';
@@ -176,9 +182,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 24,
     justifyContent: 'center',
-    left: 7,
-    position: 'absolute',
-    top: 7,
     width: 24,
   },
   menuIconBar: {

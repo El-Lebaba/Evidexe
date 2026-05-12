@@ -1,3 +1,10 @@
+/**
+ * Intervalle contrôlé pour les animations de simulation.
+ *
+ * Le callback continue seulement si la simulation est active et si l'application
+ * est au premier plan. Ça évite de faire tourner des calculs inutiles quand on
+ * quitte l'écran ou que l'app passe en arrière-plan.
+ */
 import { useEffect, useRef, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 

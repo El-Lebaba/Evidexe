@@ -1,3 +1,10 @@
+/**
+ * Simulation du pendule.
+ *
+ * L'état garde l'angle, la longueur, la gravité et l'amortissement. L'animation
+ * met à jour l'angle comme une oscillation amortie, et le SVG convertit cet
+ * angle en position x/y du poids. La période suit T ≈ 2π√(L/g).
+ */
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {

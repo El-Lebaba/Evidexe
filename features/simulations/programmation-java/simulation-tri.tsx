@@ -1,3 +1,11 @@
+/**
+ * Simulations Java des tris.
+ *
+ * Chaque tri est un générateur qui produit des états intermédiaires du tableau:
+ * indices comparés, échanges, pivot ou zone triée. L'animation lit ces états un
+ * par un et dessine les valeurs comme des barres. Ça permet de voir la logique
+ * des boucles sans exécuter du Java réel.
+ */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {

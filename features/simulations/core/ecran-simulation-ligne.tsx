@@ -1,3 +1,9 @@
+/**
+ * Écran utilisé pour les simulations annoncées mais pas encore complètes.
+ *
+ * Il garde la même structure visuelle que les vraies simulations et explique,
+ * dans le bouton `?`, ce qui devrait être construit autour du concept.
+ */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Href, router } from 'expo-router';
 import { ComponentProps, useEffect, useRef } from 'react';

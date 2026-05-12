@@ -1,3 +1,11 @@
+/**
+ * Simulation Java des ArrayList.
+ *
+ * `elements` est un tableau qui représente le contenu de l'ArrayList. Les
+ * opérations utilisent des copies du tableau pour ajouter, insérer ou retirer.
+ * Les indices actifs montrent quelles cases se décalent, et la capacité est
+ * calculée à part pour rappeler qu'une ArrayList cache un tableau interne.
+ */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {

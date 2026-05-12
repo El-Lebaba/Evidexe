@@ -1,19 +1,19 @@
 import { donneesLocales } from '@/db/donnees-principales';
 
 /**
- * CoursLocal DATA STRUCTURE
+ * Catalogue central des cours.
  *
- * To add a new CoursLocal:
- * 1. Create a new object following the structure below
- * 2. Each CoursLocal has slides[] - each slide has theory + animation config
- * 3. Push it into the COURSES array
+ * Les cours de Java, mathématiques et physique sont gardés ici pour éviter
+ * d'éparpiller le contenu pédagogique dans chaque écran. Un cours contient
+ * des diapositives, un exemple affiché dans la carte de formule/code et un
+ * quiz final. Les écrans lisent ce catalogue, puis la progression est prise
+ * dans `donneesLocales`.
  *
- * Animation types:
- * - "gate"       -> A sphere approaches a gate (true/false logic)
- * - "loop"       -> A carousel of items cycling through
- * - "variable"   -> A box that changes its value
- * - "comparison" -> Two values being compared
- * - "flow"       -> Flowchart-style execution path
+ * Pour ajouter un cours:
+ * 1. créer un objet dans la bonne matière;
+ * 2. ajouter ses diapositives;
+ * 3. ajouter le quiz dans `QUIZ_PAR_COURS`;
+ * 4. garder le même `id` entre le cours, le quiz et la progression.
  */
 
 export type MatiereCours = 'java' | 'mathematiques' | 'physique';
@@ -4052,6 +4052,12 @@ function progressKey(subject: MatiereCours, courseId: string) {
     return `${subject}:${courseId}`;
 }
 
+/**
+ * Donne accès à la progression stockée sans exposer la structure du stockage.
+ *
+ * Les écrans de cours demandent seulement une progression par matière et par
+ * cours. Le détail de la sauvegarde reste dans `donneesLocales`.
+ */
 export function obtenirCarteProgressionCours(): CarteProgressionCours {
     donneesLocales.init();
     return donneesLocales.obtenirCarteProgressionCours();
@@ -4107,16 +4113,27 @@ function toRecentLearningCourse(subject: MatiereCours, CoursLocal: CoursApprenti
     };
 }
 
+/**
+ * Construit une liste complète de tous les cours suivables.
+ *
+ * On ne se fie pas seulement aux données sauvegardées, parce qu'un utilisateur
+ * peut ne jamais avoir ouvert un cours. Le catalogue reste donc la source de
+ * vérité pour les cours existants.
+ */
 export function obtenirResumesCoursApprentissage() {
-    // Builds one tracking summary for every real CoursLocal in the catalog so CoursLocal tabs and profile use identical IDs.
     return SUBJECTS_WITH_COURSES.flatMap((subject) =>
         COURS_PAR_MATIERE[subject].map((CoursLocal) => toRecentLearningCourse(subject, CoursLocal))
     );
 }
 
+/**
+ * Retourne les cours récemment ouverts qui existent encore dans le catalogue.
+ *
+ * Si une vieille donnée locale pointe vers un cours supprimé ou renommé, elle
+ * est ignorée pour éviter d'afficher une carte brisée dans le profil.
+ */
 export function obtenirCoursApprentissageRecents(limit = 6) {
     donneesLocales.init();
-    // Keeps the profile panel limited to recently opened catalog courses, ignoring stale local records for removed courses.
     const allCoursesById = new Map(
         SUBJECTS_WITH_COURSES.flatMap((subject) =>
             COURS_PAR_MATIERE[subject].map((CoursLocal) => [progressKey(subject, CoursLocal.id), { subject, CoursLocal }] as const)

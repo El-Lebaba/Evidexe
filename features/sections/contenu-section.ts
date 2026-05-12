@@ -1,3 +1,9 @@
+/**
+ * Ancien contenu simple de section.
+ *
+ * Ces valeurs restent utiles si une route doit afficher une page générique,
+ * mais les sections principales utilisent maintenant des écrans plus complets.
+ */
 export type CleSection = 'home' | 'mathematiques' | 'physique' | 'programmation-java';
 
 export type SectionContent = {

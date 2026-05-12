@@ -1,3 +1,10 @@
+/**
+ * Rendu de formule sur Android/iOS.
+ *
+ * Les simulations utilisent ce composant quand une vraie formule doit être
+ * plus lisible qu'un simple texte. Sur mobile, MathJax est chargé dans un
+ * WebView transparent; si la formule échoue, on garde un texte de secours.
+ */
 import { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WebView } from 'react-native-webview';
@@ -35,7 +42,7 @@ const WEBVIEW_HEIGHT = {
 
 const MATHJAX_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
 
-function creerDocumentMathJax(formule: string, couleur: string) {
+function creerDocumentMathJax(formule: string, couleur: string, fallback: string) {
   return `
 <!doctype html>
 <html lang="fr">
@@ -87,8 +94,24 @@ function creerDocumentMathJax(formule: string, couleur: string) {
   <body>
     <div id="formula"></div>
     <script>
-      document.getElementById('formula').textContent = '$' + ${JSON.stringify(formule)} + '$';
-      MathJax.startup.promise.then(function () { MathJax.typesetPromise(); });
+      var elementFormule = document.getElementById('formula');
+      var texteFallback = ${JSON.stringify(fallback)};
+      function afficherFallback() {
+        elementFormule.textContent = texteFallback;
+        elementFormule.style.fontFamily = 'monospace';
+        elementFormule.style.fontWeight = '700';
+      }
+
+      elementFormule.textContent = '$' + ${JSON.stringify(formule)} + '$';
+      MathJax.startup.promise
+        .then(function () { return MathJax.typesetPromise(); })
+        .then(function () {
+          var textePage = document.body.textContent || '';
+          if (textePage.indexOf('Math input error') !== -1 || document.querySelector('[data-mjx-error]')) {
+            afficherFallback();
+          }
+        })
+        .catch(afficherFallback);
     </script>
   </body>
 </html>`;
@@ -108,8 +131,8 @@ function ComposantRenduFormule({
   const couleurFormule = modeSombre ? darkColor : lightColor;
   const displayFormula = useMemo(() => formaterFormulePourAffichage(fallback), [fallback]);
   const documentMathJax = useMemo(
-    () => creerDocumentMathJax(mathematiques || fallback, couleurFormule),
-    [couleurFormule, fallback, mathematiques]
+    () => creerDocumentMathJax(mathematiques || fallback, couleurFormule, displayFormula),
+    [couleurFormule, displayFormula, fallback, mathematiques]
   );
   const texteFallback = (
     <TexteTheme

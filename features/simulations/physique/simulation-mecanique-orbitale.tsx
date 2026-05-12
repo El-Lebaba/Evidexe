@@ -1,3 +1,11 @@
+/**
+ * Simulation de mécanique orbitale.
+ *
+ * L'orbite est calculée comme une ellipse: excentricité, orientation et phase
+ * donnent la position de la planète. Le chemin SVG trace l'orbite complète et
+ * une portion parcourue. La période suit l'idée de Kepler: elle dépend du rayon
+ * orbital et de la masse centrale.
+ */
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {

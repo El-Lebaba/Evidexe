@@ -1,3 +1,9 @@
+/**
+ * Icône native iOS.
+ *
+ * Sur iOS, Expo Symbols donne accès aux symboles du système. Les autres
+ * plateformes utilisent le fichier fallback Android/web.
+ */
 import { SymbolView, SymbolViewProps, SymbolWeight } from 'expo-symbols';
 import { StyleProp, ViewStyle } from 'react-native';
 

@@ -1,3 +1,11 @@
+/**
+ * Simulation des séries.
+ *
+ * `SERIES_DISPONIBLES` contient une fonction de terme pour chaque série. Le
+ * code construit un tableau de sommes partielles: S1, S2, S3, etc. Ce tableau
+ * est ensuite converti en points SVG pour voir si la courbe se stabilise
+ * autour d'une valeur ou si elle continue de partir.
+ */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,

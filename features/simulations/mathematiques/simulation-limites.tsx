@@ -1,3 +1,11 @@
+/**
+ * Simulation des limites.
+ *
+ * `LIMIT_FUNCTIONS` garde les fonctions avec leur point important. Le graphique
+ * crée des chemins SVG en sautant les valeurs invalides, comme les trous ou les
+ * asymptotes. Les marqueurs gauche/droite se rapprochent du point pour montrer
+ * si les deux côtés se dirigent vers la même valeur.
+ */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,

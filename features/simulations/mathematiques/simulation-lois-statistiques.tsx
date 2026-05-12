@@ -1,3 +1,11 @@
+/**
+ * Simulations de lois statistiques.
+ *
+ * La normale et la loi de Student sont dessinées avec des points calculés par
+ * leurs fonctions de densité. Les bornes choisies fabriquent un chemin SVG
+ * rempli sous la courbe, ce qui représente l'aire de probabilité. Pour Student,
+ * les degrés de liberté modifient la largeur des queues.
+ */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import {

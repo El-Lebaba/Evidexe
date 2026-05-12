@@ -1,3 +1,9 @@
+/**
+ * Version web du hook de thème.
+ *
+ * Elle utilise le même stockage que la version native, mais écoute directement
+ * l'événement navigateur déclenché quand les paramètres changent.
+ */
 import { useEffect, useState } from 'react';
 
 import { donneesLocales } from '@/db/donnees-principales';

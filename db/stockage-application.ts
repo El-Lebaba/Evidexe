@@ -1,3 +1,10 @@
+/**
+ * Stockage local pour Android et les plateformes natives.
+ *
+ * Le projet sauvegarde un seul gros objet JSON dans une table clé-valeur.
+ * SQLite garde les données après la fermeture de l'application, ce qui est
+ * nécessaire pour l'APK.
+ */
 import * as SQLite from 'expo-sqlite';
 
 const nomBase = 'evidex_app.db';

@@ -1,3 +1,9 @@
+/**
+ * Vue de défilement avec effet de parallaxe.
+ *
+ * Utilisée pour donner un mouvement léger entre l'en-tête et le contenu quand
+ * l'utilisateur fait défiler une page.
+ */
 import type { PropsWithChildren, ReactElement } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {

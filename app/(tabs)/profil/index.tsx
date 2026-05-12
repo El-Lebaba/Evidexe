@@ -1,3 +1,10 @@
+/**
+ * Page profil.
+ *
+ * Elle rassemble les données de l'utilisateur actif: XP, niveau, cours récents,
+ * succès et cartes mémoire. À chaque retour sur l'écran, les données locales
+ * sont relues pour rester alignées avec les cours et les simulations.
+ */
 import { useFocusEffect } from '@react-navigation/native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useCallback, useEffect, useRef, useState } from 'react';

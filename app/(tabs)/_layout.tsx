@@ -1,3 +1,9 @@
+/**
+ * Disposition des onglets internes.
+ *
+ * Les onglets existent pour Expo Router, mais la barre native est cachée parce
+ * que l'application utilise ses propres boutons de navigation.
+ */
 import { Tabs } from 'expo-router';
 import React from 'react';
 

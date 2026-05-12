@@ -1,3 +1,9 @@
+/**
+ * Hub simple des simulations.
+ *
+ * Il sert de point de passage vers les index par matière. Les vrais catalogues
+ * de simulations sont dans `features/simulations`.
+ */
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Href, router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';

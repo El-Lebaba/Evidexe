@@ -1,3 +1,8 @@
+/**
+ * Écran générique de section.
+ *
+ * Il sert de fallback simple: titre, description et mise en page centrée.
+ */
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

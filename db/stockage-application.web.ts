@@ -1,3 +1,10 @@
+/**
+ * Stockage local pour le web.
+ *
+ * IndexedDB remplace SQLite dans le navigateur. Le reste du projet garde les
+ * mêmes fonctions `lireValeurStockee` et `ecrireValeurStockee`, donc la couche
+ * principale ne change pas selon la plateforme.
+ */
 const nomBaseIndexedDb = 'evidex_app_database';
 const versionBaseIndexedDb = 1;
 const nomMagasin = 'kv';

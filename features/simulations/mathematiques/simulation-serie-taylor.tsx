@@ -1,3 +1,11 @@
+/**
+ * Simulation de la série de Taylor.
+ *
+ * Chaque entrée de `FUNCTIONS` sait calculer la vraie fonction et son polynôme
+ * de Taylor. Le graphe dessine deux chemins SVG: la fonction réelle et
+ * l'approximation. L'ordre choisi décide combien de termes sont additionnés,
+ * donc on voit l'approximation devenir meilleure près du centre.
+ */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,

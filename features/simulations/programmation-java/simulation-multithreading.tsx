@@ -1,3 +1,11 @@
+/**
+ * Simulation Java du multithreading.
+ *
+ * Les scénarios génèrent un tableau de tâches visuelles. Des "ouvriers"
+ * asynchrones prennent ces tâches selon le nombre de fils choisi et changent
+ * leur état: attente, active, terminée, bloquée, etc. Ça donne une image simple
+ * d'un pool de threads sans lancer de vrais threads Java.
+ */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {

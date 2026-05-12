@@ -1,3 +1,10 @@
+/**
+ * Couche principale des données locales.
+ *
+ * Le reste de l'application ne parle pas directement à SQLite ou IndexedDB.
+ * Il appelle plutôt `donneesLocales`, qui garde l'utilisateur actif, la
+ * progression des cours, les cartes mémoire, les succès et les paramètres.
+ */
 import { ecrireValeurStockee, lireValeurStockee } from '@/db/stockage-application';
 
 export type CoursLocal = {
@@ -353,6 +360,12 @@ function completerDonneesUtilisateur(donnees?: Partial<DonneesUtilisateur>): Don
   };
 }
 
+/**
+ * Remet les données dans une forme utilisable après la lecture du stockage.
+ *
+ * Cette étape sert de protection: si une vieille sauvegarde manque une section,
+ * l'application ajoute les valeurs par défaut au lieu de planter.
+ */
 function normaliserDonneesApplication(valeur: unknown): DonneesApplication {
   const donneesDefaut = creerDonneesApplicationDefaut();
 
@@ -626,6 +639,13 @@ export const donneesLocales = {
     };
   },
 
+  /**
+   * Enregistre l'avancement d'un cours.
+   *
+   * La progression monte avec la diapo la plus avancée, mais le 100 % dépend
+   * du quiz final. Ça évite qu'un cours soit marqué terminé juste parce que
+   * l'utilisateur a glissé jusqu'à la dernière page.
+   */
   enregistrerProgressionCours(
     matiere: string,
     idCours: string,

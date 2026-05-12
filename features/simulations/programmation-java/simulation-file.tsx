@@ -1,3 +1,10 @@
+/**
+ * Simulation Java de file.
+ *
+ * `elements` est un tableau utilisé comme file. L'ajout met une valeur à la fin
+ * du tableau, et le retrait enlève le premier élément avec la logique FIFO. Le
+ * rendu marque clairement l'avant et l'arrière de la file.
+ */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback, useRef, useState } from 'react';
 import {

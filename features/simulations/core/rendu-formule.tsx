@@ -1,3 +1,9 @@
+/**
+ * Rendu de secours pour les formules.
+ *
+ * Ce fichier est utilisé quand la plateforme ne prend pas la version web ou
+ * native spécialisée. Il affiche une formule simplifiée en texte monospace.
+ */
 import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 

@@ -1,3 +1,10 @@
+/**
+ * Simulation Java de pile.
+ *
+ * `elements` est un tableau utilisé comme pile. `push` ajoute au sommet et
+ * `pop` retire ce dernier élément. Pour l'affichage, le tableau est inversé afin
+ * que le sommet apparaisse visuellement en haut.
+ */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback, useRef, useState } from 'react';
 import {

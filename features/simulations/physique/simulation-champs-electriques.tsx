@@ -1,3 +1,11 @@
+/**
+ * Simulation des champs électriques.
+ *
+ * `CONFIGURATIONS` contient des charges normalisées. Elles sont placées dans le
+ * SVG, puis chaque point de grille additionne la contribution de chaque charge
+ * avec une version visuelle de E = kq/r². Le point sélectionné sert à afficher
+ * le champ total à un endroit précis.
+ */
 import { useMemo, useRef, useState } from 'react';
 import {
   Animated,

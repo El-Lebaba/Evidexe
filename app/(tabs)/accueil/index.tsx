@@ -1,3 +1,10 @@
+/**
+ * Accueil principal.
+ *
+ * Cet écran présente les grands accès de l'application: cours, simulations,
+ * profil et succès. Il garde aussi l'état du carrousel et ouvre les panneaux
+ * latéraux comme les paramètres.
+ */
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router, type Href } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';

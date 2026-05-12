@@ -1,3 +1,10 @@
+/**
+ * Simulation du mouvement projectile.
+ *
+ * La vitesse initiale est séparée en vx et vy. Le chemin SVG est créé avec
+ * x = vx*t et y = vy*t - 1/2gt². Quand la simulation est lancée, `elapsed`
+ * avance et le projectile suit cette même courbe.
+ */
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {

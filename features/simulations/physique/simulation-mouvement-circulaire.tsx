@@ -1,3 +1,10 @@
+/**
+ * Simulation du mouvement circulaire.
+ *
+ * La position de l'objet vient de cos(ωt) et sin(ωt). Le rayon, la masse et ω
+ * donnent v = ωr, a = ω²r et F = ma. Le SVG dessine l'objet sur son cercle, une
+ * flèche vitesse tangente et une flèche force vers le centre.
+ */
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {

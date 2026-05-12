@@ -1,3 +1,10 @@
+/**
+ * Panneau latéral des paramètres.
+ *
+ * Il garde les réglages visibles dans l'application, surtout le mode sombre,
+ * et donne un raccourci vers le profil actif. La sauvegarde passe par
+ * `donneesLocales` pour que le réglage reste après la fermeture.
+ */
 import { useEffect, useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router, type Href, usePathname } from 'expo-router';
@@ -71,6 +78,12 @@ export default function PanneauParametres({
     };
   }, [open]);
 
+  /**
+   * Applique un réglage tout de suite.
+   *
+   * Le panneau met son état local à jour, sauvegarde dans le stockage et
+   * avertit l'écran parent pour que l'interface change sans redémarrer.
+   */
   function applySettings(nextSettings: ParametresApplication) {
     setLocalSettings(nextSettings);
     donneesLocales.enregistrerParametres(nextSettings);

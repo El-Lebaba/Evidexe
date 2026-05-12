@@ -1,3 +1,8 @@
+/**
+ * Texte qui suit le thème.
+ *
+ * Il évite de répéter partout la logique clair/sombre pour les textes simples.
+ */
 import { StyleSheet, Text, type TextProps } from 'react-native';
 
 import { useCouleurTheme } from '@/hooks/use-couleur-theme';

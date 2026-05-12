@@ -1,3 +1,9 @@
+/**
+ * Décor animé réutilisé dans plusieurs écrans.
+ *
+ * Les symboles sont générés avec des positions déterministes pour donner du
+ * mouvement sans changer complètement de placement à chaque rendu React.
+ */
 import { useEffect, useMemo, useRef } from 'react';
 import { Animated, Easing, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 

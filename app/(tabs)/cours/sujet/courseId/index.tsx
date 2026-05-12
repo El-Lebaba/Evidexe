@@ -1,3 +1,11 @@
+/**
+ * Écran de lecture d'un cours.
+ *
+ * Cette route reçoit la matière et le cours dans l'URL, charge les diapositives,
+ * sauvegarde l'avancement localement et donne le 100 % seulement après le quiz.
+ * Pour les cours de math et de physique, la carte "Vue mathématique" garde les
+ * formules sur une ligne et prépare le texte pour le rendu de formule.
+ */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Href, router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -59,6 +67,132 @@ function estLigneFormuleAutonome(value: string) {
 
 function preserverEspaces(value: string) {
   return value.replace(/\t/g, '    ').replace(/ /g, '\u00A0');
+}
+
+function estLigneFormuleStatique(value: string) {
+  const line = value.trim();
+
+  if (!line) {
+    return false;
+  }
+
+  if (estLigneFormuleAutonome(line)) {
+    return true;
+  }
+
+  const lineSansNumero = line.replace(/^\d+\.\s*/, '');
+  const containsMathSymbol = /[=≈∫√∪∩≡≤≥<>+\-*/^πμσλ]|x²|x³|f'|A\(|P\(|C\(|N\(|B\(/.test(lineSansNumero);
+  const containsSentenceSpacing = /[A-Za-zÀ-ÿ]{3,}\s+[A-Za-zÀ-ÿ]{2,}/.test(line);
+  const isShortNumberedFormula = /^\d+\.\s*[^:]+$/.test(line) && containsMathSymbol;
+
+  return containsMathSymbol && (!containsSentenceSpacing || isShortNumberedFormula);
+}
+
+function nettoyerFormuleStatique(value: string) {
+  return value.trim().replace(/^\d+\.\s*/, '');
+}
+
+function echapperTexteLatex(value: string) {
+  return value
+    .replace(/\\/g, '')
+    .replace(/([{}$&#_%^])/g, '\\$1');
+}
+
+const EXPOSANTS_STATIQUES: Record<string, string> = {
+  '⁰': '0',
+  '¹': '1',
+  '²': '2',
+  '³': '3',
+  '⁴': '4',
+  '⁵': '5',
+  '⁶': '6',
+  '⁷': '7',
+  '⁸': '8',
+  '⁹': '9',
+  '⁻': '-',
+  '⁺': '+',
+};
+
+const INDICES_STATIQUES: Record<string, string> = {
+  '₀': '0',
+  '₁': '1',
+  '₂': '2',
+  '₃': '3',
+  '₄': '4',
+  '₅': '5',
+  '₆': '6',
+  '₇': '7',
+  '₈': '8',
+  '₉': '9',
+  '₋': '-',
+  '₊': '+',
+};
+
+function remplacerSuiteUnicode(value: string, table: Record<string, string>, prefixe: '^' | '_') {
+  const caracteres = Object.keys(table).join('');
+  return value.replace(new RegExp(`[${caracteres}]+`, 'g'), (suite) => {
+    const contenu = suite.split('').map((caractere) => table[caractere] ?? caractere).join('');
+    return `${prefixe}{${contenu}}`;
+  });
+}
+
+/**
+ * Transforme une notation de cours en LaTeX simple.
+ *
+ * Les cours sont écrits comme des notes de classe: `x²`, `v⃗`, `⇒`, `μC`.
+ * MathJax comprend mieux une notation LaTeX, donc on traduit les symboles
+ * fréquents sans essayer de couvrir tous les cas possibles.
+ */
+function convertirFormuleStatiqueEnLatex(value: string) {
+  let formule = nettoyerFormuleStatique(value)
+    .replace(/([A-Za-zΑ-ω])⃗/g, '\\vec{$1}')
+    .replace(/([A-Za-zΑ-ω])̂/g, '\\hat{$1}')
+    .replace(/arctan/g, '\\arctan ')
+    .replace(/sin/g, '\\sin ')
+    .replace(/cos/g, '\\cos ')
+    .replace(/tan/g, '\\tan ')
+    .replace(/√\(([^()]*)\)/g, '\\sqrt{$1}')
+    .replace(/√([A-Za-z0-9]+)/g, '\\sqrt{$1}')
+    .replace(/1\/2/g, '\\frac{1}{2}')
+    .replace(/\^\(([^()]*)\)/g, '^{$1}')
+    .replace(/Δ/g, '\\Delta ')
+    .replace(/Σ/g, '\\Sigma ')
+    .replace(/θ/g, '\\theta ')
+    .replace(/φ/g, '\\phi ')
+    .replace(/ω/g, '\\omega ')
+    .replace(/α/g, '\\alpha ')
+    .replace(/λ/g, '\\lambda ')
+    .replace(/σ/g, '\\sigma ')
+    .replace(/μ/g, '\\mu ')
+    .replace(/ρ/g, '\\rho ')
+    .replace(/ε/g, '\\varepsilon ')
+    .replace(/π/g, '\\pi ')
+    .replace(/Ω/g, '\\Omega ')
+    .replace(/≈/g, '\\approx ')
+    .replace(/≤/g, '\\le ')
+    .replace(/≥/g, '\\ge ')
+    .replace(/→/g, '\\to ')
+    .replace(/⇒/g, '\\Rightarrow ')
+    .replace(/×/g, '\\times ')
+    .replace(/÷/g, '\\div ')
+    .replace(/·/g, '\\cdot ')
+    .replace(/°/g, '^{\\circ}');
+
+  formule = remplacerSuiteUnicode(formule, EXPOSANTS_STATIQUES, '^');
+  formule = remplacerSuiteUnicode(formule, INDICES_STATIQUES, '_');
+
+  const texteSansCommandes = formule.replace(/\\(?:sqrt|Delta|Sigma|theta|phi|omega|alpha|lambda|sigma|mu|rho|varepsilon|pi|Omega|approx|Rightarrow|times|div|cdot|frac|vec|hat|sin|cos|tan|arctan|le|ge)\b/g, '');
+  const contientTexteLibre = /[A-Za-zÀ-ÿ]{3,}/.test(texteSansCommandes);
+
+  if (contientTexteLibre) {
+    return `\\text{${echapperTexteLatex(nettoyerFormuleStatique(value))}}`;
+  }
+
+  return formule;
+}
+
+function largeurFormuleStatique(value: string) {
+  return Math.max(260, Math.min(760, nettoyerFormuleStatique(value).length * 10));
 }
 
 function obtenirStyleTexteMarque(index: number, markedAsCode: boolean) {
@@ -272,6 +406,13 @@ export default function EcranLectureCours() {
     } as unknown as Href);
   }
 
+  /**
+   * Gère la réponse du quiz final.
+   *
+   * Le cours n'est pas terminé juste parce que la dernière diapo est vue:
+   * la bonne réponse confirme la compréhension et déclenche l'enregistrement
+   * complet, incluant l'XP une seule fois.
+   */
   function chooseAnswer(answerIndex: number) {
     if (quizCompleted || wrongAnswers.includes(answerIndex)) {
       return;
@@ -408,21 +549,24 @@ export default function EcranLectureCours() {
                     <View key={`formula-line-${index}`} style={styles.formulaLine}>
                       {line.length === 0 ? (
                         <Text style={[styles.formulaBlankLine, { color: themeFormule.text }]}>{'\u00A0'}</Text>
-                      ) : estLigneFormuleAutonome(line) ? (
+                      ) : estLigneFormuleStatique(line) ? (
                         <ScrollView
                           horizontal
                           nestedScrollEnabled
                           showsHorizontalScrollIndicator={false}
                           style={styles.formulaLineScroller}
                           contentContainerStyle={styles.formulaLineScrollerContent}>
-                          <RenduFormule
-                            darkColor={themeFormule.text}
-                            fallback={preserverEspaces(line)}
-                            lightColor={themeFormule.text}
-                            mathematiques={line}
-                            numberOfLines={1}
-                            size={line.length > 42 ? 'sm' : 'md'}
-                          />
+                          <View style={[styles.formulaMathViewWrap, { width: largeurFormuleStatique(line) }]}>
+                            <RenduFormule
+                              darkColor={themeFormule.text}
+                              fallback={nettoyerFormuleStatique(line)}
+                              lightColor={themeFormule.text}
+                              mathematiques={convertirFormuleStatiqueEnLatex(line)}
+                              mathViewMobile
+                              numberOfLines={1}
+                              size={line.length > 42 ? 'sm' : 'md'}
+                            />
+                          </View>
                         </ScrollView>
                       ) : (
                         <ScrollView
@@ -886,6 +1030,9 @@ const styles = StyleSheet.create({
     minWidth: '100%',
     paddingRight: 18,
   },
+  formulaMathViewWrap: {
+    minHeight: 38,
+  },
   formulaPlainText: {
     color: '#FFFFFF',
     fontFamily: 'monospace',
@@ -1014,4 +1161,3 @@ const styles = StyleSheet.create({
     transform: [{ translateY: 1 }],
   },
 });
-

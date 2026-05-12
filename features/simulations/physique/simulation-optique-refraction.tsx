@@ -1,3 +1,10 @@
+/**
+ * Simulation de réfraction.
+ *
+ * Le calcul applique la loi de Snell: n1 sin(θ1) = n2 sin(θ2). Si le résultat
+ * n'existe pas, la simulation affiche la réflexion totale interne. Sinon, le
+ * SVG dessine le rayon incident, le rayon réfléchi et le rayon réfracté.
+ */
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Animated,

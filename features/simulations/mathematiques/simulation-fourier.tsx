@@ -1,3 +1,11 @@
+/**
+ * Simulation de Fourier.
+ *
+ * `SIGNALS` décrit le signal cible et les harmoniques à additionner. Le code
+ * crée un chemin SVG pour la somme des n premiers termes et quelques chemins
+ * pour les composantes. La vue des phaseurs représente ces termes comme des
+ * petits vecteurs qui s'additionnent pour reconstruire le signal.
+ */
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {

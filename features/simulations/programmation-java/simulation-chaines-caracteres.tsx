@@ -1,3 +1,11 @@
+/**
+ * Simulation Java des chaînes de caractères.
+ *
+ * La chaîne est gardée comme texte, puis affichée caractère par caractère avec
+ * son index et son code Unicode. Les méthodes (`substring`, `indexOf`, etc.)
+ * sont recalculées à partir de ce texte. Les traces montrent que les opérations
+ * créent surtout de nouveaux résultats au lieu de modifier la chaîne originale.
+ */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {

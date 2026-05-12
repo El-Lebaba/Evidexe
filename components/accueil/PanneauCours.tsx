@@ -1,3 +1,9 @@
+/**
+ * Panneau de cours utilisé sur l'accueil.
+ *
+ * Il affiche un aperçu rapide des cours et de leur progression sans remplacer
+ * la vraie page `Cours`, qui reste la liste complète.
+ */
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Href, router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';

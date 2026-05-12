@@ -1,3 +1,11 @@
+/**
+ * Simulation de champ vectoriel.
+ *
+ * `VECTOR_FIELDS` garde les fonctions P(x,y) et Q(x,y). Le rendu parcourt une
+ * grille, calcule un vecteur pour chaque point, puis dessine une flèche SVG.
+ * Les particules optionnelles avancent selon le champ pour rendre visible le
+ * sens général du mouvement.
+ */
 import { useIsFocused } from '@react-navigation/native';
 import { useMemo, useRef, useState } from 'react';
 import { Animated, Platform, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';

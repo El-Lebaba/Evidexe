@@ -1,3 +1,9 @@
+/**
+ * Couleurs principales de l'application et des simulations.
+ *
+ * Les écrans utilisent ces objets au lieu de coder toutes les couleurs à la
+ * main. Ça garde le mode sombre et les matières plus cohérents.
+ */
 import { Appearance, Platform } from 'react-native';
 
 const couleurTeinteClaire = '#BC8559';

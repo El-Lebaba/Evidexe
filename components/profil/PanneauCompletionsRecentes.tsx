@@ -1,3 +1,9 @@
+/**
+ * Panneau des cours récents.
+ *
+ * Il montre les derniers cours commencés ou terminés pour que le profil donne
+ * un résumé rapide de l'activité.
+ */
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Href, router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';

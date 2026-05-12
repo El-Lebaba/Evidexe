@@ -1,3 +1,11 @@
+/**
+ * Simulation Java de mémoire.
+ *
+ * Chaque type Java produit une représentation avec adresse, bits et note. Les
+ * entiers sont convertis en binaire avec un masque, les flottants passent par
+ * `ArrayBuffer/DataView`, et les couleurs séparent les parties importantes
+ * comme signe, exposant et mantisse.
+ */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {

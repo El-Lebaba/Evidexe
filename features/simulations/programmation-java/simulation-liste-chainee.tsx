@@ -1,3 +1,11 @@
+/**
+ * Simulation Java de liste chaînée.
+ *
+ * La liste est représentée par un tableau de noeuds `{ id, valeur }`, mais le
+ * dessin ajoute des flèches pour représenter les références `next`. Les ajouts
+ * en tête/queue et les retraits changent l'ordre des noeuds sans montrer une
+ * mémoire réelle complète.
+ */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
