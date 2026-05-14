@@ -30,7 +30,7 @@ Evidexe est une application d'apprentissage interactive construite avec **Expo**
 
 ## Aperçu
 
-Evidex transforme des concepts abstraits en éléments que l'étudiant peut observer et manipuler. L'application combine :
+Evidexe transforme des concepts abstraits en éléments que l'étudiant peut observer et manipuler. L'application combine :
 
 - des diapositives de cours guidées avec exemples et quiz final;
 - des simulations interactives pour les mathématiques, la physique et les algorithmes Java;
