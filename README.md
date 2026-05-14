@@ -94,8 +94,8 @@ Le catalogue contient aussi des entrées verrouillées ou en préparation, notam
 Cloner le dépôt :
 
 ```bash
-git clone https://github.com/Veng143/Evidex.git
-cd Evidex
+git clone https://github.com/Veng143/Evidexe.git
+cd Evidexe
 ```
 
 Installer les dépendances :
